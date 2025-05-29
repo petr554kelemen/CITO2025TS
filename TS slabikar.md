@@ -362,3 +362,218 @@ this.load.script() – stáhne externí knihovnu WebFont Loader.
 declare global { interface Window { WebFont: any } } – dává TS vědět o existenci window.WebFont.
 window.WebFont.load({ …, active: () => { … } }) – callback active se vykoná, až jsou fonty k dispozici.
 this.scene.start('MainMenu') se volá až v active, takže v MainMenu už můžete bezpečně používat Google Fonts
+
+# Tvorba dialogových bublin ve Phaseru 3
+
+Tento návod tě provede krok za krokem tvorbou lokalizovaných dialogových bublin (textových boxů) ve Phaseru 3 s TypeScriptem. Výsledný postup můžeš vložit do svého slabikáře.
+
+---
+
+## 📁 1) Struktura projektu
+
+Ve složce `src` vytvoř následující adresáře a soubory:
+
+```
+src/
+├── assets/
+│   └── locales/
+│       ├── cs.json
+│       ├── en.json
+│       └── pl.json
+├── scenes/
+│   ├── PreloadScene.ts
+│   └── IntroScene.ts
+├── utils/
+│   └── DialogManager.ts
+└── main.ts
+```
+
+* **assets/locales**: JSON soubory s překlady pro češtinu, angličtinu a polštinu.
+* **scenes/PreloadScene.ts**: Načte JSONy do cache.
+* **scenes/IntroScene.ts**: Vytvoří a použije `DialogManager`.
+* **utils/DialogManager.ts**: Třída pro vykreslování a ovládání bublin.
+
+---
+
+## 🔄 2) Načtení JSON překladů v PreloadScene
+
+Ve `src/scenes/PreloadScene.ts` načteme všechny lokalizační soubory:
+
+```ts
+export default class PreloadScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'PreloadScene' });
+  }
+
+  preload(): void {
+    // načteme JSONy z assets/locales
+    this.load.json('lang_cs', 'assets/locales/cs.json');
+    this.load.json('lang_en', 'assets/locales/en.json');
+    this.load.json('lang_pl', 'assets/locales/pl.json');
+
+    // ... další assety (obrázky, zvuky) ...
+  }
+
+  create(): void {
+    // přechod do úvodní scény s výchozím jazykem
+    this.scene.start('IntroScene', { locale: 'cs' });
+  }
+}
+```
+
+> **Poznámka:** JSON se uloží do cache pod klíčem `lang_<kód jazyka>` (např. `lang_cs`).
+
+---
+
+## 📦 3) Implementace `DialogManager.ts`
+
+Vytvoř `src/utils/DialogManager.ts` s podporou vnořených klíčů (`"intro.title"`, `"dialog.ghostWelcome"`):
+
+```ts
+import Phaser from 'phaser';
+
+type Locale = 'cs' | 'en' | 'pl';
+
+interface Translations {
+  [key: string]: any;
+}
+
+export default class DialogManager {
+  private scene: Phaser.Scene;
+  private locale: Locale;
+  private texts: Record<Locale, Translations>;
+  private container?: Phaser.GameObjects.Container;
+
+  constructor(scene: Phaser.Scene, locale: Locale) {
+    this.scene = scene;
+    this.locale = locale;
+    // načteme JSONy z cache
+    this.texts = {
+      cs: this.scene.cache.json.get('lang_cs') as Translations,
+      en: this.scene.cache.json.get('lang_en') as Translations,
+      pl: this.scene.cache.json.get('lang_pl') as Translations,
+    };
+  }
+
+  // změní jazyk
+  public setLanguage(locale: Locale): void {
+    this.locale = locale;
+  }
+
+  // načte text podle vnořené cesty "klíč1.klíč2"
+  private getNestedText(path: string): string {
+    const parts = path.split('.');
+    let curr: any = this.texts[this.locale];
+    for (const p of parts) {
+      if (curr?.[p] !== undefined) curr = curr[p];
+      else return '[missing text]';
+    }
+    return typeof curr === 'string' ? curr : '[invalid key]';
+  }
+
+  // zobrazí bublinu s textem
+  public show(key: string, x = 400, y = 300): void {
+    // odstraníme předchozí bublinu (pokud je)
+    if (this.container) this.container.destroy();
+
+    const content = this.getNestedText(key);
+
+    // grafika bubliny
+    const bubble = this.scene.add.graphics();
+    bubble.fillStyle(0xffffff, 1);
+    bubble.lineStyle(2, 0x000000, 1);
+
+    const padding = 10;
+    const txt = this.scene.add.text(0, 0, content, {
+      fontFamily: 'Arial',
+      fontSize: '18px',
+      color: '#000000',
+      wordWrap: { width: 300 }
+    });
+
+    // spočteme rozměry
+    const bounds = txt.getBounds();
+    const width  = bounds.width  + padding * 2;
+    const height = bounds.height + padding * 2;
+
+    // vykreslíme obdélník a ocásek
+    bubble.fillRoundedRect(0, 0, width, height, 8);
+    bubble.strokeRoundedRect(0, 0, width, height, 8);
+    bubble.fillTriangle(
+      width/2 - 10, height,
+      width/2 + 10, height,
+      width/2,       height + 20
+    );
+    bubble.lineTriangle(
+      width/2 - 10, height,
+      width/2 + 10, height,
+      width/2,       height + 20
+    );
+
+    // pozicujeme text a bublinu
+    txt.setPosition(padding, padding);
+    this.container = this.scene.add.container(
+      x - width/2,
+      y - height - 20,
+      [ bubble, txt ]
+    );
+  }
+
+  // skryje bublinu
+  public hide(): void {
+    this.container?.destroy();
+    this.container = undefined;
+  }
+}
+```
+
+> **Poznámka:** Kód je kompletně okomentovaný, aby byl srozumitelný i pro začátečníka.
+
+---
+
+## ▶️ 4) Použití v `IntroScene.ts`
+
+```ts
+import Phaser from 'phaser';
+import DialogManager from '../utils/DialogManager';
+
+export default class IntroScene extends Phaser.Scene {
+  private dialog!: DialogManager;
+  private locale!: 'cs' | 'en' | 'pl';
+
+  constructor() {
+    super({ key: 'IntroScene' });
+  }
+
+  init(data: { locale: 'cs' | 'en' | 'pl' }) {
+    this.locale = data.locale;
+  }
+
+  create(): void {
+    this.dialog = new DialogManager(this, this.locale);
+
+    // zobrazíme nadpis
+    this.dialog.show('intro.title', 400, 100);
+
+    // po 2 s ukážeme další text
+    this.time.delayedCall(2000, () => {
+      this.dialog.show('intro.selectLang', 400, 200);
+    });
+
+    // pro ukázku: po dalších 2 s přepneme jazyk a zobrazíme uvítání ducha
+    // this.dialog.setLanguage('en');
+    // this.dialog.show('dialog.ghostWelcome', 400, 300);
+  }
+}
+```
+
+---
+
+## ✅ Shrnutí kroků
+
+1. **Struktura projektu**: vytvoř složky `assets/locales`, `scenes`, `utils`.
+2. **PreloadScene**: načti `cs.json`, `en.json`, `pl.json` z `assets/locales`.
+3. **DialogManager**: třída pro vykreslování lokalizovaných bublin s podporou vnořených klíčů.
+4. **IntroScene**: vytvoř instanci `DialogManager` a voláním `show(...)` zobrazuj text.
+
+Nyní můžeš do `assets/locales/cs.json` přidat své české texty. Až budeš chtít, připravím pro tebe i překlady do angličtiny a polštiny s ohledem na geocachingovou terminologii. 🎯

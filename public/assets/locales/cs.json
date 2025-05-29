@@ -1,10 +1,19 @@
 
 {
-  "intro": {
-    "title": "Vítej v CITO Hře!",
-    "selectLang": "Vyber si jazyk"
-  },
-  "dialog": {
-    "ghostWelcome": "Duch: Vítej, poutníku!"
+  "dialogSeqence": {
+    "motyl-01": "Fuj, jsem se tě lekl...\nco tady strašíš?",
+    "duch-01:": "Sleduji tě, jak skotačíš na věcech, které mě zabily...",
+    "motyl-02": "Jak se to sem dostalo?",
+    "duch-02": "Tak to ti řeknu úplně přesně\nTohle dokážou jen lidé...",
+    "motyl-03": "Kecáš! Vždyť si říkají milovníci přírody.",
+    "duch-03": "Hm... hele mizíme, zrovna se sem někdo blíží."
+    },
+  "dialogGameSeqence": {
+    "monina-01": "Ahoj, jsem Monina na lovu keší...",
+    "monina-02": "a tohle má být jako co?",
+    "monina-03": "Tákže...\nnež půjdu dál, pomůžeš mi to sebrat?",
+    "monina-04": "Já se tě u toho budu na nějaké věci ptát.",
+    "monina-05": "Jsem ráda, že souhlasíš,\npokud chceš Finálky pro tvou keš.",
+    "monina-06": "Tady máš pytel, ať to máš do čeho sbírat"
   }
 }

@@ -11,7 +11,11 @@ import MainMenu from './scenes/MainMenu';
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: 1024,
-    height: 768,
+    height: 760,
+    scale: {
+        mode: Phaser.Scale.FIT,                   // + přizpůsobí obsah oknu při změně rozměrů
+        autoCenter: Phaser.Scale.CENTER_BOTH,     // + vycentruje hru horizontálně i vertikálně
+    },
     parent: 'game-container',
     backgroundColor: '#028af8',
     scene: [

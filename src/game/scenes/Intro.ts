@@ -1,4 +1,3 @@
-
 import {addGuides} from '../../utils/ZlatyRez';
 
 type Odpadek = {
@@ -35,7 +34,6 @@ export default class Intro extends Phaser.Scene {
 	guides?: any;
 
 	constructor() {
-
 		super("Intro");
 	}
 

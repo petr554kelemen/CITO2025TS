@@ -7,19 +7,15 @@ import Phaser from "phaser";
 /* END-USER-IMPORTS */
 
 declare global {
-  interface Window {
-    WebFont: any;
-  }
+    interface Window {
+        WebFont: any;
+    }
 }
 
 export default class Preloader extends Phaser.Scene {
 
     constructor() {
         super("Preloader");
-
-        /* START-USER-CTR-CODE */
-        // Write your code here.
-        /* END-USER-CTR-CODE */
     }
 
     editorCreate(): void {
