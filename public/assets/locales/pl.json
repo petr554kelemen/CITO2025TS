@@ -1,0 +1,9 @@
+{
+  "intro": {
+    "title": "Witaj w grze CITO!",
+    "selectLang": "Wybierz język"
+  },
+  "dialog": {
+    "ghostWelcome": "Duch: Witaj, podróżniku!"
+  }
+}

@@ -1,0 +1,133 @@
+{
+    "section1": {
+        "files": [
+            {
+                "url": "assets/Images/Obr02.png",
+                "type": "image",
+                "key": "Banan"
+            },
+            {
+                "url": "assets/Images/Obr05.png",
+                "type": "image",
+                "key": "Baterka"
+            },
+            {
+                "url": "assets/Images/Cito_logo.PNG",
+                "type": "image",
+                "key": "Cito_logo"
+            },
+            {
+                "url": "assets/Images/Divka00.png",
+                "type": "image",
+                "key": "DivkaStoji"
+            },
+            {
+                "url": "assets/Images/ghost.png",
+                "type": "image",
+                "key": "Duch"
+            },
+            {
+                "url": "assets/Vlajky/064/dooffy_design_icons_EU_flags_Czech_Republic.png",
+                "type": "image",
+                "key": "flag_cs"
+            },
+            {
+                "url": "assets/Vlajky/064/dooffy_design_icons_EU_flags_United_Kingdom.png",
+                "type": "image",
+                "key": "flag_en"
+            },
+            {
+                "url": "assets/Vlajky/064/dooffy_design_icons_EU_flags_Poland.png",
+                "type": "image",
+                "key": "flag_pl"
+            },
+            {
+                "url": {
+                    "IMG": "assets/freepik_forest_01.jpg"
+                },
+                "type": "texture",
+                "key": "freepik_forest_01"
+            },
+            {
+                "url": {
+                    "IMG": "assets/freepik_forest_02.png"
+                },
+                "type": "texture",
+                "key": "freepik_forest_02"
+            },
+            {
+                "url": "assets/Images/Obr03.png",
+                "type": "image",
+                "key": "Kapesnik"
+            },
+            {
+                "url": "assets/Images/Obr07.png",
+                "type": "image",
+                "key": "Karton"
+            },
+            {
+                "url": "assets/Images/Obr10.png",
+                "type": "image",
+                "key": "Lahev"
+            },
+            {
+                "url": "assets/logo.png",
+                "type": "image",
+                "key": "logo"
+            },
+            {
+                "url": "assets/Images/motyl.png",
+                "type": "image",
+                "key": "Motyl"
+            },
+            {
+                "url": "assets/Images/Obr06.png",
+                "type": "image",
+                "key": "Ohryzek"
+            },
+            {
+                "url": "assets/Images/pergamen.png",
+                "type": "image",
+                "key": "Pergamen"
+            },
+            {
+                "url": "assets/Images/Obr04.png",
+                "type": "image",
+                "key": "Petka"
+            },
+            {
+                "url": "assets/Images/Obr08.png",
+                "type": "image",
+                "key": "Plechovka"
+            },
+            {
+                "url": "assets/Images/plny_pytel_512.png",
+                "type": "image",
+                "key": "plnyPytel"
+            },
+            {
+                "url": "assets/Images/prazdny_pytel_512.png",
+                "type": "image",
+                "key": "prazdnyPytel"
+            },
+            {
+                "url": "assets/Images/Obr09.png",
+                "type": "image",
+                "key": "Vajgl"
+            },
+            {
+                "url": "assets/Images/Obr01.png",
+                "type": "image",
+                "key": "Zvykacka"
+            }
+        ]
+    },
+    "meta": {
+        "app": "Phaser Editor 2D - Asset Pack Editor",
+        "contentType": "phasereditor2d.pack.core.AssetContentType",
+        "url": "https://phasereditor2d.com",
+        "version": 2,
+        "showAllFilesInBlocks": false,
+        "visible": true
+    }
+}

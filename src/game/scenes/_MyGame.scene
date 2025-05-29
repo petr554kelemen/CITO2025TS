@@ -1,0 +1,171 @@
+{
+    "id": "a58ea50b-d79d-40f1-8207-8ff43787ee11",
+    "sceneType": "SCENE",
+    "settings": {
+        "exportClass": true,
+        "autoImport": true,
+        "superClassName": "MyGame",
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "MyGame",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1024,
+        "borderHeight": 768
+    },
+    "displayList": [
+        {
+            "type": "Image",
+            "id": "cb269cc0-4837-4c24-9e41-d073674fb161",
+            "label": "background",
+            "texture": {
+                "key": "freepik_forest_01"
+            },
+            "x": 512,
+            "y": 385
+        },
+        {
+            "type": "Image",
+            "id": "4eb0d598-23a3-41dc-96c0-4375f0ad2b2d",
+            "label": "karton",
+            "texture": {
+                "key": "Karton"
+            },
+            "x": 938,
+            "y": 614
+        },
+        {
+            "type": "Image",
+            "id": "916ea41a-10cd-471a-b227-34b2d02a5a7e",
+            "label": "plechovka",
+            "texture": {
+                "key": "Plechovka"
+            },
+            "x": 844,
+            "y": 579
+        },
+        {
+            "type": "Image",
+            "id": "1c0f8a30-1aef-49f1-b4c6-2113ecea6a5f",
+            "label": "lahev",
+            "texture": {
+                "key": "Lahev"
+            },
+            "x": 443,
+            "y": 588
+        },
+        {
+            "type": "Image",
+            "id": "96086d7d-c626-43f2-a009-8d552e8bd253",
+            "label": "baterka",
+            "texture": {
+                "key": "Baterka"
+            },
+            "x": 840,
+            "y": 676
+        },
+        {
+            "type": "Image",
+            "id": "b1a76ec8-46b3-40bc-82a6-41021ee3e229",
+            "label": "zvykacka",
+            "texture": {
+                "key": "Zvykacka"
+            },
+            "x": 660,
+            "y": 583
+        },
+        {
+            "type": "Image",
+            "id": "917e41ec-e5b5-4f45-bea0-161132428cf8",
+            "label": "kapesnik",
+            "texture": {
+                "key": "Kapesnik"
+            },
+            "x": 399,
+            "y": 668
+        },
+        {
+            "type": "Image",
+            "id": "41060860-65ad-41ae-9166-2f33ac17b76e",
+            "label": "ohryzek",
+            "texture": {
+                "key": "Ohryzek"
+            },
+            "x": 566,
+            "y": 638,
+            "angle": 82
+        },
+        {
+            "type": "Image",
+            "id": "64ff2c88-b3cc-4027-897e-89f0796c6b10",
+            "label": "banan",
+            "texture": {
+                "key": "Banan"
+            },
+            "x": 288,
+            "y": 563
+        },
+        {
+            "type": "Image",
+            "id": "a5a5703e-09a3-41c2-b00f-a262e4ec7002",
+            "label": "vajgl",
+            "texture": {
+                "key": "Vajgl"
+            },
+            "x": 688,
+            "y": 666
+        },
+        {
+            "type": "Image",
+            "id": "393f41c2-eb93-4780-9234-5947fba815d5",
+            "label": "petka",
+            "texture": {
+                "key": "Petka"
+            },
+            "x": 228,
+            "y": 691
+        },
+        {
+            "type": "Image",
+            "id": "184f1f2b-67d6-4044-b3fd-1da7b3455c94",
+            "label": "divkaStoji",
+            "texture": {
+                "key": "DivkaStoji"
+            },
+            "x": 93,
+            "y": 529,
+            "visible": false
+        },
+        {
+            "type": "Image",
+            "id": "c1a2464e-9a44-46a9-91ac-f2f934aa6873",
+            "label": "prazdnyPytel",
+            "texture": {
+                "key": "prazdnyPytel"
+            },
+            "x": 135,
+            "y": 564,
+            "scaleX": 0.32442592746834764,
+            "scaleY": 0.43932686891124373
+        },
+        {
+            "type": "Rectangle",
+            "id": "f8af5492-a7c4-455a-85bb-321b49d3b221",
+            "label": "quizBox",
+            "x": 514,
+            "y": 244,
+            "scaleX": 6.2632928192855015,
+            "scaleY": 3.1861312980324406,
+            "alpha": 0.7,
+            "isFilled": true,
+            "width": 128,
+            "height": 128
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

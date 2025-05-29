@@ -1,0 +1,10 @@
+
+{
+  "intro": {
+    "title": "Vítej v CITO Hře!",
+    "selectLang": "Vyber si jazyk"
+  },
+  "dialog": {
+    "ghostWelcome": "Duch: Vítej, poutníku!"
+  }
+}

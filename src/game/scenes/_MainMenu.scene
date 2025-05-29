@@ -1,0 +1,153 @@
+{
+    "id": "32e61890-e95a-4d4f-8c33-877c1b27b0b5",
+    "sceneType": "SCENE",
+    "settings": {
+        "exportClass": true,
+        "autoImport": true,
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "MainMenu",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1024,
+        "borderHeight": 768
+    },
+    "displayList": [
+        {
+            "type": "Image",
+            "id": "eddaf8e1-94d1-401d-a328-cdfb23d1fef5",
+            "label": "background",
+            "texture": {
+                "key": "background"
+            },
+            "x": 512,
+            "y": 384
+        },
+        {
+            "type": "Image",
+            "id": "2342b7f3-7702-4d62-b539-e4e6679f8290",
+            "label": "freepik_forest_02",
+            "texture": {
+                "key": "freepik_forest_02"
+            },
+            "x": 583,
+            "y": 383
+        },
+        {
+            "type": "Text",
+            "id": "e5babb96-c526-40f4-94d3-ce0955d9767d",
+            "label": "logo",
+            "x": 512,
+            "y": 167,
+            "originX": 0.5,
+            "originY": 0.5,
+            "text": "Virtuální CITO",
+            "align": "center",
+            "fontFamily": "Barrio",
+            "fontSize": "96px",
+            "fontStyle": "bold",
+            "color": "#d1d289ff",
+            "stroke": "#931616ff",
+            "strokeThickness": 5,
+            "shadow.offsetX": 5,
+            "shadow.offsetY": 5,
+            "shadow.fill": true
+        },
+        {
+            "type": "Text",
+            "id": "849c46c6-b507-4dba-9e0b-1d60465186c2",
+            "label": "text",
+            "x": 517,
+            "y": 276,
+            "originX": 0.5,
+            "originY": 0.5,
+            "text": "GEOCACHING GAME",
+            "align": "center",
+            "fontFamily": "Arial Black",
+            "fontSize": "38px",
+            "color": "#ffffff",
+            "stroke": "#000000",
+            "strokeThickness": 8
+        },
+        {
+            "type": "Image",
+            "id": "407640ca-7503-45e5-b241-ad059c9f656a",
+            "label": "cito_logo",
+            "texture": {
+                "key": "Cito_logo"
+            },
+            "x": 524,
+            "y": 448,
+            "scaleX": 0.25,
+            "scaleY": 0.25
+        },
+        {
+            "type": "Image",
+            "id": "64d43d73-8ef5-4a93-b8e9-050487458360",
+            "label": "flag_cs",
+            "texture": {
+                "key": "flag_cs"
+            },
+            "x": 374,
+            "y": 636
+        },
+        {
+            "type": "Image",
+            "id": "3015e2c0-1a6d-47d8-9782-3df786441eda",
+            "label": "flag_en",
+            "texture": {
+                "key": "flag_en"
+            },
+            "x": 512,
+            "y": 633
+        },
+        {
+            "type": "Image",
+            "id": "a8b09fdd-e65f-4d26-8969-1813ebbc5b9d",
+            "label": "flag_pl",
+            "texture": {
+                "key": "flag_pl"
+            },
+            "x": 664,
+            "y": 634
+        },
+        {
+            "type": "Text",
+            "id": "0eaffb04-737c-41e3-aefe-5291650677b2",
+            "label": "text_1",
+            "x": 496,
+            "y": 723,
+            "text": "(c) 2022 - 2025, pettr554\nlicence MIT"
+        },
+        {
+            "type": "Image",
+            "id": "9bc3e1db-4ee3-4655-8840-0f85e9b9bb6d",
+            "label": "divkaStoji",
+            "texture": {
+                "key": "DivkaStoji"
+            },
+            "x": 123,
+            "y": 421,
+            "scaleX": 0.75,
+            "scaleY": 0.75
+        },
+        {
+            "type": "Image",
+            "id": "3569a8c4-6d78-4e1f-8e50-e7be3a74d2cb",
+            "label": "plnyPytel",
+            "texture": {
+                "key": "plnyPytel"
+            },
+            "x": 874,
+            "y": 524,
+            "scaleX": 0.25,
+            "scaleY": 0.45
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}
