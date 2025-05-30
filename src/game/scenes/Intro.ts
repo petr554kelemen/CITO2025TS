@@ -1,4 +1,6 @@
-import {addGuides} from '../../utils/ZlatyRez';
+import { addGuides } from '../../utils/ZlatyRez';
+import Phaser from 'phaser';
+import DialogManager from '../../utils/DialogManager';
 
 type Odpadek = {
 	typ: string;
@@ -10,6 +12,7 @@ type Odpadek = {
 };
 
 export default class Intro extends Phaser.Scene {
+	private dialog!: DialogManager;
 	// data odpadků na scéně
 	odpadkyData: Odpadek[] = [
 		{ typ: "Banan", pozice: { x: 985, y: 555 }, scale: 1.4, status: 'default', sprite: null },
@@ -28,8 +31,8 @@ export default class Intro extends Phaser.Scene {
 	pytel!: Phaser.GameObjects.Sprite;
 	citoLogo!: Phaser.GameObjects.Image;
 	background!: Phaser.GameObjects.Image;
-	motyl!: Phaser.GameObjects.Image;
-	duch!: Phaser.GameObjects.Image;
+	motyl!: Phaser.GameObjects.Sprite;
+	duch!: Phaser.GameObjects.Sprite;
 	prevX!: number;
 	guides?: any;
 
@@ -46,7 +49,11 @@ export default class Intro extends Phaser.Scene {
 		this.background = this.add.image(512, 385, "freepik_forest_01");
 
 		//zlaty rez
-		this.guides = addGuides(this, {thirds: true, golden: false, color:0x82e6f6});
+		this.guides = addGuides(this, { thirds: true, golden: false, color: 0x82e6f6 });
+
+		// vytvoreni dialogů
+		const mistniLocale = this.registry.get('lang') as 'cs' | 'en' | 'pl';
+		this.dialog = new DialogManager(this, mistniLocale);
 
 		// objekt ducha na scenu
 		this.duch = this.add.sprite(190, 280, "Duch", 0).setAlpha(0).setVisible(false);
@@ -85,7 +92,7 @@ export default class Intro extends Phaser.Scene {
 
 		// nastavíme počáteční hodnotu pro porovnání smeru pohybu motyla
 		this.prevX = this.motyl.x;
-		
+
 		// 2) Vygenerujeme pole bodů z odpadků
 		const path = this.odpadkyData.map((o, i) => ({
 			x: o.pozice.x,
@@ -96,18 +103,33 @@ export default class Intro extends Phaser.Scene {
 		// 3) Přidáme ještě finální bod (podle pozice ducha)
 		path.push({ x: this.duch.x + 150, y: this.duch.y });
 
+		// Vybírám jen náhodné body pro motýla
+		// 1a) Zkopíruj pole bez posledního bodu (ten je finální a musí zůstat)
+		const pathWithoutFinal = path.slice(0, -1); // vezme všechny kromě posledního
+
+		// 2a) Zamíchej pole - použijeme Fisher-Yates shuffle
+		for (let i = pathWithoutFinal.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[pathWithoutFinal[i], pathWithoutFinal[j]] = [pathWithoutFinal[j], pathWithoutFinal[i]];
+		}
+		// 3a) Vyber první 3 náhodné body
+		const randomPath = pathWithoutFinal.slice(0, 3); // max 3 prvky
+		// 4a) Přidej zpět finální bod
+		randomPath.push(path[path.length - 1]); // přidá poslední bod jako finální
+		// Výsledek: randomPath obsahuje 3 náhodné body + finální bod na konci
+
 		// 4) Sestavíme si 'timeline' pomoci 
-		//    Řetězce tweenů (metoda.timeline jiz neexistuje v novem Phaseru)
+		//    řetězce tweenů (metoda.timeline jiz neexistuje v novem Phaseru)
 		this.tweens.chain({
 			targets: this.motyl,
 			ease: 'Quad.easeInOut',
 			onComplete: () => volejDucha(), // po dokonceni se objevi duch na scene
 			tweens: [
 				// krok 1 – scale
-				{ scale: 1, duration: 3500 }, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
+				{ scale: 1, duration: 3000 }, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
 
 				// kroky 2+ – postupné pohyby mezi body
-				...path.map(pt => ({
+				...randomPath.map(pt => ({
 					x: pt.x,
 					y: pt.y,
 					duration: 4000,
@@ -134,7 +156,7 @@ export default class Intro extends Phaser.Scene {
 			this.tweens.add({
 				x: this.duch.x,
 				y: this.duch.y,
-				targets:  this.duch,
+				targets: this.duch,
 				alpha: .65,
 				duration: 2500,
 				onComplete: () => this.motyl.setFlipX(false) // zajistuje aby se divali duch a motyl FaceToFace
@@ -143,14 +165,32 @@ export default class Intro extends Phaser.Scene {
 
 		// Dále animace, tweeny, spouštění dalších scén...
 		const doFlip = (objekt: Phaser.GameObjects.Image) => {
-			 this.tweens.add({
-			 	targets: objekt,
-			 	angle: objekt.angle + 15,   // otočí o 15°
-			 	duration: 300,
-			 	ease: 'Quad.easeInOut',
+			this.tweens.add({
+				targets: objekt,
+				angle: objekt.angle + 15,   // otočí o 15°
+				duration: 300,
+				ease: 'Quad.easeInOut',
 				yoyo: true
-			 });
+			});
 		};
+
+		const sequence = [
+			{ key: 'dialogSequence.motyl-00', obj: this.motyl },
+			// { key: 'dialogSequence.motyl-01', obj: this.motyl }
+			// ... další zprávy
+		];
+
+		let totalDelay = 0;
+		sequence.forEach(item => {
+			this.time.delayedCall(totalDelay, () => {
+				//const x = item.obj.x;
+				//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
+				//this.dialog.show(item.key, x, y);
+				this.dialog.showAbove(item.key, item.obj);
+			});
+			const text = this.dialog.getText(item.key);
+			totalDelay += text.length * 40 + 1000;
+		});
 	}
 
 	update(): void {

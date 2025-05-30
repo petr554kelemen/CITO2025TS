@@ -1,9 +1,19 @@
 {
-  "intro": {
-    "title": "Welcome to the CITO Game!",
-    "selectLang": "Choose your language"
+  "dialogSequence": {
+    "motyl-00": "Wow, that's beautiful!\nWhat is it?",
+    "motyl-01": "Whoa, you scared me...\nWhy are you haunting here?",
+    "duch-01": "I’m watching you playing with the things that killed me...",
+    "motyl-02": "How did this get here?",
+    "duch-02": "I can tell you exactly\nOnly humans can do that...",
+    "motyl-03": "No way! They call themselves nature lovers.",
+    "duch-03": "Hmm... let’s disappear, someone is coming."
   },
-  "dialog": {
-    "ghostWelcome": "Ghost: Welcome, traveler!"
+  "dialogGameSequence": {
+    "monina-01": "Hi, I'm Monina, out geocaching...",
+    "monina-02": "And what is this supposed to be?",
+    "monina-03": "So...\nbefore I move on, will you help me pick this up?",
+    "monina-04": "I’ll ask you a few questions along the way.",
+    "monina-05": "I'm glad you agreed,\nif you want Final Coordinates for your cache.",
+    "monina-06": "Here's a bag so you have something to collect it in."
   }
 }

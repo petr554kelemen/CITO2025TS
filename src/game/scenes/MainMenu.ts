@@ -1,6 +1,8 @@
 // src/game/scenes/MainMenu.ts
 type Lang = 'cs' | 'en' | 'pl';
 
+import Phaser from "phaser";
+
 export default class MainMenu extends Phaser.Scene {
   private strings!: Record<string, any>;
 
@@ -19,7 +21,8 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   create(): void {
-
+    //this.strings = this.scene.registry.get('strings') as Record<string, any>;
+    
     this.cameras.main.fadeIn(500, 0, 0, 0); //fadeIn ze staré scény
 
     // freepik_forest_02

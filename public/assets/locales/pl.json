@@ -1,9 +1,19 @@
 {
-  "intro": {
-    "title": "Witaj w grze CITO!",
-    "selectLang": "Wybierz język"
+  "dialogSequence": {
+    "motyl-00": "Wow, jakie to piękne!\nCo to jest?",
+    "motyl-01": "Łał, aż się przestraszyłem...\nCzemu tu straszysz?",
+    "duch-01": "Obserwuję cię, jak bawisz się rzeczami, które mnie zabiły...",
+    "motyl-02": "Jak to się tu znalazło?",
+    "duch-02": "Powiem ci dokładnie\nTylko ludzie tak potrafią...",
+    "motyl-03": "Nie wierzę! Przecież mówią, że kochają naturę.",
+    "duch-03": "Hmm... zmywajmy się, ktoś się zbliża."
   },
-  "dialog": {
-    "ghostWelcome": "Duch: Witaj, podróżniku!"
+  "dialogGameSequence": {
+    "monina-01": "Cześć, jestem Monina i szukam keszy...",
+    "monina-02": "A co to ma być?",
+    "monina-03": "Więc...\nzanim pójdę dalej, pomożesz mi to zebrać?",
+    "monina-04": "Będę ci zadawać kilka pytań po drodze.",
+    "monina-05": "Cieszę się, że się zgadzasz,\njeśli chcesz finałowe współrzędne do swojej skrytki.",
+    "monina-06": "Masz tu worek, żebyś miał w co to zebrać."
   }
 }
