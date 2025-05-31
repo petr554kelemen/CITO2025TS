@@ -18,16 +18,34 @@ export default class DialogManager {
     //this.texts = this.scene.cache.json.get(`locale-${locale}`) as Record<string, any>;
   }
 
-  // nyní public, abyste z IntroScene mohl měřit délku
-  // public getText(path: string): string {
-  //   const parts = path.split('.');
-  //   let curr: any = this.texts;
-  //   for (const p of parts) {
-  //     if (curr?.[p] !== undefined) curr = curr[p];
-  //     else return '[missing text]';
-  //   }
-  //   return typeof curr === 'string' ? curr : '[invalid key]';
-  // }
+/**
+   * Zobrazí jeden dialog podle klíče na daný čas (ms)
+   * @param key Klíč do JSON (např. "motyl-00")
+   * @param durationMs Jak dlouho zůstane bublina zobrazená (defaultně 2000 ms)
+   */
+  public showDialogByKey(key: string, durationMs: number = 2000) {
+    //const text = this.dialogs[key]; // řadek s chybou dialogs neexistuje
+    const text = this.getText(key);   // zkousim nahradit 
+    if (!text) return;
+    this.show(text);
+
+    // Po uplynutí času dialog zmizí
+    this.scene.time.delayedCall(durationMs, () => {
+      this.hide();
+    });
+  }
+
+  /* public showDialogByKey(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
+    const text = this.getText(key);
+    if (!text) return;
+    this.showAbove(text, obj);
+
+    // Po uplynutí času dialog zmizí
+    this.scene.time.delayedCall(durationMs, () => {
+      this.hide();
+    });
+  }
+ */
 
   public showAbove(
     key: string,

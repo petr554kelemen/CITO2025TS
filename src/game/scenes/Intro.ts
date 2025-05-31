@@ -79,7 +79,6 @@ export default class Intro extends Phaser.Scene {
 
 		// vytvoření pytle na scéně
 		//this.pytel = this.add.sprite(400, 300, 'prazdnyPytel').setScale(.25);
-
 		//this.pytel.setInteractive();
 
 		// umístění motýla na scénu
@@ -113,7 +112,7 @@ export default class Intro extends Phaser.Scene {
 			[pathWithoutFinal[i], pathWithoutFinal[j]] = [pathWithoutFinal[j], pathWithoutFinal[i]];
 		}
 		// 3a) Vyber první 3 náhodné body
-		const randomPath = pathWithoutFinal.slice(0, 3); // max 3 prvky
+		const randomPath = pathWithoutFinal.slice(0, 4); // max 3 prvky
 		// 4a) Přidej zpět finální bod
 		randomPath.push(path[path.length - 1]); // přidá poslední bod jako finální
 		// Výsledek: randomPath obsahuje 3 náhodné body + finální bod na konci
@@ -132,12 +131,13 @@ export default class Intro extends Phaser.Scene {
 				...randomPath.map(pt => ({
 					x: pt.x,
 					y: pt.y,
-					duration: 4000,
+					duration: 3000,
 					ease: 'Quad.easeInOut',
 					onComplete: () => {
-						// s 33% šancí se zakolibe na odpadku
-						if (Math.random() <= 0.33) {
+						// s 50% šancí se zakolibe na odpadku
+						if (Math.random() <= 0.5) {
 							doFlip(this.motyl);
+							this.dialog.showDialogByKey('motyl-01', 1500);
 						}
 					}
 				}))
@@ -159,7 +159,10 @@ export default class Intro extends Phaser.Scene {
 				targets: this.duch,
 				alpha: .65,
 				duration: 2500,
-				onComplete: () => this.motyl.setFlipX(false) // zajistuje aby se divali duch a motyl FaceToFace
+				onComplete: () => {
+					this.motyl.setFlipX(false); // zajistuje aby se divali duch a motyl FaceToFace
+					this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
+				} 
 			});
 		}
 
@@ -174,24 +177,31 @@ export default class Intro extends Phaser.Scene {
 			});
 		};
 
-		const sequence = [
-			{ key: 'dialogSequence.motyl-00', obj: this.motyl },
-			// { key: 'dialogSequence.motyl-01', obj: this.motyl }
-			// ... další zprávy
-		];
-
-		let totalDelay = 0;
-		sequence.forEach(item => {
-			this.time.delayedCall(totalDelay, () => {
-				//const x = item.obj.x;
-				//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
-				//this.dialog.show(item.key, x, y);
-				this.dialog.showAbove(item.key, item.obj);
-			});
-			const text = this.dialog.getText(item.key);
-			totalDelay += text.length * 40 + 1000;
-		});
+		
 	}
+	dialogMotylDuch() {
+			const sequence = [
+				{ key: 'dialogSequence.motyl-01', obj: this.motyl },
+				{ key: 'dialogSequence.duch-01', obj: this.duch },
+				{ key: 'dialogSequence.motyl-02', obj: this.motyl },
+				{ key: 'dialogSequence.duch-02', obj: this.duch },
+				{ key: 'dialogSequence.motyl-03', obj: this.motyl },
+				{ key: 'dialogSequence.duch-03', obj: this.duch }
+				// ... další zprávy
+			];
+
+			let totalDelay = 0;
+			sequence.forEach(item => {
+				this.time.delayedCall(totalDelay, () => {
+					//const x = item.obj.x;
+					//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
+					//this.dialog.show(item.key, x, y);
+					this.dialog.showAbove(item.key, item.obj);
+				});
+				const text = this.dialog.getText(item.key);
+				totalDelay += text.length * 40 + 1000;
+			});
+		}
 
 	update(): void {
 		const curX = this.motyl.x;

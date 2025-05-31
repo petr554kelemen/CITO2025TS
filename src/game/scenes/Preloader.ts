@@ -62,9 +62,9 @@ export default class Preloader extends Phaser.Scene {
         // načtené v preload-asset-pack
 
         // překlady
-        this.load.json('locale-cs', 'assets/locales/cs.json');
-        this.load.json('locale-en', 'assets/locales/en.json');
-        this.load.json('locale-pl', 'assets/locales/pl.json');
+        this.load.json('lang-cs', 'assets/locales/cs.json');
+        this.load.json('lang-en', 'assets/locales/en.json');
+        this.load.json('lang-pl', 'assets/locales/pl.json');
 
         // 1) Načtení WebFont Loaderu
         this.load.script(
@@ -84,21 +84,16 @@ export default class Preloader extends Phaser.Scene {
                 // (volitelně) barva pozadí během čekání
                 this.cameras.main.setBackgroundColor('#000000');
                 // start next scene až fonty jsou načtené
-                this.scene.start('MainMenu');
+                //this.scene.start('MainMenu');
+
+                this.scene.transition({
+                    target: 'MainMenu',
+                    duration: 2000,      // délka přechodu v ms
+                    moveBelow: true     // nová scéna se vykreslí pod tou starou, která pak mizí
+                });
             }
-        });
-
-
-        this.scene.transition({
-            target: 'MainMenu',
-            duration: 1200,      // délka přechodu v ms
-            moveBelow: true     // nová scéna se vykreslí pod tou starou, která pak mizí
         });
         //this.scene.start('MainMenu');
     }
-    /* END-USER-CODE */
 }
 
-/* END OF COMPILED CODE */
-
-// You can write more code here

@@ -4,24 +4,17 @@ type Lang = 'cs' | 'en' | 'pl';
 import Phaser from "phaser";
 
 export default class MainMenu extends Phaser.Scene {
-  private strings!: Record<string, any>;
 
   constructor() {
     super('MainMenu');  // teď to Phaseru jednoznačně řekneš
   }
 
   preload(): void {
-    // načtení JSONů i vlaječek
-    this.load.json('locale-cs', 'assets/locales/cs.json');
-    this.load.json('locale-en', 'assets/locales/en.json');
-    this.load.json('locale-pl', 'assets/locales/pl.json');
-    //this.load.image('flag-cs', 'assets/images/flag-cs.png');
-    //this.load.image('flag-en', 'assets/images/flag-en.png');
-    //this.load.image('flag-pl', 'assets/images/flag-pl.png');
+    // načtení JSONů i vlaječek v preloader.ts
+
   }
 
   create(): void {
-    //this.strings = this.scene.registry.get('strings') as Record<string, any>;
     
     this.cameras.main.fadeIn(500, 0, 0, 0); //fadeIn ze staré scény
 
@@ -33,10 +26,6 @@ export default class MainMenu extends Phaser.Scene {
     text.setOrigin(0.5, 0.5);
     text.text = "GEOCACHING GAME";
     text.setStyle({ "align": "center", "color": "#ffffff", "fontFamily": "Arial Black", "fontSize": "38px", "stroke": "#000000", "strokeThickness": 8 });
-
-    // výchozí jazyk
-    const defaultLang: Lang = 'cs';
-    this.strings = this.cache.json.get(`locale-${defaultLang}`)!;
 
     // Název hry - Nadpis
     const nazevHry = this.add.text(this.scale.width / 2, 180, "", {});
@@ -95,13 +84,8 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   private selectLang(lang: Lang): void {
-    // uložení do globální Registry
-    const strings = this.cache.json.get(`locale-${lang}`)!;
-    this.registry.set('lang', lang);
-    this.registry.set('strings', strings);
-
-    // spusť Intro a předej mu i tu registry (není potřeba explicitně,
-    // protože registry je globální – ale pro přehlednost můžete předat locale)
-    this.scene.start('Intro', { locale: lang });
+    
+    const texts = this.cache.json.get(`lang-${lang}`)!;   
+    this.scene.start('Intro', { texts, language: lang });
   }
 }
