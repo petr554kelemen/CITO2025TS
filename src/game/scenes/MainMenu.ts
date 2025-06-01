@@ -1,12 +1,20 @@
 // src/game/scenes/MainMenu.ts
-type Lang = 'cs' | 'en' | 'pl';
+// type Lang = 'cs' | 'en' | 'pl';
 
-import Phaser from "phaser";
+import Phaser from 'phaser';
 
-export default class MainMenu extends Phaser.Scene {
+/**
+ * Třída pro správu a zobrazování dialogů ve hře.
+ * Přijímá objekt s texty (pro daný jazyk) v konstruktoru.
+ */
+export default class DialogManager extends Phaser.GameObjects.Container {
+  private texts: Record<string, any>;
 
-  constructor() {
-    super('MainMenu');  // teď to Phaseru jednoznačně řekneš
+  constructor(scene: Phaser.Scene, texts: Record<string, any>) {
+    super(scene);
+    this.texts = texts;
+    // (Volitelné: Přidej sebe do scény, pokud je potřeba)
+    // scene.add.existing(this);
   }
 
   preload(): void {

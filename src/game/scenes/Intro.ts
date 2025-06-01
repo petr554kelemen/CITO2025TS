@@ -137,7 +137,7 @@ export default class Intro extends Phaser.Scene {
 						// s 50% šancí se zakolibe na odpadku
 						if (Math.random() <= 0.5) {
 							doFlip(this.motyl);
-							this.dialog.showDialogByKey('motyl-01', 1500);
+							// TODO: this.dialog.showDialogByKey('motyl-01', 1500);
 						}
 					}
 				}))
@@ -196,7 +196,7 @@ export default class Intro extends Phaser.Scene {
 					//const x = item.obj.x;
 					//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
 					//this.dialog.show(item.key, x, y);
-					this.dialog.showAbove(item.key, item.obj);
+					//this.dialog.showAbove(item.key, item.obj);
 				});
 				const text = this.dialog.getText(item.key);
 				totalDelay += text.length * 40 + 1000;

@@ -10,6 +10,58 @@ export default class DialogManager extends Phaser.GameObjects.Container {
   }
 
   /**
+   * Vrací text podle klíče ve formátu "dialogSequence.motyl-01"
+   * Pokud text nenajde, vrací prázdný řetězec a vypíše varování do konzole.
+   */
+  public getText(key: string): string {
+    const result = key.split('.').reduce(
+      (o, k) => (o && o[k] !== undefined ? o[k] : undefined),
+      this.texts
+    );
+    if (typeof result !== "string") {
+      console.warn("Chybný klíč v lokalizaci:", key);
+      return "";
+    }
+    return result;
+  }
+
+  /**
+   * Zobrazí dialog podle klíče na danou dobu (ms).
+   */
+  public showDialogByKey(key: string, durationMs: number = 2000) {
+    const text = this.getText(key);
+    if (!text) return;
+    this.show(text);
+    this.scene.time.delayedCall(durationMs, () => this.hide());
+  }
+
+  /**
+   * (Ukázka: zobrazí dialog nad sprite, pokud potřebuješ.)
+   */
+  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
+    const text = this.getText(key);
+    if (!text) return;
+    this.showAbove(text, obj);
+    this.scene.time.delayedCall(durationMs, () => this.hide());
+  }
+
+  // Dále další potřebné veřejné metody (např. sekvence dialogů...)
+
+  // Interní metoda pro vykreslení dialogu (implementace podle potřeby)
+  private show(text: string) {
+    // TODO: Zobraz bublinu s textem na scéně
+  }
+
+  private showAbove(text: string, obj: Phaser.GameObjects.Sprite) {
+    // TODO: Zobraz bublinu nad daným objektem
+  }
+
+  private hide() {
+    // TODO: Skryj dialogovou bublinu
+  }
+
+
+  /**
      * Zobrazí jeden dialog podle klíče na daný čas (ms)
      * @param key Klíč do JSON (např. "motyl-00")
      * @param durationMs Jak dlouho zůstane bublina zobrazená (defaultně 2000 ms)
@@ -41,12 +93,12 @@ export default class DialogManager extends Phaser.GameObjects.Container {
  /**
    * (Ukázka, pokud chceš zobrazit dialog nad sprite)
    */
-  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
-    const text = this.getText(key);
-    if (!text) return;
-    this.showAbove(text, obj);
-    this.scene.time.delayedCall(durationMs, () => this.hide());
-  }
+  // public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
+  //   const text = this.getText(key);
+  //   if (!text) return;
+  //   this.showAbove(text, obj);
+  //   this.scene.time.delayedCall(durationMs, () => this.hide());
+  // }
 
   // /** Skryje/zničí bublinu a odhlásí update */
   // public destroy(): void {
@@ -113,29 +165,29 @@ export default class DialogManager extends Phaser.GameObjects.Container {
   /**
    * Vrátí text podle zadaného klíče ve stromu (např. 'dialogSequence.motyl-01')
    */
-  public getText(key: string): string {
-    const result = key.split('.').reduce(
-      (o, k) => (o && o[k] !== undefined ? o[k] : undefined),
-      this.texts
-    );
-    if (typeof result !== "string") {
-      console.warn("Chybný klíč v lokalizaci:", key);
-      return "";
-    }
-    return result;
-  }
+  // public getText(key: string): string {
+  //   const result = key.split('.').reduce(
+  //     (o, k) => (o && o[k] !== undefined ? o[k] : undefined),
+  //     this.texts
+  //   );
+  //   if (typeof result !== "string") {
+  //     console.warn("Chybný klíč v lokalizaci:", key);
+  //     return "";
+  //   }
+  //   return result;
+  // }
 
   /**
      * Zobrazí dialog podle klíče na daný čas (ms)
     */
-  public showDialogByKey(key: string, durationMs: number = 2000) {
-    const text = this.getText(key);
-    if (!text) return;
-    this.show(text);
-    this.scene.time.delayedCall(durationMs, () => this.hide());
-  }
+  // public showDialogByKey(key: string, durationMs: number = 2000) {
+  //   const text = this.getText(key);
+  //   if (!text) return;
+  //   this.show(text);
+  //   this.scene.time.delayedCall(durationMs, () => this.hide());
+  // }
 
-  public show(key: string, x = 400, y = 300): void {
+  //public show(key: string, x = 400, y = 300): void {
     //   this.container?.destroy();
     //   const content = this.getText(key);
 
@@ -174,10 +226,10 @@ export default class DialogManager extends Phaser.GameObjects.Container {
     //     y - height - 20,
     //     [bubble, textObj]
     //   );
-  }
+  //}
 
-  public hide(): void {
+  //public hide(): void {
     // this.container?.destroy();
     // this.container = undefined;
-  }
+ // }
 }
