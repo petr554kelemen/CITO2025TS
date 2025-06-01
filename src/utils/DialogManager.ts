@@ -1,235 +1,187 @@
 import Phaser from 'phaser';
 
-export default class DialogManager extends Phaser.GameObjects.Container {
-  private texts: Record<string, any>;
+export default class DialogManager {
+  // Reference na aktivní scénu, ve které chceme vykreslovat dialogy
+  private scene: Phaser.Scene;
 
-  constructor(scene: Phaser.Scene, texts: Record<string, any>) {
-    super(scene);
-    this.texts = texts;
-    // Další inicializace, např. this.scene.add.existing(this);
+  // Objekt s lokalizovanými texty (přijímá se z JSONu, např. texts.dialogSequence)
+  private texts: { [key: string]: string };
+
+  // Kontejner, do kterého dáváme Graphics + Text, aby se daly najednou zničit
+  private bubbleContainer: Phaser.GameObjects.Container | null;
+
+  // Flag, zda už je bublina viditelná
+  private isVisible: boolean;
+
+  constructor(scene: Phaser.Scene, texts: any) {
+    this.scene = scene;
+    // texts očekává strukturu { dialogSequence: { 'klíč': 'řetězec', … } }
+    this.texts = texts.dialogSequence || {};
+    this.bubbleContainer = null;
+    this.isVisible = false;
   }
 
   /**
-   * Vrací text podle klíče ve formátu "dialogSequence.motyl-01"
-   * Pokud text nenajde, vrací prázdný řetězec a vypíše varování do konzole.
+   * Verejná metoda pro zobrazení dialogu dole na obrazovce.
+   * @param key Klíč ve formátu "dialogSequence.motyl-00" nebo jen "motyl-00".
    */
-  public getText(key: string): string {
-    const result = key.split('.').reduce(
-      (o, k) => (o && o[k] !== undefined ? o[k] : undefined),
-      this.texts
-    );
-    if (typeof result !== "string") {
-      console.warn("Chybný klíč v lokalizaci:", key);
-      return "";
+  public showDialog(key: string) {
+    // Pokud předali formát s 'dialogSequence.', vezmeme jen tu část za tečkou
+    const parts = key.split('.');
+    const realKey = parts[parts.length - 1];
+
+    // Najdeme text v načteném JSONu
+    const text = this.texts[realKey];
+    if (!text) {
+      console.warn(`DialogManager: Text pro klíč "${realKey}" nebyl nalezen.`);
+      return;
     }
-    return result;
-  }
 
-  /**
-   * Zobrazí dialog podle klíče na danou dobu (ms).
-   */
-  public showDialogByKey(key: string, durationMs: number = 2000) {
-    const text = this.getText(key);
-    if (!text) return;
-    this.show(text);
-    this.scene.time.delayedCall(durationMs, () => this.hide());
-  }
-
-  /**
-   * (Ukázka: zobrazí dialog nad sprite, pokud potřebuješ.)
-   */
-  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
-    const text = this.getText(key);
-    if (!text) return;
-    this.showAbove(text, obj);
-    this.scene.time.delayedCall(durationMs, () => this.hide());
-  }
-
-  // Dále další potřebné veřejné metody (např. sekvence dialogů...)
-
-  // Interní metoda pro vykreslení dialogu (implementace podle potřeby)
-  private show(text: string) {
-    // TODO: Zobraz bublinu s textem na scéně
-  }
-
-  private showAbove(text: string, obj: Phaser.GameObjects.Sprite) {
-    // TODO: Zobraz bublinu nad daným objektem
-  }
-
-  private hide() {
-    // TODO: Skryj dialogovou bublinu
-  }
-
-
-  /**
-     * Zobrazí jeden dialog podle klíče na daný čas (ms)
-     * @param key Klíč do JSON (např. "motyl-00")
-     * @param durationMs Jak dlouho zůstane bublina zobrazená (defaultně 2000 ms)
-     */
-  // public showDialogByKey(key: string, durationMs: number = 2000) {
-  //   //const text = this.dialogs[key]; // řadek s chybou dialogs neexistuje
-  //   const text = this.getText(key);   // zkousim nahradit 
-  //   if (!text) return;
-  //   this.show(text);
-
-  //   // Po uplynutí času dialog zmizí
-  //   this.scene.time.delayedCall(durationMs, () => {
-  //     this.hide();
-  //   });
-  // }
-
-  /* public showDialogByKey(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
-    const text = this.getText(key);
-    if (!text) return;
-    this.showAbove(text, obj);
-
-    // Po uplynutí času dialog zmizí
-    this.scene.time.delayedCall(durationMs, () => {
+    // Pokud už je něco vidět, nejprve to skryjeme
+    if (this.isVisible) {
       this.hide();
-    });
+    }
+
+    // Vykreslíme bublinu dole
+    this.show(text);
   }
- */
-
- /**
-   * (Ukázka, pokud chceš zobrazit dialog nad sprite)
-   */
-  // public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite, durationMs: number = 2000) {
-  //   const text = this.getText(key);
-  //   if (!text) return;
-  //   this.showAbove(text, obj);
-  //   this.scene.time.delayedCall(durationMs, () => this.hide());
-  // }
-
-  // /** Skryje/zničí bublinu a odhlásí update */
-  // public destroy(): void {
-  //   if (this.container) {
-  //     this.container.destroy();
-  //     this.container = undefined;
-  //   }
-  //   if (this.followTarget) {
-  //     this.scene.events.off('update', this.updateBubblePosition, this);
-  //     this.followTarget = undefined;
-  //   }
-  //}
-
-  /** Vytvoří bublinu jednorázově podle aktuální pozice followTarget */
-  // private createBubble(key: string) {
-  //   if (!this.followTarget) return;
-
-  //   const text = this.getText(key);
-  //   // textový objekt
-  //   const textObj = this.scene.add.text(0, 0, text, {
-  //     fontFamily: 'Arial',
-  //     fontSize: '18px',
-  //     color: '#000000',
-  //     wordWrap: { width: 250 }
-  //   });
-  //   const bounds = textObj.getBounds();
-  //   const pad = 8;
-  //   const w = bounds.width + pad * 2;
-  //   const h = bounds.height + pad * 2;
-
-  //   // grafika bubliny
-  //   const g = this.scene.add.graphics()
-  //     .fillStyle(0xffffff, 1)
-  //     .lineStyle(2, 0x000000, 1);
-  //   g.fillRoundedRect(0, 0, w, h, 6);
-  //   g.strokeRoundedRect(0, 0, w, h, 6);
-  //   // špička
-  //   g.fillTriangle(w / 2 - 6, h, w / 2 + 6, h, w / 2, h + 12);
-  //   g.strokeTriangle(w / 2 - 6, h, w / 2 + 6, h, w / 2, h + 12);
-
-  //   textObj.setPosition(pad, pad);
-
-  //   // container se zatím vykreslí na (0,0); poloha se upraví hned v update
-  //   this.container = this.scene.add.container(0, 0, [g, textObj]);
-  // }
-
-  // /** Každý frame nastaví container nad target */
-  // private updateBubblePosition() {
-  //   if (!this.container || !this.followTarget) return;
-
-  //   const x = this.followTarget.x;
-  //   const y = this.followTarget.y
-  //     - this.followTarget.displayHeight / 2
-  //     - this.offsetY;
-
-  //   // container kreslíme od levého horního rohu
-  //   const bounds = this.container.getBounds();
-  //   this.container.setPosition(
-  //     x - bounds.width / 2,
-  //     y - bounds.height - 12  // 12 = výška špičky
-  //   );
-  //}
 
   /**
-   * Vrátí text podle zadaného klíče ve stromu (např. 'dialogSequence.motyl-01')
+   * Verejná metoda pro zobrazení dialogu nad konkrétním sprite objektem.
+   * @param key Klíč podobně jako u showDialog.
+   * @param obj Phaser.Sprite nad kterým se bublina vykreslí.
    */
-  // public getText(key: string): string {
-  //   const result = key.split('.').reduce(
-  //     (o, k) => (o && o[k] !== undefined ? o[k] : undefined),
-  //     this.texts
-  //   );
-  //   if (typeof result !== "string") {
-  //     console.warn("Chybný klíč v lokalizaci:", key);
-  //     return "";
-  //   }
-  //   return result;
-  // }
+  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite) {
+    const parts = key.split('.');
+    const realKey = parts[parts.length - 1];
+    const text = this.texts[realKey];
+    if (!text) {
+      console.warn(`DialogManager: Text pro klíč "${realKey}" nebyl nalezen.`);
+      return;
+    }
+
+    if (this.isVisible) {
+      this.hide();
+    }
+
+    this.showAbove(text, obj);
+  }
 
   /**
-     * Zobrazí dialog podle klíče na daný čas (ms)
-    */
-  // public showDialogByKey(key: string, durationMs: number = 2000) {
-  //   const text = this.getText(key);
-  //   if (!text) return;
-  //   this.show(text);
-  //   this.scene.time.delayedCall(durationMs, () => this.hide());
-  // }
+   * Verejná metoda pro ruční skrytí dialogu (pokud ho chceš zavřít dříve, než skončí časovač).
+   */
+  public hideDialog() {
+    this.hide();
+  }
 
-  //public show(key: string, x = 400, y = 300): void {
-    //   this.container?.destroy();
-    //   const content = this.getText(key);
+  /**
+   * Interní metoda pro vykreslení bubliny s textem ve spodní části scény.
+   * @param text Řetězec, který chceme zobrazit.
+   */
+  private show(text: string) {
+    // 1) Vypočítáme rozměry bubliny (80% šířky, 25% výšky)
+    const width = this.scene.scale.width * 0.8;
+    const height = this.scene.scale.height * 0.25;
+    const x = (this.scene.scale.width - width) / 2;    // vystředění vodorovně
+    const y = this.scene.scale.height - height - 20;   // 20 px nad spodní hranou
 
-    //   const bubble = this.scene.add.graphics();
-    //   bubble.fillStyle(0xffffff, 1);
-    //   bubble.lineStyle(2, 0x000000, 1);
+    // 2) Nakreslíme bílou obdélníkovou bublinu s černým orámováním
+    const bubble = this.scene.add.graphics({ x: x, y: y });
+    bubble.fillStyle(0xffffff, 1);      // bílá barva výplně
+    bubble.lineStyle(4, 0x000000, 1);   // černý okraj tloušťky 4 px
 
-    //   const padding = 10;
-    //   const textObj = this.scene.add.text(0, 0, content, {
-    //     fontFamily: 'Arial',
-    //     fontSize: '18px',
-    //     color: '#000000',
-    //     wordWrap: { width: 300 }
-    //   });
+    const radius = 16;                  // poloměr zaoblení rohů
+    bubble.fillRoundedRect(0, 0, width, height, radius);
+    bubble.strokeRoundedRect(0, 0, width, height, radius);
 
-    //   const bounds = textObj.getBounds();
-    //   const width = bounds.width + padding * 2;
-    //   const height = bounds.height + padding * 2;
+    // 3) Přidáme text do bubliny s word-wrap tak, aby se řádky zalamovaly
+    const padding = 16; // odsazení textu od okrajů bubliny
+    const content = this.scene.add.text(
+      x + padding,
+      y + padding,
+      text,
+      {
+        fontFamily: 'Arial',
+        fontSize: '20px',
+        color: '#000000',
+        wordWrap: { width: width - padding * 2, useAdvancedWrap: true }
+      }
+    );
 
-    //   bubble.fillRoundedRect(0, 0, width, height, 8);
-    //   bubble.strokeRoundedRect(0, 0, width, height, 8);
-    //   bubble.fillTriangle(
-    //     width / 2 - 10, height,
-    //     width / 2 + 10, height,
-    //     width / 2, height + 20
-    //   );
-    //   bubble.strokeTriangle(
-    //     width / 2 - 10, height,
-    //     width / 2 + 10, height,
-    //     width / 2, height + 20
-    //   );
+    // 4) Vše vložíme do jednoho Containeru, aby se to dalo snadno odstranit
+    this.bubbleContainer = this.scene.add.container(0, 0, [bubble, content]);
+    this.isVisible = true;
+  }
 
-    //   textObj.setPosition(padding, padding);
-    //   this.container = this.scene.add.container(
-    //     x - width / 2,
-    //     y - height - 20,
-    //     [bubble, textObj]
-    //   );
-  //}
+  /**
+   * Interní metoda pro vykreslení bubliny nad daným Phaser.Sprite.
+   * @param text Řetězec, který chceme zobrazit.
+   * @param obj Sprite, nad kterým bublina sedne.
+   */
+  private showAbove(text: string, obj: Phaser.GameObjects.Sprite) {
+    // 1) Rozměry bubliny odvodíme od velikosti sprite (např. mírně širší a menší výška)
+    const bubbleWidth = obj.displayWidth * 1.2;
+    const bubbleHeight = obj.displayHeight * 0.6;
 
-  //public hide(): void {
-    // this.container?.destroy();
-    // this.container = undefined;
- // }
+    // Pozice bubliny nad středem sprite
+    const x = obj.x - bubbleWidth / 2;
+    const y = obj.y - obj.displayHeight / 2 - bubbleHeight - 10; // 10 px mezera
+
+    // 2) Nakreslíme bílou bublinu se zaoblenými rohy
+    const bubble = this.scene.add.graphics({ x: x, y: y });
+    bubble.fillStyle(0xffffff, 1);
+    bubble.lineStyle(3, 0x000000, 1);
+    const radius = 12;
+    bubble.fillRoundedRect(0, 0, bubbleWidth, bubbleHeight, radius);
+    bubble.strokeRoundedRect(0, 0, bubbleWidth, bubbleHeight, radius);
+
+    // (Volitelně: šipka dolů uprostřed bubliny – pokud chceš,
+    //  odkomentuj následující řádky a uprav podle potřeby)
+    bubble.fillTriangle(
+      bubbleWidth / 2 - 10, bubbleHeight,
+      bubbleWidth / 2 + 10, bubbleHeight,
+      bubbleWidth / 2, bubbleHeight + 10
+    );
+    bubble.lineStyle(3, 0x000000, 1);
+    bubble.strokeTriangle(
+      bubbleWidth / 2 - 10, bubbleHeight,
+      bubbleWidth / 2 + 10, bubbleHeight,
+      bubbleWidth / 2, bubbleHeight + 10
+    );
+
+    // 3) Přidáme text do bubliny
+    const padding = 8;
+    const content = this.scene.add.text(
+      x + padding,
+      y + padding,
+      text,
+      {
+        fontFamily: 'Arial',
+        fontSize: '18px',
+        color: '#000000',
+        wordWrap: { width: bubbleWidth - padding * 2, useAdvancedWrap: true }
+      }
+    );
+
+    // 4) Zabalíme do jednoho Containeru
+    this.bubbleContainer = this.scene.add.container(0, 0, [bubble, content]);
+    this.isVisible = true;
+  }
+
+  /**
+   * Interní metoda pro skrytí (zrušení) aktuálně zobrazené bubliny.
+   */
+  private hide() {
+    if (!this.bubbleContainer) {
+      return;
+    }
+    // Zničíme nejprve všechny děti Containeru (Graphics a Text)
+    this.bubbleContainer.each((child: Phaser.GameObjects.GameObject) => {
+      child.destroy();
+    });
+    // A teprve pak samotný Container
+    this.bubbleContainer.destroy();
+    this.bubbleContainer = null;
+    this.isVisible = false;
+  }
 }
