@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+//import DialogManager from '../../utils/DialogManager';
 
 // Pokud používáš vlastní pozici/scénu pro vlaječky a assety, uprav podle potřeby
 //const supportedLanguages = ['cs', 'en', 'pl'];
@@ -108,7 +109,7 @@ export default class MainMenu extends Phaser.Scene {
     //   });
     // }
 
-    // text
+        // text
     const text = this.add.text(this.scale.width / 2, 276, "", {});
     text.setOrigin(0.5, 0.5);
     text.text = "GEOCACHING GAME";

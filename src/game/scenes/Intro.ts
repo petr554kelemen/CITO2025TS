@@ -35,12 +35,21 @@ export default class Intro extends Phaser.Scene {
 	duch!: Phaser.GameObjects.Sprite;
 	prevX!: number;
 	guides?: any;
+	texts: any;                    // objekt s lokalizovanými texty (typ any pro jednoduchost)
+	lang: any;
 
 	constructor() {
 		super("Intro");
 	}
 
-	init(): void {
+	init(data: { texts: string, language: string }): void {
+		// pokud jsi volal(a) this.scene.start('Intro', { language: 'cs' }), tady to spadne do data.language = 'cs'
+		if (data.language) {
+			this.lang = data.language;
+		} else {
+			// pro jistotu můžeš mít default:
+			this.lang = 'cs';
+		}
 	}
 
 	create(): void {
@@ -52,9 +61,8 @@ export default class Intro extends Phaser.Scene {
 		this.guides = addGuides(this, { thirds: true, golden: false, color: 0x82e6f6 });
 
 		// vytvoreni dialogů
-		//const mistniLocale = this.registry.get('lang') as 'cs' | 'en' | 'pl';
-		//this.dialog = new DialogManager(this, mistniLocale);
-
+		this.dialog = new DialogManager(this, this.lang);
+		
 		// objekt ducha na scenu
 		this.duch = this.add.sprite(190, 280, "Duch", 0).setAlpha(0).setVisible(false);
 
@@ -137,8 +145,10 @@ export default class Intro extends Phaser.Scene {
 						// s 50% šancí se zakolibe na odpadku
 						if (Math.random() <= 0.5) {
 							doFlip(this.motyl);
-							// TODO: this.dialog.showDialogByKey('motyl-01', 1500);
 						}
+						//console.log(this);
+
+						this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
 					}
 				}))
 			]
@@ -162,7 +172,7 @@ export default class Intro extends Phaser.Scene {
 				onComplete: () => {
 					this.motyl.setFlipX(false); // zajistuje aby se divali duch a motyl FaceToFace
 					this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
-				} 
+				}
 			});
 		}
 
@@ -177,31 +187,31 @@ export default class Intro extends Phaser.Scene {
 			});
 		};
 
-		
+
 	}
 	dialogMotylDuch() {
-			const sequence = [
-				{ key: 'dialogSequence.motyl-01', obj: this.motyl },
-				{ key: 'dialogSequence.duch-01', obj: this.duch },
-				{ key: 'dialogSequence.motyl-02', obj: this.motyl },
-				{ key: 'dialogSequence.duch-02', obj: this.duch },
-				{ key: 'dialogSequence.motyl-03', obj: this.motyl },
-				{ key: 'dialogSequence.duch-03', obj: this.duch }
-				// ... další zprávy
-			];
+		const sequence = [
+			{ key: 'dialogSequence.motyl-01', obj: this.motyl },
+			{ key: 'dialogSequence.duch-01', obj: this.duch },
+			{ key: 'dialogSequence.motyl-02', obj: this.motyl },
+			{ key: 'dialogSequence.duch-02', obj: this.duch },
+			{ key: 'dialogSequence.motyl-03', obj: this.motyl },
+			{ key: 'dialogSequence.duch-03', obj: this.duch }
+			// ... další zprávy
+		];
 
-			let totalDelay = 0;
-			sequence.forEach(item => {
-				this.time.delayedCall(totalDelay, () => {
-					//const x = item.obj.x;
-					//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
-					//this.dialog.show(item.key, x, y);
-					//this.dialog.showAbove(item.key, item.obj);
-				});
-				const text = this.dialog.getText(item.key);
-				totalDelay += text.length * 40 + 1000;
+		let totalDelay = 0;
+		sequence.forEach(item => {
+			this.time.delayedCall(totalDelay, () => {
+				//const x = item.obj.x;
+				//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
+				//this.dialog.show(item.key, x, y);
+				//this.dialog.showAbove(item.key, item.obj);
 			});
-		}
+			//const text = this.dialog.getText(item.key);
+			//totalDelay += text.length * 40 + 1000;
+		});
+	}
 
 	update(): void {
 		const curX = this.motyl.x;
