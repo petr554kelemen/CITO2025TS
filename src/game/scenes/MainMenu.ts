@@ -97,16 +97,9 @@ export default class MainMenu extends Phaser.Scene {
     // umistit background na scenu
     this.add.image(583, 383, "freepik_forest_02");
 
-    // 1. Výběr jazyka z localStorage nebo autodetekce prohlížeče
+    // Výběr jazyka z localStorage nebo uložení do localStorage 
     let selectedLanguage = localStorage.getItem('language') as Lang;
     if (!selectedLanguage) localStorage.setItem('language', selectedLanguage);
-    
-    // 2. Zobraz vlaječky a jejich handler
-    // const flags: Record<Lang, Phaser.GameObjects.Image> = {
-    //   cs: this.add.image(100, 200, 'flag-cs').setInteractive(),
-    //   en: this.add.image(200, 200, 'flag-en').setInteractive(),
-    //   pl: this.add.image(300, 200, 'flag-pl').setInteractive()
-    // };
 
     // for (const lang of supportedLanguages) {
     //   flags[lang].on('pointerdown', () => {
@@ -137,12 +130,16 @@ export default class MainMenu extends Phaser.Scene {
     divkaStoji.scaleX = 0.75;
     divkaStoji.scaleY = 0.75;
 
+    // plnyPytel
+    const plnyPytel = this.add.image(874, 524, "plnyPytel").setOrigin(.5);
+    plnyPytel.scaleX = 0.25;
+    plnyPytel.scaleY = 0.45;
+
     // obrazky vlajek pro vyber jazyka
-    // vlaječky pro výběr
     const langs: Lang[] = ['cs', 'en', 'pl'];
     const rozestup: number = 100;
     let xPosVlajek: number = this.scale.width / 2;
-    
+
     langs.forEach((lang, idx) => {
       switch (idx) {
         case 0:
