@@ -15,7 +15,14 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   create(): void {
-    
+    const supportedLanguages = ['cs', 'en', 'pl'];
+    let selectedLanguage = localStorage.getItem('language');
+    if (!selectedLanguage) {
+      const browserLang = navigator.language.slice(0, 2);
+      selectedLanguage = supportedLanguages.includes(browserLang) ? browserLang : 'cs';
+      localStorage.setItem('language', selectedLanguage);
+    }
+
     this.cameras.main.fadeIn(500, 0, 0, 0); //fadeIn ze staré scény
 
     // freepik_forest_02
@@ -83,9 +90,10 @@ export default class MainMenu extends Phaser.Scene {
     plnyPytel.scaleY = 0.45;
   }
 
-  private selectLang(lang: Lang): void {
-    
-    const texts = this.cache.json.get(`lang-${lang}`)!;   
+  private selectLang(lang: string): void {
+    const texts = this.cache.json.get(`lang-${lang}`);
+    // Případně si můžeš aktualizovat UI, když chceš ihned měnit jazyk MainMenu
+    // (např. přepnout nápisy, nadpisy apod.)
     this.scene.start('Intro', { texts, language: lang });
   }
 }

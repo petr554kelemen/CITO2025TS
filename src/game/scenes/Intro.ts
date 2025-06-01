@@ -52,8 +52,8 @@ export default class Intro extends Phaser.Scene {
 		this.guides = addGuides(this, { thirds: true, golden: false, color: 0x82e6f6 });
 
 		// vytvoreni dialogů
-		const mistniLocale = this.registry.get('lang') as 'cs' | 'en' | 'pl';
-		this.dialog = new DialogManager(this, mistniLocale);
+		//const mistniLocale = this.registry.get('lang') as 'cs' | 'en' | 'pl';
+		//this.dialog = new DialogManager(this, mistniLocale);
 
 		// objekt ducha na scenu
 		this.duch = this.add.sprite(190, 280, "Duch", 0).setAlpha(0).setVisible(false);
