@@ -13,6 +13,8 @@ type Odpadek = {
 
 export default class Intro extends Phaser.Scene {
 	private dialog!: DialogManager;
+	
+
 	// data odpadků na scéně
 	odpadkyData: Odpadek[] = [
 		{ typ: "Banan", pozice: { x: 985, y: 555 }, scale: 1.4, status: 'default', sprite: null },
@@ -35,14 +37,14 @@ export default class Intro extends Phaser.Scene {
 	duch!: Phaser.GameObjects.Sprite;
 	prevX!: number;
 	guides?: any;
-	texts: any;                    // objekt s lokalizovanými texty (typ any pro jednoduchost)
 	lang: any;
+	texts!: Record<string, string>;
 
 	constructor() {
 		super("Intro");
 	}
 
-	init(data: { texts: string, language: string }): void {
+	init(data: { texts: Record<string, any>; language: string }): void {
 		// pokud jsi volal(a) this.scene.start('Intro', { language: 'cs' }), tady to spadne do data.language = 'cs'
 		if (data.language) {
 			this.lang = data.language;
@@ -50,6 +52,8 @@ export default class Intro extends Phaser.Scene {
 			// pro jistotu můžeš mít default:
 			this.lang = 'cs';
 		}
+		
+		this.texts = data.texts;
 	}
 
 	create(): void {
@@ -62,7 +66,9 @@ export default class Intro extends Phaser.Scene {
 
 		// vytvoreni dialogů
 		this.dialog = new DialogManager(this, this.lang);
-		
+		//this.texts = this.cache.json.get(`lang-${this.lang}`);
+		//console.log('=== Debug: this.texts v Intro ===', this.texts);
+
 		// objekt ducha na scenu
 		this.duch = this.add.sprite(190, 280, "Duch", 0).setAlpha(0).setVisible(false);
 
@@ -148,7 +154,9 @@ export default class Intro extends Phaser.Scene {
 						}
 						//console.log(this);
 
-						this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
+						//this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
+						//this.dialog.showDialog('dialogSequence.motyl-00');
+						this.dialog.showDialogAbove('dialogSequence.motyl-01', this.motyl);
 					}
 				}))
 			]
