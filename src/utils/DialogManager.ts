@@ -56,6 +56,10 @@ export default class DialogManager {
     const realKey = parts[parts.length - 1];
     const text = this.texts[realKey];
     if (!text) {
+      this.show('MISSING');
+      return;
+    }
+    if (!text) {
       console.warn(`DialogManager: Text pro klíč "${realKey}" nebyl nalezen.`);
       return;
     }

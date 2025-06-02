@@ -43,7 +43,7 @@ let skore: number = 0;
 Text
 
 ```ts
-let jmeno: string = "Motýl";
+let jmeno: string = "Motyl";
 ```
 
 **boolean**
