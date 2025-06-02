@@ -161,8 +161,8 @@ export default class Intro extends Phaser.Scene {
 
 						//this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
 						//this.dialog.showDialog('dialogSequence.motyl-00');
-						console.log('DEBUG: Klíče v dialogSequence:', Object.keys(this.texts.dialogSequence || {}));
-						this.dialog.showDialogAbove('dialogSequence.motyl-01', this.motyl);
+						//console.log('DEBUG: Klíče v dialogSequence:', Object.keys(this.texts.dialogSequence || {}));
+						this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
 					}
 				}))
 			]
@@ -220,10 +220,10 @@ export default class Intro extends Phaser.Scene {
 				//const x = item.obj.x;
 				//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
 				//this.dialog.show(item.key, x, y);
-				//this.dialog.showAbove(item.key, item.obj);
+				this.dialog.showDialogAbove(item.key, item.obj);
 			});
 			//const text = this.dialog.getText(item.key);
-			//totalDelay += text.length * 40 + 1000;
+			//totalDelay += this.texts.length * 40 + 1000;
 		});
 	}
 

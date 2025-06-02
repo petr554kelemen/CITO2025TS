@@ -1,20 +1,20 @@
 
 {
   "dialogSequence": {
-    "motyl-00":"jéé, to je krása\ncopak to je?",
-    "motyl-01": "Fuj, jsem se tě lekl...\nco tady strašíš?",
+    "motyl-00":"Jééjda, to je ale krása\nCopak to je?",
+    "motyl-01": "Fuj, jsem se tě lekl...\nCo tady strašíš?",
     "duch-01": "Sleduji tě, jak skotačíš na věcech, které mě zabily...",
     "motyl-02": "Jak se to sem dostalo?",
-    "duch-02": "Tak to ti řeknu úplně přesně\nTohle dokážou jen lidé...",
+    "duch-02": "To ti řeknu úplně přesně\nTohle dokážou jen lidé...",
     "motyl-03": "Kecáš! Vždyť si říkají milovníci přírody.",
-    "duch-03": "Hm... hele mizíme, zrovna se sem někdo blíží."
+    "duch-03": "Hm... hele mizím, někdo se sem blíží."
     },
   "dialogGameSequence": {
     "monina-01": "Ahoj, jsem Monina na lovu keší...",
     "monina-02": "a tohle má být jako co?",
-    "monina-03": "Tákže...\nnež půjdu dál, pomůžeš mi to sebrat?",
+    "monina-03": "Tááákže...\nNež půjdu dál, pomůžeš mi to sebrat?",
     "monina-04": "Já se tě u toho budu na nějaké věci ptát.",
-    "monina-05": "Jsem ráda, že souhlasíš,\npokud chceš Finálky pro tvou keš.",
+    "monina-05": "Jsem ráda, že souhlasíš,\nPokud chceš Finálky pro kešku.",
     "monina-06": "Tady máš pytel, ať to máš do čeho sbírat"
   }
 }
