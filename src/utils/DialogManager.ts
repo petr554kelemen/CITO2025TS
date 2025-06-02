@@ -155,6 +155,12 @@ export default class DialogManager {
    * @param obj Sprite, nad kterým bublina sedne.
    */
   private showAbove(text: string, obj: Phaser.GameObjects.Sprite) {
+    if (!obj) {
+        console.error('DialogManager: showAbove byl zavolán s undefined nebo null objektem!', text, obj);
+        // Můžeš zobrazit bublinu na default místo jako fallback:
+        this.show(text);
+        return;
+    }
     
     // 1) Rozměry bubliny odvodíme od velikosti sprite (např. mírně širší a menší výška)
     const bubbleWidth = obj.displayWidth * 1.5;
@@ -219,7 +225,7 @@ export default class DialogManager {
     // A teprve pak samotný Container
     this.bubbleContainer.destroy();
     this.bubbleContainer = null;
-    this.followTarget = undefined;
+    //this.followTarget = undefined;
     this.isVisible = false;
   }
 

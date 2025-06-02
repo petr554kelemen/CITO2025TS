@@ -223,7 +223,7 @@ export default class Intro extends Phaser.Scene {
 			});
 			//const text = this.dialog.getText(item.key);
 			//totalDelay += this.texts.length * 40 + 1000;
-			this.dialog.hideDialog();
+			//this.dialog.hideDialog();
 		});
 	}
 
@@ -231,6 +231,19 @@ export default class Intro extends Phaser.Scene {
 		const curX = this.motyl.x;
 		const container = this.dialog.getBubbleContainer();
 		const target = this.dialog.getFollowTarget();
+
+		if (this.dialog) {
+			const bubble = this.dialog.getBubbleContainer?.();
+			const target = this.dialog.getFollowTarget?.();
+
+			if (bubble && target) {
+				// Motýl existuje, bublina ho sleduje
+				bubble.setPosition(target.x, target.y - 40);
+			} else if (bubble && !target) {
+				// Motýl zmizel – bublinu ihned znič
+				this.dialog.hideDialog();
+			}
+		}
 
 		if (curX > this.prevX) {
 			// motýl letí zleva doprava
