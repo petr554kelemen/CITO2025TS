@@ -13,6 +13,8 @@ export default class DialogManager {
   // Flag, zda už je bublina viditelná
   private isVisible: boolean;
 
+  private followTarget?: Phaser.GameObjects.Sprite;
+
   constructor(scene: Phaser.Scene, texts: any) {
     this.scene = scene;
     // texts očekává strukturu { dialogSequence: { 'klíč': 'řetězec', … } }
@@ -51,15 +53,14 @@ export default class DialogManager {
    * @param key Klíč podobně jako u showDialog.
    * @param obj Phaser.Sprite nad kterým se bublina vykreslí.
    */
-  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite) {
+  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite):void {
+    this.followTarget = obj;
+
     const parts = key.split('.');
     const realKey = parts[parts.length - 1];
     const text = this.texts[realKey];
     if (!text) {
       this.show('MISSING');
-      return;
-    }
-    if (!text) {
       console.warn(`DialogManager: Text pro klíč "${realKey}" nebyl nalezen.`);
       return;
     }
@@ -68,7 +69,7 @@ export default class DialogManager {
       this.hide();
     }
 
-    this.showAbove(text, obj);
+    this.showAbove(text, this.followTarget);
   }
 
   /**
@@ -112,15 +113,26 @@ export default class DialogManager {
   //     }
   //   );
 
-  private show(text: string) {
+  private show(text: string, target?: Phaser.GameObjects.Sprite) {
     if (this.bubbleContainer) {
       this.bubbleContainer.destroy();
     }
 
+    let x: number;
+    let y: number;
+  
+    if (target){
+      x = target.x;
+      y = target.y - 40;
+    } else {
+      x = this.scene.cameras.main.width /2;
+      y = this.scene.cameras.main.height - 70;
+    }
+
     const bubbleWidth = 500;
     const bubbleHeight = 200;
-    const x = this.scene.cameras.main.width / 2;
-    const y = this.scene.cameras.main.height - bubbleHeight / 2 - 10;
+    //const x = this.scene.cameras.main.width / 2;
+    //const y = this.scene.cameras.main.height - bubbleHeight / 2 - 10;
 
     const bubble = this.scene.add.rectangle(x, y, bubbleWidth, bubbleHeight, 0xffffff, 0.85)
       .setStrokeStyle(2, 0x333333);
@@ -143,6 +155,7 @@ export default class DialogManager {
    * @param obj Sprite, nad kterým bublina sedne.
    */
   private showAbove(text: string, obj: Phaser.GameObjects.Sprite) {
+    
     // 1) Rozměry bubliny odvodíme od velikosti sprite (např. mírně širší a menší výška)
     const bubbleWidth = obj.displayWidth * 1.5;
     const bubbleHeight = obj.displayHeight * 0.8;
@@ -206,6 +219,15 @@ export default class DialogManager {
     // A teprve pak samotný Container
     this.bubbleContainer.destroy();
     this.bubbleContainer = null;
+    this.followTarget = undefined;
     this.isVisible = false;
+  }
+
+  public getBubbleContainer(){
+    return this.bubbleContainer;
+  }
+
+  public getFollowTarget(){
+    return this.followTarget;
   }
 }

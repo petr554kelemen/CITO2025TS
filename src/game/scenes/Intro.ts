@@ -200,9 +200,8 @@ export default class Intro extends Phaser.Scene {
 				yoyo: true
 			});
 		};
-
-
 	}
+
 	dialogMotylDuch() {
 		const sequence = [
 			{ key: 'dialogSequence.motyl-01', obj: this.motyl },
@@ -214,21 +213,24 @@ export default class Intro extends Phaser.Scene {
 			// ... další zprávy
 		];
 
-		let totalDelay = 0;
+		let totalDelay = 1500;
 		sequence.forEach(item => {
 			this.time.delayedCall(totalDelay, () => {
 				//const x = item.obj.x;
 				//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
-				//this.dialog.show(item.key, x, y);
+				//this.dialog.showDialog(item.key, x, y);
 				this.dialog.showDialogAbove(item.key, item.obj);
 			});
 			//const text = this.dialog.getText(item.key);
 			//totalDelay += this.texts.length * 40 + 1000;
+			this.dialog.hideDialog();
 		});
 	}
 
 	update(): void {
 		const curX = this.motyl.x;
+		const container = this.dialog.getBubbleContainer();
+		const target = this.dialog.getFollowTarget();
 
 		if (curX > this.prevX) {
 			// motýl letí zleva doprava
@@ -236,6 +238,13 @@ export default class Intro extends Phaser.Scene {
 		} else if (curX < this.prevX) {
 			// motýl letí zprava doleva
 			this.motyl.setFlipX(false);
+		}
+
+		if (this.dialog && container && target) {
+			//const target = dialog.followTarget;
+			const x = target.x;
+			const y = target.y - 40; // stejné odsazení jako při vytvoření bubliny
+			container.setPosition(x, y);
 		}
 
 		// uložíme si pro další update
