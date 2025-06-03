@@ -49,17 +49,12 @@ export default class Intro extends Phaser.Scene {
 		super("Intro");
 	}
 
-	init(data: { texts: DialogTexts; language: string }) {
-		// pokud jsi volal(a) this.scene.start('Intro', { language: 'cs' }), tady to spadne do data.language = 'cs'
-		if (data.language) {
-			this.lang = data.language;
-		} else {
-			// pro jistotu můžeš mít default:
-			this.lang = 'cs';
-		}
 
+	init(data: { texts: DialogTexts; language: string }): void {
 		this.texts = data.texts;
+		this.lang = data.language;
 	}
+
 
 	create(): void {
 
@@ -71,8 +66,6 @@ export default class Intro extends Phaser.Scene {
 
 		// vytvoreni dialogů
 		this.dialog = new DialogManager(this, this.texts);
-		//this.texts = this.cache.json.get(`lang-${this.lang}`);
-		//console.log('=== Debug: this.texts v Intro ===', this.texts);
 
 		// objekt ducha na scenu
 		this.duch = this.add.sprite(190, 280, "Duch", 0).setAlpha(0).setVisible(false);
@@ -103,13 +96,20 @@ export default class Intro extends Phaser.Scene {
 		// umístění motýla na scénu
 		const startX = 835; // pozor existuje jen v create()
 		const startY = 475; // pozor existuje jen v create()
-		this.motyl = this.add
-			.sprite(startX, startY, 'Motyl')
-			.setScale(0.2)     // začíná zmenšený
-			.setDepth(2);      // nech ho nad backgroundem, ale pod logem
+		// this.motyl = this.add
+		// 	.sprite(startX, startY, 'Motyl')
+		// 	.setScale(0.2)     // začíná zmenšený
+		// 	.setDepth(2);      // nech ho nad backgroundem, ale pod logem
 
 		// nastavíme počáteční hodnotu pro porovnání smeru pohybu motyla
-		this.prevX = this.motyl.x;
+		//this.prevX = this.motyl.x;
+
+		// 2) Vytvoříme motýla (sprite s klíčem 'motyl'; předpokládejme, že preload už máme hotové)
+		this.motyl = this.add.sprite(startX, startY, 'Motyl').setScale(.2);
+		// Doporučeno nastavit předvolby pro fyziku, když chceš pomocí těla počítat flip:
+		//this.physics.add.existing(this.motyl);
+		//(this.motyl.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
+
 
 		// 2) Vygenerujeme pole bodů z odpadků
 		const path = this.odpadkyData.map((o, i) => ({
@@ -144,7 +144,13 @@ export default class Intro extends Phaser.Scene {
 			onComplete: () => volejDucha(), // po dokonceni se objevi duch na scene
 			tweens: [
 				// krok 1 – scale
-				{ scale: 1, duration: 3000 }, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
+				{
+					scale: 1,
+					duration: 3000,
+					onComplete: ()=>{
+						this.dialog.showDialogAbove('motyl-00', this.motyl);
+					}
+				}, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
 
 				// kroky 2+ – postupné pohyby mezi body
 				...randomPath.map(pt => ({
@@ -159,10 +165,9 @@ export default class Intro extends Phaser.Scene {
 						}
 						//console.log(this);
 
-						//this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
-						//this.dialog.showDialog('dialogSequence.motyl-00');
-						//console.log('DEBUG: Klíče v dialogSequence:', Object.keys(this.texts.dialogSequence || {}));
-						this.dialog.showDialogAbove('dialogSequence.motyl-00', this.motyl);
+						// první dialog motýla na scéně
+						this.dialog.showDialogAbove('motyl-00', this.motyl);
+						this.time.delayedCall(2200, () => this.dialog.hideDialog());
 					}
 				}))
 			]
@@ -185,7 +190,8 @@ export default class Intro extends Phaser.Scene {
 				duration: 2500,
 				onComplete: () => {
 					this.motyl.setFlipX(false); // zajistuje aby se divali duch a motyl FaceToFace
-					this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
+					//this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
+					this.dialog.showArrowOnly(this.motyl);
 				}
 			});
 		}
@@ -204,12 +210,12 @@ export default class Intro extends Phaser.Scene {
 
 	dialogMotylDuch() {
 		const sequence = [
-			{ key: 'dialogSequence.motyl-01', obj: this.motyl },
-			{ key: 'dialogSequence.duch-01', obj: this.duch },
-			{ key: 'dialogSequence.motyl-02', obj: this.motyl },
-			{ key: 'dialogSequence.duch-02', obj: this.duch },
-			{ key: 'dialogSequence.motyl-03', obj: this.motyl },
-			{ key: 'dialogSequence.duch-03', obj: this.duch }
+			{ key: 'motyl-01', obj: this.motyl },
+			{ key: 'duch-01', obj: this.duch },
+			{ key: 'motyl-02', obj: this.motyl },
+			{ key: 'duch-02', obj: this.duch },
+			{ key: 'motyl-03', obj: this.motyl },
+			{ key: 'duch-03', obj: this.duch }
 			// ... další zprávy
 		];
 
