@@ -316,14 +316,14 @@ export default class DialogManager {
     return Math.max(this.MIN_DISPLAY_TIME, text.length * this.BASE_DISPLAY_TIME_PER_CHAR);
   }
 
-  
+
   // Nová asynchronní metoda, která zobrazí dialog a počká
   public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.Sprite): Promise<void> {
     this.showDialogAbove(key, obj); // Zobrazí bublinu
     const duration = this.getDialogDisplayDuration(key); // Získá délku zobrazení
     await this.delay(duration); // Počká po určenou dobu
     this.hideDialog(); // Skryje bublinu
-    await this.delay(500); // Malá pauza mezi dialogy (např. 0.5 sekundy)
+    await this.delay(800); // Malá pauza mezi dialogy (např. 0.5 sekundy)
   }
 
   // Pomocná asynchronní metoda pro zpoždění

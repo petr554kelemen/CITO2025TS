@@ -1,55 +1,68 @@
-/* START OF COMPILED CODE */
 
 import Phaser from "phaser";
-/* START-USER-IMPORTS */
-/* END-USER-IMPORTS */
+import DialogManager from "../../utils/DialogManager";
+
+type DialogTexts = {
+	dialogSequence: Record<string, string>;
+	dialogGameSequence?: Record<string, string>;
+};
+
+type Odpadek = {
+	typ: string;
+	pozice: { x: number; y: number };
+	scale?: number;
+	angle?: number;
+	status: string;
+	sprite: Phaser.GameObjects.Sprite | null;
+};
 
 export default class Game extends Phaser.Scene {
+	cam: any;
+	language: 'cs' | 'en' | 'pl';
+	texts!: DialogTexts;
 
+	//TODO: prevzit parametr predchozi sceny
 	constructor() {
 		super("Game");
 
-		/* START-USER-CTR-CODE */
-		// Write your code here.
-		/* END-USER-CTR-CODE */
 	}
 
-	editorCreate(): void {
 
-		// background
-		const background = this.add.image(512, 384, "background");
-		background.alpha = 0.5;
-
-		// text
-		const text = this.add.text(513, 384, "", {});
-		text.setOrigin(0.5, 0.5);
-		text.text = "Make something fun!\nand share it with us:\nsupport@phaser.io";
-		text.setStyle({ "align": "center", "color": "#ffffff", "fontFamily": "Arial Black", "fontSize": "38px", "stroke": "#000000", "strokeThickness":8});
-
-		this.events.emit("scene-awake");
+	init(data: { texts: DialogTexts; language: string }): void {
+		this.texts = data.texts;
+		this.language = 'cs';
 	}
 
-	/* START-USER-CODE */
 
-	// Write your code here
+	create(): void {
+		
+		//TODO: Vytvoreni dialogu s kvizem
 
-	create() {
+		// pozadí pro hru s kvízem
+		const backgroundGame = this.add.image(512, 384, "background");
+		backgroundGame.setOrigin(0.5);
 
-		this.editorCreate();
+		this.cam = this.cameras.main;
 
-		this.cameras.main.setBackgroundColor(0x00ff00);
+		this.input.once('pointerdown', () => {
 
-        this.input.once('pointerdown', () => {
+			//this.scene.start('GameOver');
 
-            this.scene.start('GameOver');
+		});
 
-        });
+		this.score();
 
 	}
 
-	/* END-USER-CODE */
+	private score():void {
+		//TODO: Vytvoreni skore dialogu
+	}
+
+	private quiz():void{
+		//TODO: Vytvoreni quizu v ../../utils/quiz.ts
+	}
+
+	update(): void {
+
+	}
 }
-
-/* END OF COMPILED CODE */
-
-// You can write more code here

@@ -253,6 +253,22 @@ export default class Intro extends Phaser.Scene {
 		});
 	}
 
+	private playMotylDuchDialog(): void {
+		// TODO:
+		// zde sekvence dialogů motýla/ducha
+		// na konci sekvence a animací zavoláš:
+		// this.playMoninaDialog();
+		this.playMoninaDialog();
+	}
+
+	private playMoninaDialog(): void {
+		// TODO:
+		// zde sekvence dialogů pro Moninu
+		// TODO:
+		// po odehrání dialogu přechod na scénu s kvízem: Game.ts
+		this.scene.start('game'); // TODO: predat s parametry text a language podle MainMenu
+	}
+
 	// Intro.ts - metoda update()
 	update(): void {
 		const curX = this.motyl.x;
