@@ -96,20 +96,9 @@ export default class Intro extends Phaser.Scene {
 		// umístění motýla na scénu
 		const startX = 835; // pozor existuje jen v create()
 		const startY = 475; // pozor existuje jen v create()
-		// this.motyl = this.add
-		// 	.sprite(startX, startY, 'Motyl')
-		// 	.setScale(0.2)     // začíná zmenšený
-		// 	.setDepth(2);      // nech ho nad backgroundem, ale pod logem
 
-		// nastavíme počáteční hodnotu pro porovnání smeru pohybu motyla
-		//this.prevX = this.motyl.x;
-
-		// 2) Vytvoříme motýla (sprite s klíčem 'motyl'; předpokládejme, že preload už máme hotové)
+		// 1) Vytvoříme motýla (sprite s klíčem 'motyl'; předpokládejme, že preload už máme hotové)
 		this.motyl = this.add.sprite(startX, startY, 'Motyl').setScale(.2);
-		// Doporučeno nastavit předvolby pro fyziku, když chceš pomocí těla počítat flip:
-		//this.physics.add.existing(this.motyl);
-		//(this.motyl.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
-
 
 		// 2) Vygenerujeme pole bodů z odpadků
 		const path = this.odpadkyData.map((o, i) => ({
@@ -149,7 +138,7 @@ export default class Intro extends Phaser.Scene {
 					duration: 3000,
 					onComplete: () => {
 						//this.dialog.showDialogAbove('motyl-00', this.motyl);
-						this.dialog.beginnerTest(this.motyl);
+						//this.dialog.beginnerTest(this.motyl);
 					}
 				}, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
 
@@ -160,15 +149,14 @@ export default class Intro extends Phaser.Scene {
 					duration: 3000,
 					ease: 'Quad.easeInOut',
 					onComplete: () => {
-						// s 50% šancí se zakolibe na odpadku
-						if (Math.random() <= 0.5) {
+						// s 33% šancí se zakolibe na odpadku
+						if (Math.random() <= 0.33) {
 							doFlip(this.motyl);
 						}
-						//console.log(this);
 
 						// první dialog motýla na scéně
 						this.dialog.showDialogAbove('motyl-00', this.motyl);
-						this.time.delayedCall(2200, () => this.dialog.hideDialog());
+						//this.time.delayedCall(2200, () => this.dialog.hideDialog());
 					}
 				}))
 			]
@@ -192,7 +180,6 @@ export default class Intro extends Phaser.Scene {
 				onComplete: () => {
 					this.motyl.setFlipX(false); // zajistuje aby se divali duch a motyl FaceToFace
 					this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
-					//this.dialog.showArrowOnly(this.motyl);
 				}
 			});
 		}
@@ -209,7 +196,7 @@ export default class Intro extends Phaser.Scene {
 		};
 	}
 
-	dialogMotylDuch() {
+	async dialogMotylDuch(): Promise<void> {
 		const sequence = [
 			{ key: 'motyl-01', obj: this.motyl },
 			{ key: 'duch-01', obj: this.duch },
@@ -220,17 +207,48 @@ export default class Intro extends Phaser.Scene {
 			// ... další zprávy
 		];
 
-		let totalDelay = 1500;
-		sequence.forEach(item => {
-			this.time.delayedCall(totalDelay, () => {
-				//const x = item.obj.x;
-				//const y = item.obj.y - item.obj.displayHeight / 2 - 10;
-				//this.dialog.showDialog(item.key, x, y);
-				this.dialog.showDialogAbove(item.key, item.obj);
+		//this.processDialogSequence(sequence, 0);
+		// Můžeme přidat počáteční zpoždění před prvním dialogem, pokud je potřeba
+		//await this.dialog.delay(1500); // Použijeme delay metodu z DialogManageru
+
+		// Projdeme sekvenci a zobrazíme každý dialog postupně
+		for (const item of sequence) {
+			// Zavoláme novou metodu, která se postará o zobrazení, čekání a skrytí
+			await this.dialog.showDialogAboveAndDelay(item.key, item.obj);
+		}
+	}
+
+
+	/**
+	  * Rekurzivní funkce pro zpracování sekvence dialogů.
+	  * @param sequence Pole objektů { key: string, obj: Phaser.GameObjects.Sprite }
+	  * @param index Aktuální index dialogu v sekvenci
+	  */
+	private processDialogSequence(sequence: { key: string, obj: Phaser.GameObjects.Sprite }[], index: number): void {
+		// Pokud jsme prošli všechny dialogy, ukončíme rekurzi
+		if (index >= sequence.length) {
+			this.dialog.hideDialog(); // Skryjeme poslední bublinu po dokončení celé sekvence
+			console.log('Sekvence dialogů dokončena.');
+			return;
+		}
+
+		const currentDialog = sequence[index];
+		const displayDuration = this.dialog.getDisplayDurationForKey(currentDialog.key);
+		const delay = displayDuration + 500; // 500ms pauza mezi dialogy
+
+		// Zobrazíme aktuální dialog
+		this.dialog.showDialogAbove(currentDialog.key, currentDialog.obj);
+		console.log(`Zobrazuji dialog "${currentDialog.key}" na ${displayDuration}ms.`);
+
+		// Nastavíme zpožděné volání pro skrytí dialogu a spuštění dalšího
+		this.time.delayedCall(displayDuration, () => {
+			this.dialog.hideDialog(); // Skryjeme aktuální dialog
+			console.log(`Skrývám dialog "${currentDialog.key}".`);
+
+			// Po krátké pauze spustíme další dialog v sekvenci
+			this.time.delayedCall(500, () => { // Krátká pauza před dalším dialogem
+				this.processDialogSequence(sequence, index + 1); // Rekurzivní volání pro další dialog
 			});
-			//const text = this.dialog.getText(item.key);
-			//totalDelay += this.texts.length * 40 + 1000;
-			//this.dialog.hideDialog();
 		});
 	}
 

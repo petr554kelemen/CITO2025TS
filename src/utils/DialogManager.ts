@@ -7,6 +7,8 @@ export default class DialogManager {
   private bubbleContainer: Phaser.GameObjects.Container | null; // kontejner, ve kterém držím pozadí + text bubliny
   private isVisible: boolean;                            // příznak, jestli je bublina právě zobrazená
   private followTarget?: Phaser.GameObjects.Sprite;      // Sprite, který bublina (bubbleContainer) „sleduje“
+  private readonly BASE_DISPLAY_TIME_PER_CHAR = 40; // ms na znak
+  private readonly MIN_DISPLAY_TIME = 2000;         // Minimální doba zobrazení (2 sekundy)
 
   constructor(scene: Phaser.Scene, texts: any) {
     this.scene = scene;
@@ -15,6 +17,11 @@ export default class DialogManager {
     this.bubbleContainer = null;
     this.isVisible = false;
   }
+
+  // Nová pomocná metoda pro získání textu
+    public getText(key: string): string {
+        return this.texts[key] || `[TEXT MISSING: ${key}]`;
+    }
 
   // Testovací kod pro vykreslování grafických objektů
   public beginnerTest(obj: Phaser.GameObjects.Sprite): void {
@@ -103,8 +110,8 @@ export default class DialogManager {
 
     // 8) Pro ladění vykreslíme zkrátka malý puntík na centerX, topY (vrchol sprite)
     //    abychom viděli, zda šipka opravdu ukazuje na střed vrchu:
-    const debugDot = this.scene.add.circle(centerX, topY, 3, 0xff0000);
-    this.scene.time.delayedCall(1000, () => debugDot.destroy());
+    //const debugDot = this.scene.add.circle(centerX, topY, 3, 0xff0000);
+    //this.scene.time.delayedCall(1000, () => debugDot.destroy());
   }
 
   // Veřejná metoda: zobrazí bublinu dole (bez followTarget)
@@ -279,5 +286,41 @@ export default class DialogManager {
         topY - (actualBubbleHeight + arrowHeight) // Posun Y tak, aby špička šipky byla na topY
       );
     }
+  }
+
+  // Nová metoda: Vrátí odhadovanou délku zobrazení textu na základě jeho délky
+  public getDisplayDurationForKey(key: string): number {
+    const txt = this.texts[key];
+    if (!txt) {
+      console.warn(`DialogManager: Text pro klíč "${key}" nenalezen při výpočtu délky.`);
+      return 1000; // Výchozí délka, pokud text není nalezen
+    }
+    // Odhad: 60ms na znak + minimálně 1500ms
+    // Můžeš si tuto logiku upravit podle potřeby, aby dialogy byly čitelné.
+    const duration = Math.max(1500, txt.length * 60);
+    return duration;
+  }
+
+  // Nová pomocná metoda pro odhad doby zobrazení dialogu
+  public getDialogDisplayDuration(key: string): number {
+    const text = this.getText(key);
+    // Odhad doby zobrazení: počet znaků * čas na znak, s minimální dobou
+    return Math.max(this.MIN_DISPLAY_TIME, text.length * this.BASE_DISPLAY_TIME_PER_CHAR);
+  }
+
+  // Nová asynchronní metoda, která zobrazí dialog a počká
+  public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.Sprite): Promise<void> {
+    this.showDialogAbove(key, obj); // Zobrazí bublinu
+    const duration = this.getDialogDisplayDuration(key); // Získá délku zobrazení
+    await this.delay(duration); // Počká po určenou dobu
+    this.hideDialog(); // Skryje bublinu
+    await this.delay(500); // Malá pauza mezi dialogy (např. 0.5 sekundy)
+  }
+
+  // Pomocná asynchronní metoda pro zpoždění
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => {
+      this.scene.time.delayedCall(ms, resolve);
+    });
   }
 }
