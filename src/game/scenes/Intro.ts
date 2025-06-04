@@ -234,7 +234,8 @@ export default class Intro extends Phaser.Scene {
 
 		const currentDialog = sequence[index];
 		const displayDuration = this.dialog.getDisplayDurationForKey(currentDialog.key);
-		const delay = displayDuration + 500; // 500ms pauza mezi dialogy
+		//const delay = displayDuration + 500; // 500ms pauza mezi dialogy
+		//const delay = this.delay();
 
 		// Zobrazíme aktuální dialog
 		this.dialog.showDialogAbove(currentDialog.key, currentDialog.obj);

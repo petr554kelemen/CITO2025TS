@@ -19,9 +19,9 @@ export default class DialogManager {
   }
 
   // Nová pomocná metoda pro získání textu
-    public getText(key: string): string {
-        return this.texts[key] || `[TEXT MISSING: ${key}]`;
-    }
+  public getText(key: string): string {
+    return this.texts[key] || `[TEXT MISSING: ${key}]`;
+  }
 
   // Testovací kod pro vykreslování grafických objektů
   public beginnerTest(obj: Phaser.GameObjects.Sprite): void {
@@ -70,7 +70,7 @@ export default class DialogManager {
     const arrowWidth = 20;   // šířka základny šipky
 
     // 3) Spočítáme, jak velký je právě obrázek sprite (origin 0.5,0.5 předpoklad)
-    const originWidth = target.frame.width;
+    //const originWidth = target.frame.width;
     const originHeight = target.frame.height;
 
     // 4) Body pro umístění šipky: chceme, aby špička šipky byla v bodě (centerX, topY)
@@ -191,6 +191,8 @@ export default class DialogManager {
     // 6) Vytvoříme container a vložíme do něj oba GameObjecty: Graphics i Text
     this.bubbleContainer = this.scene.add.container(0, 0, [bg, content]);
     this.isVisible = true;
+    console.log(this.isVisible);
+    
 
     if (target) {
       this.followTarget = target;
@@ -227,6 +229,7 @@ export default class DialogManager {
     }
   }
 
+
   // Soukromá metoda: zruší bublinu (odstraní container z scény)
   private hide(): void {
     if (this.bubbleContainer) {
@@ -237,16 +240,19 @@ export default class DialogManager {
     }
   }
 
+
   // Přístupové metody pro případ, že chce scéna (Intro) v update() kontrolovat pozici:
   public getBubbleContainer(): Phaser.GameObjects.Container | null {
 
     return this.bubbleContainer;
   }
 
+
   public getFollowTarget(): Phaser.GameObjects.Sprite | undefined {
 
     return this.followTarget;
   }
+
 
   public updateBubblePosition(): void {
     // Kontrolujeme, zda bublina existuje a zda má nějaký sledovaný cíl.
@@ -265,7 +271,7 @@ export default class DialogManager {
       // jako privátní proměnné v `show()`, použij je pro maximální přesnost.
       // Jinak je musíme odhadnout z container.getBounds().
       // Pro jednoduchost a přesnost v tomto kontextu použijeme:
-      const padding = 5;       // Tyto by měly být stejné jako při tvorbě bubliny
+      //const padding = 5;       // Tyto by měly být stejné jako při tvorbě bubliny
       const arrowHeight = 10;
       // Šířka a výška *obsahu* bubliny, jak byly použity pro výpočet `bubbleWidth` a `bubbleHeight` v `show()`
       // Tady by bylo ideální mít tyto hodnoty uložené z `show()` metody.
@@ -288,6 +294,7 @@ export default class DialogManager {
     }
   }
 
+
   // Nová metoda: Vrátí odhadovanou délku zobrazení textu na základě jeho délky
   public getDisplayDurationForKey(key: string): number {
     const txt = this.texts[key];
@@ -301,6 +308,7 @@ export default class DialogManager {
     return duration;
   }
 
+
   // Nová pomocná metoda pro odhad doby zobrazení dialogu
   public getDialogDisplayDuration(key: string): number {
     const text = this.getText(key);
@@ -308,6 +316,7 @@ export default class DialogManager {
     return Math.max(this.MIN_DISPLAY_TIME, text.length * this.BASE_DISPLAY_TIME_PER_CHAR);
   }
 
+  
   // Nová asynchronní metoda, která zobrazí dialog a počká
   public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.Sprite): Promise<void> {
     this.showDialogAbove(key, obj); // Zobrazí bublinu
