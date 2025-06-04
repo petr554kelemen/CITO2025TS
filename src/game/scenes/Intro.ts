@@ -147,8 +147,9 @@ export default class Intro extends Phaser.Scene {
 				{
 					scale: 1,
 					duration: 3000,
-					onComplete: ()=>{
-						this.dialog.showDialogAbove('motyl-00', this.motyl);
+					onComplete: () => {
+						//this.dialog.showDialogAbove('motyl-00', this.motyl);
+						this.dialog.beginnerTest(this.motyl);
 					}
 				}, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
 
@@ -190,8 +191,8 @@ export default class Intro extends Phaser.Scene {
 				duration: 2500,
 				onComplete: () => {
 					this.motyl.setFlipX(false); // zajistuje aby se divali duch a motyl FaceToFace
-					//this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
-					this.dialog.showArrowOnly(this.motyl);
+					this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
+					//this.dialog.showArrowOnly(this.motyl);
 				}
 			});
 		}
@@ -233,40 +234,21 @@ export default class Intro extends Phaser.Scene {
 		});
 	}
 
+	// Intro.ts - metoda update()
 	update(): void {
 		const curX = this.motyl.x;
-		const container = this.dialog.getBubbleContainer();
-		const target = this.dialog.getFollowTarget();
 
-		if (this.dialog) {
-			const bubble = this.dialog.getBubbleContainer?.();
-			const target = this.dialog.getFollowTarget?.();
-
-			if (bubble && target) {
-				// Motýl existuje, bublina ho sleduje
-				bubble.setPosition(target.x, target.y - 40);
-			} else if (bubble && !target) {
-				// Motýl zmizel – bublinu ihned znič
-				this.dialog.hideDialog();
-			}
-		}
+		// NOVINKA: Jediný řádek pro aktualizaci pozice bubliny přes DialogManager
+		// DialogManager se sám postará o správné umístění bubliny,
+		// pokud má nastavený followTarget.
+		this.dialog.updateBubblePosition(); // <--- Zde se volá nová metoda
 
 		if (curX > this.prevX) {
-			// motýl letí zleva doprava
 			this.motyl.setFlipX(true);
 		} else if (curX < this.prevX) {
-			// motýl letí zprava doleva
 			this.motyl.setFlipX(false);
 		}
 
-		if (this.dialog && container && target) {
-			//const target = dialog.followTarget;
-			const x = target.x;
-			const y = target.y - 40; // stejné odsazení jako při vytvoření bubliny
-			container.setPosition(x, y);
-		}
-
-		// uložíme si pro další update
 		this.prevX = curX;
 	}
 }

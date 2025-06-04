@@ -16,6 +16,40 @@ export default class DialogManager {
     this.isVisible = false;
   }
 
+  // Testovací kod pro vykreslování grafických objektů
+  public beginnerTest(obj: Phaser.GameObjects.Sprite): void {
+    // 1) Pokud existuje followTarget (např. motýl nebo duch), vykreslíme jeho bounds:
+    this.followTarget = obj;
+    if (this.followTarget) {
+      // Zjistíme bounding box targetu
+      const targetBounds = this.followTarget.getBounds();
+      // Vytvoříme Graphics pro rámeček targetu
+      const gTarget = this.scene.add.graphics();
+      gTarget.lineStyle(2, 0x00ff00, 1); // zelená linka tl. 2px
+      gTarget.strokeRect(
+        targetBounds.x,
+        targetBounds.y,
+        targetBounds.width,
+        targetBounds.height
+      );
+      gTarget.setDepth(9999); // vykreslíme nad vším ostatním
+    }
+
+    // 2) Pokud existuje bublina (container), vykreslíme její bounding box:
+    if (this.bubbleContainer) {
+      const bubbleBounds = this.bubbleContainer.getBounds();
+      const gBubble = this.scene.add.graphics();
+      gBubble.lineStyle(2, 0xff0000, 1); // červená linka tl. 2px
+      gBubble.strokeRect(
+        bubbleBounds.x,
+        bubbleBounds.y,
+        bubbleBounds.width,
+        bubbleBounds.height
+      );
+      gBubble.setDepth(9999);
+    }
+  }
+
   /** Dočasně vykreslíme jen šipku nad daným sprite (bez obdélníku a textu). */
   public showArrowOnly(target: Phaser.GameObjects.Sprite): void {
     // 1) Odstraníme předchozí container
@@ -26,15 +60,15 @@ export default class DialogManager {
 
     // 2) Parametry šipky
     const arrowHeight = 10;   // výška šipky
-    const arrowWidth  = 20;   // šířka základny šipky
+    const arrowWidth = 20;   // šířka základny šipky
 
     // 3) Spočítáme, jak velký je právě obrázek sprite (origin 0.5,0.5 předpoklad)
-    const originWidth  = target.frame.width;
+    const originWidth = target.frame.width;
     const originHeight = target.frame.height;
 
     // 4) Body pro umístění šipky: chceme, aby špička šipky byla v bodě (centerX, topY)
     const centerX = target.x;
-    const topY    = target.y - originHeight / 2;
+    const topY = target.y - originHeight / 2;
 
     // 5) Vytvoříme Graphics a nakreslíme pouze trojúhelník (šipku):
     //    – body trojúhelníku relativně k (0,0) containeru budou:
@@ -53,8 +87,8 @@ export default class DialogManager {
     // Trojúhelník: body přesně pro šipku směřující dolů
     bg.fillTriangle(
       -arrowWidth / 2, 0,     // (levý bod základny)
-       arrowWidth / 2, 0,     // (pravý bod základny)
-       0, arrowHeight         // (špička dolů)
+      arrowWidth / 2, 0,     // (pravý bod základny)
+      0, arrowHeight         // (špička dolů)
     );
 
     // 6) Vytvoříme container s jediným prvkem (bg)
@@ -166,7 +200,7 @@ export default class DialogManager {
       //      container.y = topY - (bubbleHeight + arrowHeight)
       this.bubbleContainer.setPosition(
         centerX - bubbleWidth / 2,
-        topY - (bubbleHeight + arrowHeight)
+        topY //- (bubbleHeight + arrowHeight)
       );
 
       // 9) Text uvnitř bubliny posuneme s odsazením padding od levého a horního okraje obdélníku:
@@ -186,8 +220,6 @@ export default class DialogManager {
     }
   }
 
-
-
   // Soukromá metoda: zruší bublinu (odstraní container z scény)
   private hide(): void {
     if (this.bubbleContainer) {
@@ -200,20 +232,52 @@ export default class DialogManager {
 
   // Přístupové metody pro případ, že chce scéna (Intro) v update() kontrolovat pozici:
   public getBubbleContainer(): Phaser.GameObjects.Container | null {
-    //if (this.bubbleContainer) {
+
     return this.bubbleContainer;
-    //} else {
-    //  console.error('Kontejner bubble neexistuje !');
-    //  return null;
-    //}
   }
 
   public getFollowTarget(): Phaser.GameObjects.Sprite | undefined {
-    //if (this.followTarget){
+
     return this.followTarget;
-    //} else {
-    //  console.error('Objekt pro bubble neexistuje !');
-    //  return undefined;
-    //}
+  }
+
+  public updateBubblePosition(): void {
+    // Kontrolujeme, zda bublina existuje a zda má nějaký sledovaný cíl.
+    if (this.bubbleContainer && this.followTarget) {
+      // Získáme aktuální globální ohraničující rámeček cílového spritu.
+      // Toto je klíčové, protože getBounds() zohledňuje scale a origin spritu.
+      const spriteBounds = this.followTarget.getBounds();
+      const centerX = spriteBounds.centerX; // Střed X cílového spritu
+      const topY = spriteBounds.top;       // Horní hrana cílového spritu
+
+      // Získáme rozměry samotné bubliny (žlutý obdélník + šipka),
+      // aby se zachovalo správné odsazení.
+      // Použijeme getBounds() celého containeru, ale musíme zvážit,
+      // že celková výška containeru zahrnuje i šipku.
+      // Pokud jsi si uložil `bubbleWidth`, `bubbleHeight` a `arrowHeight`
+      // jako privátní proměnné v `show()`, použij je pro maximální přesnost.
+      // Jinak je musíme odhadnout z container.getBounds().
+      // Pro jednoduchost a přesnost v tomto kontextu použijeme:
+      const padding = 5;       // Tyto by měly být stejné jako při tvorbě bubliny
+      const arrowHeight = 10;
+      // Šířka a výška *obsahu* bubliny, jak byly použity pro výpočet `bubbleWidth` a `bubbleHeight` v `show()`
+      // Tady by bylo ideální mít tyto hodnoty uložené z `show()` metody.
+      // Protože je nemáme, musíme je buď znovu vypočítat, nebo odhadnout.
+      // Pro nejlepší výsledky si uložte `bubbleWidth` a `bubbleHeight` (bez šipky)
+      // jako privátní proměnné při vytváření bubliny a použijte je zde.
+
+      // Pokud nemáme uložené bubbleWidth/Height, můžeme je získat z bounds containeru.
+      // Nicméně, getBounds() containeru zahrnuje i šipku.
+      // Proto musíme od celkové výšky odečíst arrowHeight, abychom dostali výšku samotného obdélníku.
+      const containerBounds = this.bubbleContainer.getBounds();
+      const actualBubbleWidth = containerBounds.width;
+      const actualBubbleHeight = containerBounds.height - arrowHeight; // Výška obdélníku bubliny
+
+      // Nastavení pozice containeru tak, aby špička šipky lícovala s (centerX, topY)
+      this.bubbleContainer.setPosition(
+        centerX - actualBubbleWidth / 2, // Posun X tak, aby střed bubliny byl pod centerX
+        topY - (actualBubbleHeight + arrowHeight) // Posun Y tak, aby špička šipky byla na topY
+      );
+    }
   }
 }
