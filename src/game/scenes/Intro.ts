@@ -265,8 +265,11 @@ export default class Intro extends Phaser.Scene {
 			duration: 2500,
 			ease: 'Quad.easeIn',
 			onComplete: () => {
-				// Po dokončení animací přepneme na novou scénu
-				this.startGameScene();
+				// Po dokončení animací spustíme fade-out celé scény
+				this.cameras.main.fadeOut(1000, 0, 0, 0); // 1s černý fade
+				this.cameras.main.once('camerafadeoutcomplete', () => {
+					this.startGameScene();
+				});
 			}
 		});
 	}
