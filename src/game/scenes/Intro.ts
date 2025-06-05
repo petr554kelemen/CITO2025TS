@@ -56,27 +56,63 @@ export default class Intro extends Phaser.Scene {
 	}
 
 
+
 	create(): void {
+		this.createBackground();
+		this.createGuides();
+		this.createDialogManager();
+		this.createDuch();
+		this.createPytel();
+		this.createOdpadky();
+		this.createMotylAndAnimate();
+		this.createCitoLogo();
+	}
 
-		// background
+	/**
+	 * Vytvoří pozadí scény.
+	 */
+	private createBackground(): void {
 		this.background = this.add.image(512, 385, "freepik_forest_01");
+		// POZOR: Správný klíč obrázku musí být načten v preload!
+	}
 
-		//zlaty rez
+	/**
+	 * Přidá vodítka pro kompozici scény.
+	 */
+	private createGuides(): void {
 		this.guides = addGuides(this, { thirds: true, golden: false, color: 0x82e6f6 });
+	}
 
-		// vytvoreni dialogů
+	/**
+	 * Inicializuje správce dialogů.
+	 */
+	private createDialogManager(): void {
 		this.dialog = new DialogManager(this, this.texts);
+	}
 
-		// objekt ducha na scenu
+	/**
+	 * Vytvoří ducha na scéně, nastaví jeho počáteční vlastnosti.
+	 */
+	private createDuch(): void {
 		this.duch = this.add.sprite(190, 280, "Duch", 0).setAlpha(0).setVisible(false);
+		// POZOR: Pokud duch není vidět, zkontroluj klíč a souřadnice!
+	}
 
-		// pytel na odpadky na scéně
+	/**
+	 * Vytvoří pytel na odpadky na scéně.
+	 */
+	private createPytel(): void {
 		this.pytel = this.add.sprite(810, 690, "prazdnyPytel");
 		this.pytel.scaleX = 0.5;
 		this.pytel.scaleY = 0.5;
 		this.pytel.setSize(153, 512);
+		// POZOR: Nastavení scale a velikosti musí odpovídat obrázku!
+	}
 
-		// Vygeneruj všechny odpadky podle dat
+	/**
+	 * Vygeneruje všechny odpadky podle dat a přidá je na scénu.
+	 */
+	private createOdpadky(): void {
 		this.odpadkyData.forEach(odpadek => {
 			odpadek.sprite = this.add.sprite(
 				odpadek.pozice.x,
@@ -86,114 +122,100 @@ export default class Intro extends Phaser.Scene {
 			if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale);
 			if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
 			odpadek.sprite.setInteractive();
-			// případné další eventy, logika...
+			// POZOR: Nezapomeň na interaktivitu, pokud budeš chtít drag & drop!
 		});
+	}
 
-		// vytvoření pytle na scéně
-		//this.pytel = this.add.sprite(400, 300, 'prazdnyPytel').setScale(.25);
-		//this.pytel.setInteractive();
-
-		// umístění motýla na scénu
-		const startX = 835; // pozor existuje jen v create()
-		const startY = 475; // pozor existuje jen v create()
-
-		// 1) Vytvoříme motýla (sprite s klíčem 'motyl'; předpokládejme, že preload už máme hotové)
+	/**
+	 * Vytvoří motýla, připraví jeho trasu a spustí animaci.
+	 */
+	private createMotylAndAnimate(): void {
+		const startX = 835;
+		const startY = 475;
 		this.motyl = this.add.sprite(startX, startY, 'Motyl').setScale(.2);
 
-		// 2) Vygenerujeme pole bodů z odpadků
 		const path = this.odpadkyData.map((o, i) => ({
 			x: o.pozice.x,
-			// přidáme malou „cik-cak“ odchylku podle indexu
 			y: o.pozice.y + (i % 2 === 0 ? 20 : -20)
 		}));
-
-		// 3) Přidáme ještě finální bod (podle pozice ducha)
 		path.push({ x: this.duch.x + 150, y: this.duch.y });
 
-		// Vybírám jen náhodné body pro motýla
-		// 1a) Zkopíruj pole bez posledního bodu (ten je finální a musí zůstat)
-		const pathWithoutFinal = path.slice(0, -1); // vezme všechny kromě posledního
-
-		// 2a) Zamíchej pole - použijeme Fisher-Yates shuffle
+		const pathWithoutFinal = path.slice(0, -1);
 		for (let i = pathWithoutFinal.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
 			[pathWithoutFinal[i], pathWithoutFinal[j]] = [pathWithoutFinal[j], pathWithoutFinal[i]];
 		}
-		// 3a) Vyber první 3 náhodné body
-		const randomPath = pathWithoutFinal.slice(0, 4); // max 3 prvky
-		// 4a) Přidej zpět finální bod
-		randomPath.push(path[path.length - 1]); // přidá poslední bod jako finální
-		// Výsledek: randomPath obsahuje 3 náhodné body + finální bod na konci
+		const randomPath = pathWithoutFinal.slice(0, 4);
+		randomPath.push(path[path.length - 1]);
 
-		// 4) Sestavíme si 'timeline' pomoci 
-		//    řetězce tweenů (metoda.timeline jiz neexistuje v novem Phaseru)
 		this.tweens.chain({
 			targets: this.motyl,
 			ease: 'Quad.easeInOut',
-			onComplete: () => volejDucha(), // po dokonceni se objevi duch na scene
+			onComplete: () => this.volejDucha(),
 			tweens: [
-				// krok 1 – scale
 				{
 					scale: 1,
 					duration: 3000,
 					onComplete: () => {
 						//this.dialog.showDialogAbove('motyl-00', this.motyl);
-						//this.dialog.beginnerTest(this.motyl);
 					}
-				}, // tady by mel motyl priletet z dalky a postupne preletavat z objektu na objekt
-
-				// kroky 2+ – postupné pohyby mezi body
+				},
 				...randomPath.map(pt => ({
 					x: pt.x,
 					y: pt.y,
 					duration: 3000,
 					ease: 'Quad.easeInOut',
 					onComplete: () => {
-						// s 33% šancí se zakolibe na odpadku
 						if (Math.random() <= 0.33) {
-							doFlip(this.motyl);
+							this.doFlip(this.motyl);
 						}
-
-						// první dialog motýla na scéně
 						this.dialog.showDialogAbove('motyl-00', this.motyl);
-						//this.time.delayedCall(2200, () => this.dialog.hideDialog());
 					}
 				}))
 			]
-			// chain se spustí automaticky, nemusíme volat play()
 		});
+		// POZOR: Pokud motýl "zamrzne", zkontroluj správnost cesty a tweenu!
+	}
 
-		// Příklad: přidání CITO loga
+	/**
+	 * Přidá CITO logo na scénu.
+	 */
+	private createCitoLogo(): void {
 		this.citoLogo = this.add.image(910, 107, "Cito_logo");
 		this.citoLogo.setScale(0.2);
 		this.citoLogo.setAlpha(0.9);
+	}
 
-		// Volani (postupne zviditelneni) ducha na scene
-		const volejDucha = () => {
-			this.duch.setVisible(true);
-			this.tweens.add({
-				x: this.duch.x,
-				y: this.duch.y,
-				targets: this.duch,
-				alpha: .65,
-				duration: 2500,
-				onComplete: () => {
-					this.motyl.setFlipX(false); // zajistuje aby se divali duch a motyl FaceToFace
-					this.dialogMotylDuch();		// spusti dialog mezi motylem a duchem
-				}
-			});
-		}
+	/**
+	 * Postupně zviditelní ducha a spustí dialog mezi motýlem a duchem.
+	 */
+	private volejDucha(): void {
+		this.duch.setVisible(true);
+		this.tweens.add({
+			x: this.duch.x,
+			y: this.duch.y,
+			targets: this.duch,
+			alpha: .65,
+			duration: 2500,
+			onComplete: () => {
+				this.motyl.setFlipX(false);
+				this.dialogMotylDuch();
+			}
+		});
+	}
 
-		// Dále animace, tweeny, spouštění dalších scén...
-		const doFlip = (objekt: Phaser.GameObjects.Image) => {
-			this.tweens.add({
-				targets: objekt,
-				angle: objekt.angle + 15,   // otočí o 15°
-				duration: 300,
-				ease: 'Quad.easeInOut',
-				yoyo: true
-			});
-		};
+	/**
+	 * Krátká animace "zakolíbání" objektu.
+	 * @param objekt Objekt, který se má otočit.
+	 */
+	private doFlip(objekt: Phaser.GameObjects.Image): void {
+		this.tweens.add({
+			targets: objekt,
+			angle: objekt.angle + 15,
+			duration: 300,
+			ease: 'Quad.easeInOut',
+			yoyo: true
+		});
 	}
 
 	async dialogMotylDuch(): Promise<void> {
@@ -216,6 +238,51 @@ export default class Intro extends Phaser.Scene {
 			// Zavoláme novou metodu, která se postará o zobrazení, čekání a skrytí
 			await this.dialog.showDialogAboveAndDelay(item.key, item.obj);
 		}
+
+		// --- ZÁVĚR SCÉNY ---
+		this.endIntroScene();
+	}
+
+	/**
+ * Závěr intro scény: duch zmizí, motýl odletí, přepnutí na další scénu.
+ */
+	private endIntroScene(): void {
+		// Duch zmizí (fade out)
+		this.tweens.add({
+			targets: this.duch,
+			alpha: 0,
+			duration: 3000, // 3 sekundy
+			onComplete: () => {
+				this.duch.setVisible(false); // Skryjeme ducha po zmizení
+			}
+		});
+
+		// Motýl odletí doprava nahoru mimo scénu
+		this.tweens.add({
+			targets: this.motyl,
+			x: 1200, // mimo obrazovku (přizpůsob podle rozměrů)
+			y: -100,
+			duration: 2500,
+			ease: 'Quad.easeIn',
+			onComplete: () => {
+				// Po dokončení animací přepneme na novou scénu
+				this.startGameScene();
+			}
+		});
+	}
+
+	/**
+	 * Přepnutí na herní scénu a předání potřebných parametrů.
+	 */
+	private startGameScene(): void {
+		this.scene.start('game', {
+			odpadkyData: this.odpadkyData, // předáme pole odpadků
+			pytel: this.pytel,             // případně předat info o pytli (nebo jen status)
+			language: this.lang,           // jazyk vybraný v MainMenu
+			texts: this.texts              // texty pro dialogy/kvíz
+		});
+		// POZOR: Pokud předáváš celé objekty (např. sprite), doporučuji předat jen data, ne Phaser objekty!
+		// V nové scéně si vytvoř nové instance sprite podle těchto dat.
 	}
 
 
