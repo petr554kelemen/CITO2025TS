@@ -217,6 +217,9 @@ export default class Intro extends Phaser.Scene {
 			targets: this.duch,
 			alpha: .65,
 			duration: 2500,
+			onStart: () => {
+				this.dialog.hideDialog(); // Skryjeme dialog motýla hned na začátku animace ducha
+			},
 			onComplete: () => {
 				this.motyl.setFlipX(false);
 				this.dialogMotylDuch();

@@ -28,10 +28,13 @@ export default class Game extends Phaser.Scene {
 
     //TODO: Přidat proměnné pro pytel, Moninu, časovač, kvíz, skóre atd.
     private pytel!: Phaser.GameObjects.Sprite;
-    private monina!: Phaser.GameObjects.Image;
+    private monina!: Phaser.GameObjects.Sprite;
     //private quiz!: Quiz;
     // private timeLeft: number = 120;
     // private timerText!: Phaser.GameObjects.Text;
+
+    private moninaSequence: { key: string; obj: Phaser.GameObjects.Image }[] = [];
+    private dialog!: DialogManager;
 
     constructor() {
         super("Game");
@@ -65,6 +68,8 @@ export default class Game extends Phaser.Scene {
         this.createOdpadky();
 
         this.setupMonina();
+        this.monina = this.add.sprite(200, 560, "monina", 0); // frame 0
+        
         if (this.monina) {
             this.monina.alpha = 0.5; // Nastavení průhlednosti Moniny
             this.monina.visible = true;
@@ -75,21 +80,20 @@ export default class Game extends Phaser.Scene {
                 duration: 1000,
                 ease: 'Power2',
                 onComplete: () => {
-                    // Po dokončení animace můžete přidat další logiku, např. spuštění dialogu
-                    //DialogManager.showDialog(this, this.texts.dialogSequence, this.language, () => {
-                    // Callback po dokončení dialogu
-                    this.pytel = this.add.sprite(810, 690, "prazdnyPytel");
-                    this.pytel.setOrigin(0.5);
-                    this.pytel.setScale(0.5);
-                    this.pytel.setInteractive();
+                    // Spusť sekvenci dialogu Moniny
+                    this.dialog = new DialogManager(this, this.texts);
+                    for (const item of this.moninaSequence) {
+                        // Zavoláme novou metodu, která se postará o zobrazení, čekání a skrytí
+                        this.dialog.showDialogAbove(item.key, this.monina);
+                    }
                 }
             });
 
-            // TODO: 1. Přidat Moninu na scénu a zobrazit úvodní dialog (DialogManager)
+            // TODO: 1. Zobrazit úvodní sekvenci monologu (DialogManager)
             // TODO: 2. Po skončení dialogu přidat prázdný pytel na scénu
-            // TODO: 3. Rozmístit odpadky do spodní třetiny scény (použít this.odpadky)
+
             // TODO: 4. Nastavit drag & drop pro odpadky
-            // TODO: 5. Detekovat vhození odpadku do pytle a spustit otázku z kvízu
+            // TODO: 5. Detekovat vhození odpadku do pytle, zvětšit pytel a spustit otázku z kvízu
             // TODO: 6. Spustit časovač a zobrazovat zbývající čas
             // TODO: 7. Penalizace za použití hintu (odečíst čas/skóre)
             // TODO: 8. Po sebrání všech odpadků nebo vypršení času zobrazit skóre a výsledek
@@ -104,18 +108,16 @@ export default class Game extends Phaser.Scene {
     }
 
     private setupMonina(): void {
-        this.monina = this.add.image(200, 600, "DivkaStoji");
+        this.monina = this.add.sprite(200, 560, "Monina", 0); // frame 0
         this.monina.setOrigin(0.5);
         this.monina.visible = false;
 
-        // TODO: monolog Moniny, vysvětluje princip hry
-        const sequence = [
+        this.moninaSequence = [
             { key: 'monina-01', obj: this.monina },
             { key: 'monina-02', obj: this.monina },
             { key: 'monina-03', obj: this.monina },
             { key: 'monina-04', obj: this.monina },
             { key: 'monina-05', obj: this.monina }
-            // ... další zprávy
         ];
     }
 
@@ -143,6 +145,7 @@ export default class Game extends Phaser.Scene {
 
     update(): void {
         //TODO: Herní logika (např. kontrola dokončení, časovač, animace)
+        
 
     }
 }
