@@ -58,7 +58,7 @@ export default class Preloader extends Phaser.Scene {
     preload() {
         // Use the 'pack' file to load in any assets you need for this scene
         this.load.pack('preload', 'assets/preload-asset-pack.json');
-        this.load.spritesheet('monina', 'assets/images/Divka00.png', { frameWidth: 128, frameHeight: 256 });
+        this.load.spritesheet('monina', 'assets/images/Divka00.png', { frameWidth: 141, frameHeight: 450 });
         // obrázky vlaječek
         // načtené v preload-asset-pack
 

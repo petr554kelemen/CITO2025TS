@@ -18,10 +18,18 @@ export class Quiz {
         try {
             questionsData = await import(`../../public/assets/locales/quiz-${this.language}.json`);
         } catch (e) {
-            // Pokud jazykový soubor neexistuje, použij češtinu jako výchozí
             questionsData = await import(`../../public/assets/locales/quiz-cs.json`);
         }
-        this.questions = this.shuffle(questionsData.default).slice(0, count);
+        // Ošetři, zda je data pole nebo objekt s .default
+        const questionsArray = Array.isArray(questionsData.default)
+            ? questionsData.default
+            : Array.isArray(questionsData)
+                ? questionsData
+                : [];
+        if (!questionsArray.length) {
+            throw new Error("Quiz: Nenalezeny žádné otázky!");
+        }
+        this.questions = this.shuffle(questionsArray).slice(0, count);
     }
 
     getQuestion(index: number): QuizQuestion | null {

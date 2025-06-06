@@ -126,15 +126,21 @@ export default class DialogManager {
   }
 
   // Veřejná metoda: zobrazí bublinu nad zadaným objektem (např. nad motýlem)
-  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite): void {
+  public showDialogAbove(key: string, obj: Phaser.GameObjects.Sprite, offsetY: number = 0): Promise<void> {
     const txt = this.texts[key];
     if (!txt) {
-      console.warn(`DialogManager: Text pro klíč "${key}" nenalezen.`);
-      return;
+        console.warn(`DialogManager: Text pro klíč "${key}" nenalezen.`);
+        return Promise.resolve();
     }
-    // Zobrazím bublinu s daným textem nad objektem `obj`
-    this.show(txt, obj);
-  }
+    this.show(txt, obj, offsetY);
+
+    // Vrátí Promise, která se vyřeší po určitém čase (např. 2,2 s)
+    return new Promise(resolve => {
+        obj.scene.time.delayedCall(2200, () => {
+            resolve();
+        });
+    });
+}
 
   // Veřejná metoda: skryje aktuální bublinu (pokud nějaká je)
   public hideDialog(): void {
@@ -142,7 +148,7 @@ export default class DialogManager {
   }
 
   // Soukromá metoda: vykreslí bublinu s textem; pokud je target, začne ji sledovat
-  private show(text: string, target?: Phaser.GameObjects.Sprite): void {
+  private show(text: string, target?: Phaser.GameObjects.Sprite, offsetY: number = 0): void {
     // 1) Skryjeme existující bublinu, pokud nějaká je
     this.hide();
 
@@ -209,7 +215,7 @@ export default class DialogManager {
       //      container.y = topY - (bubbleHeight + arrowHeight)
       this.bubbleContainer.setPosition(
         centerX - bubbleWidth / 2,
-        topY //- (bubbleHeight + arrowHeight)
+        topY + offsetY // <-- zde použij offsetY
       );
 
       // 9) Text uvnitř bubliny posuneme s odsazením padding od levého a horního okraje obdélníku:
