@@ -16,6 +16,8 @@ type DialogTexts = {
 	dialogGameSequence?: Record<string, string>;
 };
 
+
+
 export default class Intro extends Phaser.Scene {
 	private dialog!: DialogManager;
 
@@ -66,6 +68,23 @@ export default class Intro extends Phaser.Scene {
 		this.createOdpadky();
 		this.createMotylAndAnimate();
 		this.createCitoLogo();
+
+		// Umožní přeskočit intro kliknutím kamkoliv
+		this.input.once('pointerdown', () => {
+			this.skipIntro();
+		});
+	}
+
+	/**
+	 * Okamžitě ukončí intro scénu a přejde do hry.
+	 */
+	private skipIntro(): void {
+		// Zabrání opakovanému volání
+		this.input.enabled = false;
+		this.cameras.main.fadeOut(500, 0, 0, 0);
+		this.cameras.main.once('camerafadeoutcomplete', () => {
+			this.startGameScene();
+		});
 	}
 
 	/**
@@ -106,6 +125,7 @@ export default class Intro extends Phaser.Scene {
 		this.pytel.scaleX = 0.5;
 		this.pytel.scaleY = 0.5;
 		this.pytel.setSize(153, 512);
+		this.pytel.setVisible(false);
 		// POZOR: Nastavení scale a velikosti musí odpovídat obrázku!
 	}
 
@@ -278,11 +298,10 @@ export default class Intro extends Phaser.Scene {
 	 * Přepnutí na herní scénu a předání potřebných parametrů.
 	 */
 	private startGameScene(): void {
-		this.scene.start('game', {
-			odpadkyData: this.odpadkyData, // předáme pole odpadků
-			pytel: this.pytel,             // případně předat info o pytli (nebo jen status)
-			language: this.lang,           // jazyk vybraný v MainMenu
-			texts: this.texts              // texty pro dialogy/kvíz
+		this.scene.start('Game', {
+			odpadkyData: this.odpadkyData,
+			language: this.lang,
+			texts: this.texts
 		});
 		// POZOR: Pokud předáváš celé objekty (např. sprite), doporučuji předat jen data, ne Phaser objekty!
 		// V nové scéně si vytvoř nové instance sprite podle těchto dat.
@@ -324,19 +343,13 @@ export default class Intro extends Phaser.Scene {
 	}
 
 	private playMotylDuchDialog(): void {
-		// TODO:
-		// zde sekvence dialogů motýla/ducha
-		// na konci sekvence a animací zavoláš:
-		// this.playMoninaDialog();
-		this.playMoninaDialog();
-	}
-
-	private playMoninaDialog(): void {
-		// TODO:
-		// zde sekvence dialogů pro Moninu
-		// TODO:
-		// po odehrání dialogu přechod na scénu s kvízem: Game.ts
-		this.scene.start('game'); // TODO: predat s parametry text a language podle MainMenu
+		// Po dokončení dialogu přejdeme na scénu s kvízem: Game.ts
+		this.scene.start('Game', {
+			odpadkyData: this.odpadkyData, // předáme pole odpadků
+			pytel: this.pytel,             // případně předat info o pytli (nebo jen status)
+			language: this.lang,           // jazyk vybraný v MainMenu
+			texts: this.texts              // texty pro dialogy/kvíz
+		});
 	}
 
 	// Intro.ts - metoda update()
