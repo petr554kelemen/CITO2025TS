@@ -1,18 +1,25 @@
 {
   "dialogSequence": {
-    "motyl-00": "Wow, jakie to piękne!\nCo to jest?",
-    "motyl-01": "Łał, aż się przestraszyłem...\nCzemu tu straszysz?",
-    "duch-01": "Obserwuję cię, jak bawisz się rzeczami, które mnie zabiły...",
+    "motyl-00": "Wow, ale piękne!\nCiekawe co to jest?",
+    "motyl-01": "Ojej, aż się przestraszyłem...\nCo tu się kręcisz?",
+    "duch-01": "Obserwuję cię, jak bawisz się rzeczami, które mnie wykończyły...",
     "motyl-02": "Jak to się tu znalazło?",
-    "duch-02": "Powiem ci dokładnie\nTylko ludzie tak potrafią...",
+    "duch-02": "Powiem ci dokładnie.\nTylko ludzie potrafią takie rzeczy...",
     "motyl-03": "Nie wierzę! Przecież mówią, że kochają naturę.",
     "duch-03": "Hmm... zmywajmy się, ktoś się zbliża.",
-
-    "monina-01": "Cześć, jestem Monina i szukam keszy...",
-    "monina-02": "A co to ma być?",
-    "monina-03": "Więc...\nzanim pójdę dalej, pomożesz mi to zebrać?",
-    "monina-04": "Będę ci zadawać kilka pytań po drodze.",
-    "monina-05": "Cieszę się, że się zgadzasz,\njeśli chcesz finałowe współrzędne do swojej skrytki.",
-    "monina-06": "Masz tu worek, żebyś miał w co to zebrać."
+    "monina-01": "Cześć, jestem Monina... szukam tu kesza...",
+    "monina-02": "...a to niby co ma być?",
+    "monina-03": "Więc...\nZanim pójdę dalej, pomożesz mi to posprzątać?",
+    "monina-04": "Cieszę się, że się zgadzasz,\njeśli chcesz finałowe współrzędne do kesza.",
+    "monina-05": "Zostawiam ci ten worek, żebyś miał w co zbierać śmieci.",
+    "monina-06": "No to zaczynamy! Podczas sprzątania dostaniesz kilka pytań na czas.",
+    "monina-07": "Jeśli odpowiesz poprawnie na co najmniej 8 z 10, dostaniesz finałowe współrzędne.",
+    "monina-08": "Możesz użyć 2 podpowiedzi,\nale każda kosztuje 10 sekund.",
+    "monina-09": "No to do dzieła, żeby mieć to szybko z głowy!",
+    "timerLabel": "Czas: {time}",
+    "finalSuccess": "Dzięki za pomoc w sprzątaniu!\nJesteś super!\n\nKliknij po finał.",
+    "finalFail": "Tym razem się nie udało...\nSpróbuj ponownie!\n\nKliknij, aby zacząć od nowa.",
+    "finalFailTime": "Czas minął!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa.",
+    "finalFailScore": "Potrzebujesz co najmniej 8 poprawnych odpowiedzi!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa."
   }
 }
