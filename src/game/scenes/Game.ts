@@ -209,25 +209,7 @@ export default class Game extends Phaser.Scene {
         ];
     }
 
-    /* private score(): void {
-        for (let i = 0; i < this.odpadky.length; i++) {
-            const icon = this.add.image(32 + i * 36, 40, 'miniBag')
-                .setScale(0.32)
-                .setAlpha(0.15)
-                .setScrollFactor(0);
-            this.bagIcons.push(icon);
-        }
-        this.timerText = this.add.text(32, 70, `Čas: ${this.timeLeft}`, {
-            fontSize: '28px',
-            color: '#222',
-            fontFamily: 'Arial'
-        }).setScrollFactor(0);
-    } */
-
-    // private quiz(): void {
-    //     //TODO: Vytvoreni quizu v ../../utils/quiz.ts
-    // }
-
+    // Vytvoří odpadky na scéně
     private createOdpadky(): void {
         // Vytvoř skupinu pro odpadky
         this.odpadkyGroup = this.add.group();
@@ -307,7 +289,7 @@ export default class Game extends Phaser.Scene {
             }
         );
 
-        this.input.on('dragend', ( _: unknown, gameObject: Phaser.GameObjects.Sprite) => {
+        this.input.on('dragend', (_: unknown, gameObject: Phaser.GameObjects.Sprite) => {
             // Kontrola, zda byl odpadek "odložen" do pytle
             if (Phaser.Geom.Intersects.RectangleToRectangle(
                 gameObject.getBounds(), this.pytel.getBounds()
@@ -349,69 +331,90 @@ export default class Game extends Phaser.Scene {
         if (this.quizActive) return;
 
         this.quizActive = true;
-
-        // Zablokuj všechny odpadky
         this.odpadky.forEach(o => o.sprite?.disableInteractive());
 
         const question = this.quiz.getQuestionForType(odpadek.typ);
         if (!question) {
-            console.warn('Chybí otázka pro typ odpadku:', odpadek.typ);
             this.quizActive = false;
             this.odpadky.forEach(o => o.sprite?.setInteractive());
             onComplete();
             return;
         }
 
-        if ((window as any).DEBUG_MODE) {
-            console.log('Spouštím kvíz pro odpadek:', odpadek, 'Otázka:', question);
-        }
+        // --- JEDEN BOX, vyšší neprůhlednost ---
+        const questionMaxWidth = 600;
+        const padding = 32;
+        const startY = 180;
 
-        // Overlay pro otázku – světlejší pozadí a box
-        const overlay = this.add.rectangle(512, 384, 700, 380, 0xffffff, 0.25).setDepth(1000);
-        const box = this.add.rectangle(512, 384, 660, 300, 0xf5f5dc, 1) // světle béžová
-            .setDepth(1001)
-            .setStrokeStyle(4, 0x4caf50); // zelený rámeček
-
-        // Text otázky
-        const questionText = this.add.text(512, 250, question.question, {
+        // Vytvoř text otázky
+        const questionText = this.add.text(0, 0, question.question, {
             fontSize: '22px',
-            color: '#2e7d32', // tmavě zelená
+            color: '#2e7d32',
             fontFamily: 'Arial',
-            wordWrap: { width: 600 }
-        }).setOrigin(0.5).setDepth(1002);
+            wordWrap: { width: questionMaxWidth }
+        }).setDepth(1002);
 
-        // Hint tlačítko
-        const hintBtn = this.add.text(512, 310, '💡 Nápověda', {
+        // Výpočet šířky a výšky boxu
+        let boxWidth = questionText.width + padding * 2;
+        let boxHeight = questionText.height + padding * 2 + 60 + question.options.length * 44;
+
+        // Vytvoř pouze jeden box s vyšší neprůhledností
+        const box = this.add.rectangle(512, 384, boxWidth, boxHeight, 0xf5f5dc, 0.95)
+            .setDepth(1001)
+            .setStrokeStyle(3, 0x4caf50);
+
+        // Zarovnej otázku do boxu s paddingem
+        const boxX = 512 - boxWidth / 2;
+        const boxY = 384 - boxHeight / 2;
+        questionText.setPosition(boxX + padding, boxY + padding);
+
+        // Hint tlačítko pod otázku, také uvnitř boxu
+        let hintBtnY = boxY + padding + questionText.height + 24;
+        const hintBtn = this.add.text(boxX + boxWidth / 2, hintBtnY, '💡 Nápověda', {
             fontSize: '20px',
-            color: '#1565c0', // modrá
+            color: '#1565c0',
             fontFamily: 'Arial',
-            backgroundColor: '#e3f2fd', // světle modrá
+            backgroundColor: '#e3f2fd',
             padding: { left: 10, right: 10, top: 4, bottom: 4 }
         }).setOrigin(0.5).setDepth(1002).setInteractive();
 
-        // Hint text
+        // Možnosti odpovědí budou pod hint tlačítkem (nebo pod hint textem)
+        let optionsStartY = hintBtnY + 44;
         let hintText: Phaser.GameObjects.Text | null = null;
         let hintUsed = false;
+
+        // --- Hint logika ---
         hintBtn.on('pointerdown', () => {
             if (!hintUsed && question.hint) {
                 hintUsed = true;
-                hintText = this.add.text(512, 370, question.hint, {
+                hintText = this.add.text(boxX + boxWidth / 2, optionsStartY, question.hint, {
                     fontSize: '20px',
                     color: '#555',
                     fontFamily: 'Arial',
-                    wordWrap: { width: 500 }
+                    wordWrap: { width: questionMaxWidth - 80 }
                 }).setOrigin(0.5).setDepth(1002);
-                // Penalizace za hint
+
+                // Posuň tlačítka ještě níž podle výšky hintu
+                const hintHeight = hintText.height + 16;
+                optionButtons.forEach((btn, i) => {
+                    btn.setY(optionsStartY + hintHeight + i * 44);
+                });
+
+                // Zvětši box, pokud je potřeba
+                const newBoxHeight = questionText.height + padding * 2 + 60 + hintHeight + question.options.length * 44;
+                if (newBoxHeight > box.height) {
+                    box.setSize(boxWidth, newBoxHeight);
+                }
+
                 this.timeLeft -= 10;
-                //this.timerText.setText(`Čas: ${this.timeLeft}`);
                 hintBtn.setAlpha(0.5).disableInteractive();
             }
         });
 
-        // Možnosti odpovědí
+        // --- Možnosti odpovědí ---
         const optionButtons: Phaser.GameObjects.Text[] = [];
         question.options.forEach((opt, i) => {
-            const btn = this.add.text(512, 370 + i * 36, opt, {
+            const btn = this.add.text(boxX + boxWidth / 2, optionsStartY + i * 44, opt, {
                 fontSize: '20px',
                 color: '#222',
                 fontFamily: 'Arial',
@@ -426,14 +429,12 @@ export default class Game extends Phaser.Scene {
                     this.scoreboard.markCorrect();
                 }
                 // Zruš UI overlay
-                overlay.destroy();
                 box.destroy();
                 questionText.destroy();
                 hintBtn.destroy();
                 optionButtons.forEach(b => b.destroy());
                 if (hintText) hintText.destroy();
 
-                // Opět povol interaktivitu odpadků
                 this.odpadky.forEach(o => {
                     if (o.sprite) {
                         o.sprite.setInteractive();
@@ -442,6 +443,32 @@ export default class Game extends Phaser.Scene {
                 });
                 this.quizActive = false;
                 onComplete();
+
+                // --- NOVÁ LOGIKA: Kontrola, zda už nejsou žádné odpadky ---
+                const zbyva = this.odpadky.some(o => o.sprite !== null);
+                if (!zbyva) {
+                    this.timerEvent?.remove();
+                    this.pytel.setTexture('plnyPytel');
+                    const total = this.odpadky.length;
+                    const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
+                    const minCorrect = Math.ceil(total * 0.8);
+
+                    let dialogKey: string;
+                    if (this.timeLeft <= 0) {
+                        dialogKey = "finalFailTime";
+                    } else if (correct < minCorrect) {
+                        dialogKey = "finalFailScore";
+                    } else {
+                        dialogKey = "finalSuccess";
+                    }
+
+                    this.dialog.showDialog(dialogKey);
+                    this.showFinalScene?.();
+
+                    if ((window as any).DEBUG_MODE) {
+                        console.log('Konec hry: celkem odpadu:', total, 'správně:', correct);
+                    }
+                }
             });
 
             optionButtons.push(btn);
@@ -481,7 +508,29 @@ export default class Game extends Phaser.Scene {
     update(): void {
         //TODO: Herní logika (např. kontrola dokončení, časovač, animace)
 
+    }
 
+    // Přidáno: Metoda pro zobrazení závěrečné scény
+    private showFinalScene(): void {
+        // TODO: Implementace závěrečné scény (např. skóre, animace, restart)
+        // Prozatím zobrazíme jednoduchý text
+        const dialogContainer = this.dialog.getBubbleContainer();
+        if (dialogContainer) {
+            // Najdi text uvnitř kontejneru
+            const textObj = dialogContainer.list.find(obj => obj instanceof Phaser.GameObjects.Text) as Phaser.GameObjects.Text | undefined;
+            if (textObj) {
+                dialogContainer.setSize(textObj.width, textObj.height);
+            } else {
+                // fallback, pokud není text
+                dialogContainer.setSize(300, 100);
+            }
+            dialogContainer.setInteractive();
+            dialogContainer.once('pointerdown', () => {
+                this.dialog.hideDialog();
+                // 'success' is not defined in this scope, so you may want to handle this logic differently.
+                this.scene.restart();
+            });
+        }
     }
 }
 

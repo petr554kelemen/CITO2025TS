@@ -2,64 +2,71 @@
   {
     "type": "Zvykacka",
     "question": "Jak długo trwa rozkład gumy do żucia w przyrodzie?",
-    "options": ["1 miesiąc", "5 lat", "25 lat", "50 lat"],
-    "answer": 2,
-    "hint": "Gumy do żucia zawierają syntetyczne polimery, które rozkładają się bardzo powoli."
+    "options": ["5 lat", "50 lat", "1 miesiąc", "25 lat"],
+    "answer": 1,
+    "hint": "To nie jest 5 lat ani 1 miesiąc."
   },
   {
     "type": "Vajgl",
     "question": "Jak długo trwa rozkład niedopałka papierosa w przyrodzie?",
-    "options": ["1 miesiąc", "1 rok", "5 lat", "15 lat"],
-    "answer": 2,
-    "hint": "Filtr zawiera włókna celulozowe, które rozkładają się przez wiele lat."
+    "options": ["1 miesiąc", "5 lat", "1 rok", "15 lat"],
+    "answer": 3,
+    "hint": "To nie jest 1 miesiąc ani 1 rok."
   },
   {
     "type": "Plechovka",
     "question": "Jak długo trwa rozkład aluminiowej puszki w przyrodzie?",
-    "options": ["10 lat", "50 lat", "100 lat", "200 lat"],
+    "options": ["100 lat", "10 lat", "200 lat", "50 lat"],
     "answer": 3,
-    "hint": "Aluminium jest bardzo odporne na działanie czynników naturalnych."
+    "hint": "To nie jest 10 lat ani 200 lat."
   },
   {
     "type": "PET",
     "question": "Jak długo trwa rozkład butelki PET w przyrodzie?",
-    "options": ["10 lat", "50 lat", "200 lat", "450 lat"],
-    "answer": 3,
-    "hint": "Butelki PET to jedne z najbardziej trwałych śmieci."
+    "options": ["200 lat", "10 lat", "450 lat", "50 lat"],
+    "answer": 2,
+    "hint": "To nie jest 10 lat ani 50 lat."
   },
   {
     "type": "Ohryzek",
-    "question": "Jak długo trwa rozkład ogryzka jabłka w przyrodzie?",
-    "options": ["2 tygodnie", "2 miesiące", "1 rok", "5 lat"],
-    "answer": 0,
-    "hint": "Odpady organiczne rozkładają się szybciej niż plastik czy metal."
+    "question": "Jak długo trwa rozkład ogryzka w przyrodzie?",
+    "options": ["2 miesiące", "2 tygodnie", "5 lat", "1 rok"],
+    "answer": 1,
+    "hint": "To nie jest 5 lat ani 1 rok."
   },
   {
     "type": "Lahev",
     "question": "Jak długo trwa rozkład szklanej butelki w przyrodzie?",
-    "options": ["50 lat", "200 lat", "1000 lat", "praktycznie nigdy"],
-    "answer": 3,
-    "hint": "Szkło praktycznie się nie rozkłada w przyrodzie."
+    "options": ["praktycznie nigdy", "50 lat", "1000 lat", "200 lat"],
+    "answer": 0,
+    "hint": "To nie jest 50 lat ani 200 lat."
   },
   {
     "type": "Karton",
     "question": "Jak długo trwa rozkład kartonu po mleku w przyrodzie?",
-    "options": ["3 miesiące", "1 rok", "5 lat", "10 lat"],
-    "answer": 1,
-    "hint": "Karton jest pokryty plastikiem, co spowalnia jego rozkład."
+    "options": ["1 rok", "3 miesiące", "10 lat", "5 lat"],
+    "answer": 0,
+    "hint": "To nie jest 3 miesiące ani 10 lat."
   },
   {
     "type": "Baterie",
     "question": "Jak długo trwa rozkład baterii AAA w przyrodzie?",
-    "options": ["1 rok", "10 lat", "100 lat", "500 lat"],
-    "answer": 2,
-    "hint": "Baterie zawierają metale i chemikalia, które rozkładają się bardzo długo."
+    "options": ["1 rok", "10 lat", "500 lat", "100 lat"],
+    "answer": 3,
+    "hint": "To nie jest 1 rok ani 10 lat."
   },
   {
     "type": "Banan",
     "question": "Jak długo trwa rozkład skórki od banana w przyrodzie?",
-    "options": ["1 tydzień", "1 miesiąc", "6 miesięcy", "2 lata"],
+    "options": ["1 miesiąc", "2 lata", "6 miesięcy", "1 tydzień"],
+    "answer": 0,
+    "hint": "To nie jest 2 lata ani 6 miesięcy."
+  },
+  {
+    "type": "Kapesnik",
+    "question": "Jak długo trwa rozkład chusteczek papierowych w przyrodzie?",
+    "options": ["1 dzień", "1 tydzień", "1 miesiąc", "1 rok"],
     "answer": 1,
-    "hint": "Skórka od banana to odpad organiczny, ale rozkład zależy od warunków."
+    "hint": "To nie jest 1 dzień ani 1 rok."
   }
 ]

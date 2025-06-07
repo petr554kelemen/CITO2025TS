@@ -1,65 +1,72 @@
 [
   {
-    "type": "ChewingGum",
+    "type": "Zvykacka",
     "question": "How long does it take for chewing gum to decompose in nature?",
-    "options": ["1 month", "5 years", "25 years", "50 years"],
-    "answer": 2,
-    "hint": "Chewing gum contains synthetic polymers that decompose very slowly."
+    "options": ["5 years", "50 years", "1 month", "25 years"],
+    "answer": 1,
+    "hint": "It's not 5 years or 1 month."
   },
   {
-    "type": "CigaretteButt",
+    "type": "Vajgl",
     "question": "How long does it take for a cigarette butt to decompose in nature?",
-    "options": ["1 month", "1 year", "5 years", "15 years"],
-    "answer": 2,
-    "hint": "The filter contains cellulose fibers that take years to break down."
-  },
-  {
-    "type": "Can",
-    "question": "How long does it take for an aluminum can to decompose in nature?",
-    "options": ["10 years", "50 years", "100 years", "200 years"],
+    "options": ["1 month", "5 years", "1 year", "15 years"],
     "answer": 3,
-    "hint": "Aluminum is highly resistant to natural elements."
+    "hint": "It's not 1 month or 1 year."
   },
   {
-    "type": "PETBottle",
+    "type": "Plechovka",
+    "question": "How long does it take for an aluminium can to decompose in nature?",
+    "options": ["100 years", "10 years", "200 years", "50 years"],
+    "answer": 3,
+    "hint": "It's not 10 years or 200 years."
+  },
+  {
+    "type": "PET",
     "question": "How long does it take for a PET bottle to decompose in nature?",
-    "options": ["10 years", "50 years", "200 years", "450 years"],
-    "answer": 3,
-    "hint": "PET bottles are among the most durable types of litter."
-  },
-  {
-    "type": "AppleCore",
-    "question": "How long does it take for an apple core to decompose in nature?",
-    "options": ["2 weeks", "2 months", "1 year", "5 years"],
-    "answer": 0,
-    "hint": "Organic waste decomposes much faster than plastic or metal."
-  },
-  {
-    "type": "GlassBottle",
-    "question": "How long does it take for a glass bottle to decompose in nature?",
-    "options": ["50 years", "200 years", "1000 years", "practically never"],
-    "answer": 3,
-    "hint": "Glass hardly decomposes in nature at all."
-  },
-  {
-    "type": "MilkCarton",
-    "question": "How long does it take for a milk carton to decompose in nature?",
-    "options": ["3 months", "1 year", "5 years", "10 years"],
-    "answer": 1,
-    "hint": "Cartons are coated with plastic, which slows down decomposition."
-  },
-  {
-    "type": "Battery",
-    "question": "How long does it take for an AAA battery to decompose in nature?",
-    "options": ["1 year", "10 years", "100 years", "500 years"],
+    "options": ["200 years", "10 years", "450 years", "50 years"],
     "answer": 2,
-    "hint": "Batteries contain metals and chemicals that take a very long time to break down."
+    "hint": "It's not 10 years or 50 years."
   },
   {
-    "type": "BananaPeel",
-    "question": "How long does it take for a banana peel to decompose in nature?",
-    "options": ["1 week", "1 month", "6 months", "2 years"],
+    "type": "Ohryzek",
+    "question": "How long does it take for an apple core to decompose in nature?",
+    "options": ["2 months", "2 weeks", "5 years", "1 year"],
     "answer": 1,
-    "hint": "A banana peel is organic waste, but decomposition depends on conditions."
+    "hint": "It's not 5 years or 1 year."
+  },
+  {
+    "type": "Lahev",
+    "question": "How long does it take for a glass bottle to decompose in nature?",
+    "options": ["practically never", "50 years", "1000 years", "200 years"],
+    "answer": 0,
+    "hint": "It's not 50 years or 200 years."
+  },
+  {
+    "type": "Karton",
+    "question": "How long does it take for a milk carton to decompose in nature?",
+    "options": ["1 year", "3 months", "10 years", "5 years"],
+    "answer": 0,
+    "hint": "It's not 3 months or 10 years."
+  },
+  {
+    "type": "Baterie",
+    "question": "How long does it take for an AAA battery to decompose in nature?",
+    "options": ["1 year", "10 years", "500 years", "100 years"],
+    "answer": 3,
+    "hint": "It's not 1 year or 10 years."
+  },
+  {
+    "type": "Banan",
+    "question": "How long does it take for a banana peel to decompose in nature?",
+    "options": ["1 month", "2 years", "6 months", "1 week"],
+    "answer": 0,
+    "hint": "It's not 2 years or 6 months."
+  },
+  {
+    "type": "Kapesnik",
+    "question": "How long does it take for a paper tissue to decompose in nature?",
+    "options": ["1 day", "1 week", "1 month", "1 year"],
+    "answer": 1,
+    "hint": "It's not 1 day or 1 year."
   }
 ]

@@ -25,7 +25,7 @@ export default class Intro extends Phaser.Scene {
 	// data odpadků na scéně
 	odpadkyData: Odpadek[] = [
 		{ typ: "Banan", pozice: { x: 985, y: 555 }, scale: 1.4, status: 'default', sprite: null },
-		{ typ: "Baterka", pozice: { x: 880, y: 485 }, scale: 0.75, status: 'default', sprite: null },
+		{ typ: "Baterie", pozice: { x: 880, y: 485 }, scale: 0.75, status: 'default', sprite: null },
 		{ typ: "Lahev", pozice: { x: 535, y: 550 }, scale: 1.5, status: 'default', sprite: null },
 		{ typ: "Ohryzek", pozice: { x: 600, y: 720 }, scale: 0.65, angle: 70, status: 'default', sprite: null },
 		{ typ: "Kapesnik", pozice: { x: 490, y: 650 }, status: 'default', sprite: null },
@@ -33,7 +33,7 @@ export default class Intro extends Phaser.Scene {
 		{ typ: "Karton", pozice: { x: 670, y: 505 }, status: 'default', sprite: null },
 		{ typ: "Zvykacka", pozice: { x: 666, y: 566 }, status: 'default', sprite: null },
 		{ typ: "Plechovka", pozice: { x: 845, y: 565 }, angle: 14, status: 'default', sprite: null },
-		{ typ: "Petka", pozice: { x: 310, y: 630 }, scale: 1.5, angle: -44, status: 'default', sprite: null }
+		{ typ: "PET", pozice: { x: 310, y: 630 }, scale: 1.5, angle: -44, status: 'default', sprite: null }
 	];
 
 	// Další property (třeba sprite pro pytel, logo...)
@@ -345,15 +345,6 @@ export default class Intro extends Phaser.Scene {
 		});
 	}
 
-	private playMotylDuchDialog(): void {
-		// Po dokončení dialogu přejdeme na scénu s kvízem: Game.ts
-		this.scene.start('Game', {
-			odpadkyData: this.odpadkyData, // předáme pole odpadků
-			pytel: this.pytel,             // případně předat info o pytli (nebo jen status)
-			language: this.lang,           // jazyk vybraný v MainMenu
-			texts: this.texts              // texty pro dialogy/kvíz
-		});
-	}
 
 	// Intro.ts - metoda update()
 	update(): void {

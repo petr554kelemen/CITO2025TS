@@ -42,17 +42,13 @@
                 "key": "flag_pl"
             },
             {
-                "url": {
-                    "IMG": "assets/freepik_forest_01.jpg"
-                },
-                "type": "texture",
+                "url": "assets/freepik_forest_01.jpg",
+                "type": "image",
                 "key": "freepik_forest_01"
             },
             {
-                "url": {
-                    "IMG": "assets/freepik_forest_02.png"
-                },
-                "type": "texture",
+                "url": "assets/freepik_forest_02.png",
+                "type": "image",
                 "key": "freepik_forest_02"
             },
             {
@@ -119,6 +115,11 @@
                 "url": "assets/Images/Obr01.png",
                 "type": "image",
                 "key": "Zvykacka"
+            },
+            {
+                "url": "assets/Images/Pytel_ico.png",
+                "type": "image",
+                "key": "miniBag"
             }
         ]
     },

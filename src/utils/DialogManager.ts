@@ -227,10 +227,46 @@ export default class DialogManager {
       );
 
     } else {
-      // 10) Bez cílového sprite – klasická bublina dole uprostřed obrazovky
+      // 10) Bez cílového sprite – klasická bublina dole uprostřed obrazovky, ale bez šipky
       const cam = this.scene.cameras.main;
+
+      // Vytvoříme nový styl pro větší text
+      const bigStyle: Phaser.Types.GameObjects.Text.TextStyle = {
+        fontFamily: 'Arial',
+        fontSize: '28px', // větší text
+        color: '#000000',
+        wordWrap: { width: cam.width - 120 } // širší bublina
+      };
+
+      // Odstraníme původní textový objekt a vytvoříme nový s větším stylem
+      content.destroy();
+      const bigContent = this.scene.add.text(0, 0, text, bigStyle);
+
+      const padding = 16;
+      const bubbleWidth = bigContent.width + padding * 2;
+      const bubbleHeight = bigContent.height + padding * 2;
+
+      // Vytvoř nový Graphics objekt pro pozadí bubliny
+      const bigBg = this.scene.add.graphics();
+      bigBg.fillStyle(0xffffff, 1);
+      bigBg.fillRoundedRect(
+        0, 0,
+        bubbleWidth,
+        bubbleHeight,
+        12 // větší zaoblení
+      );
+
+      bigContent.setPosition(
+        padding,
+        padding
+      );
+
+      // Odeber starý obsah a přidej nový text a nové pozadí
+      this.bubbleContainer.removeAll(true);
+      this.bubbleContainer.add([bigBg, bigContent]);
+
       this.bubbleContainer.x = cam.width / 2 - bubbleWidth / 2;
-      this.bubbleContainer.y = cam.height - bubbleHeight - 20;
+      this.bubbleContainer.y = cam.height - bubbleHeight - 32;
       this.followTarget = undefined;
     }
   }

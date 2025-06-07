@@ -2,64 +2,71 @@
   {
     "type": "Zvykacka",
     "question": "Jak dlouho trvá, než se v přírodě rozloží žvýkačka?",
-    "options": ["1 měsíc", "5 let", "25 let", "50 let"],
-    "answer": 2,
-    "hint": "Žvýkačky obsahují syntetické polymery, které se rozkládají velmi pomalu."
+    "options": ["5 let", "50 let", "1 měsíc", "25 let"],
+    "answer": 1,
+    "hint": "Není to 5 let ani 1 měsíc."
   },
   {
     "type": "Vajgl",
     "question": "Jak dlouho trvá rozklad nedopalku cigarety (vajglu) v přírodě?",
-    "options": ["1 měsíc", "1 rok", "5 let", "15 let"],
-    "answer": 2,
-    "hint": "Filtr obsahuje celulózová vlákna, která se rozkládají několik let."
+    "options": ["1 měsíc", "5 let", "1 rok", "15 let"],
+    "answer": 3,
+    "hint": "Není to 1 měsíc ani 1 rok."
   },
   {
     "type": "Plechovka",
     "question": "Jak dlouho trvá, než se v přírodě rozloží hliníková plechovka?",
-    "options": ["10 let", "50 let", "100 let", "200 let"],
+    "options": ["100 let", "10 let", "200 let", "50 let"],
     "answer": 3,
-    "hint": "Hliník je velmi odolný vůči přírodním vlivům."
+    "hint": "Není to 10 let ani 200 let."
   },
   {
     "type": "PET",
     "question": "Jak dlouho trvá rozklad PET lahve v přírodě?",
-    "options": ["10 let", "50 let", "200 let", "450 let"],
-    "answer": 3,
-    "hint": "PET lahve jsou jedním z nejtrvanlivějších odpadků."
+    "options": ["200 let", "10 let", "450 let", "50 let"],
+    "answer": 2,
+    "hint": "Není to 10 let ani 50 let."
   },
   {
     "type": "Ohryzek",
     "question": "Jak dlouho trvá rozklad ohryzku v přírodě?",
-    "options": ["2 týdny", "2 měsíce", "1 rok", "5 let"],
-    "answer": 0,
-    "hint": "Organický odpad se rozkládá rychleji než plast nebo kov."
+    "options": ["2 měsíce", "2 týdny", "5 let", "1 rok"],
+    "answer": 1,
+    "hint": "Není to 5 let ani 1 rok."
   },
   {
     "type": "Lahev",
     "question": "Jak dlouho trvá, než se v přírodě rozloží skleněná lahev?",
-    "options": ["50 let", "200 let", "1000 let", "prakticky nikdy"],
-    "answer": 3,
-    "hint": "Sklo se v přírodě téměř nerozkládá."
+    "options": ["prakticky nikdy", "50 let", "1000 let", "200 let"],
+    "answer": 0,
+    "hint": "Není to 50 let ani 200 let."
   },
   {
     "type": "Karton",
     "question": "Jak dlouho trvá rozklad kartonu od mléka v přírodě?",
-    "options": ["3 měsíce", "1 rok", "5 let", "10 let"],
-    "answer": 1,
-    "hint": "Karton je potažen plastem, což rozklad zpomaluje."
+    "options": ["1 rok", "3 měsíce", "10 let", "5 let"],
+    "answer": 0,
+    "hint": "Není to 3 měsíce ani 10 let."
   },
   {
     "type": "Baterie",
     "question": "Jak dlouho trvá rozklad baterie AAA v přírodě?",
-    "options": ["1 rok", "10 let", "100 let", "500 let"],
-    "answer": 2,
-    "hint": "Baterie obsahují kovy a chemikálie, které se rozkládají velmi dlouho."
+    "options": ["1 rok", "10 let", "500 let", "100 let"],
+    "answer": 3,
+    "hint": "Není to 1 rok ani 10 let."
   },
   {
     "type": "Banan",
     "question": "Jak dlouho trvá rozklad banánové slupky v přírodě?",
-    "options": ["1 týden", "1 měsíc", "6 měsíců", "2 roky"],
+    "options": ["1 měsíc", "2 roky", "6 měsíců", "1 týden"],
+    "answer": 0,
+    "hint": "Není to 2 roky ani 6 měsíců."
+  },
+  {
+    "type": "Kapesnik",
+    "question": "Jak dlouho trvá rozklad papírových kapesníků v přírodě?",
+    "options": ["1 den", "1 týden", "1 měsíc", "1 rok"],
     "answer": 1,
-    "hint": "Banánová slupka je organický odpad, ale rozklad závisí na podmínkách."
+    "hint": "Není to 1 den ani 1 rok."
   }
 ]
