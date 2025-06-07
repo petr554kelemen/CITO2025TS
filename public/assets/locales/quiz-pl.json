@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "type": "Zvykacka",
+    "question": "Jak długo trwa rozkład gumy do żucia w przyrodzie?",
+    "options": ["1 miesiąc", "5 lat", "25 lat", "50 lat"],
+    "answer": 2,
+    "hint": "Gumy do żucia zawierają syntetyczne polimery, które rozkładają się bardzo powoli."
+  },
+  {
+    "type": "Vajgl",
+    "question": "Jak długo trwa rozkład niedopałka papierosa w przyrodzie?",
+    "options": ["1 miesiąc", "1 rok", "5 lat", "15 lat"],
+    "answer": 2,
+    "hint": "Filtr zawiera włókna celulozowe, które rozkładają się przez wiele lat."
+  },
+  {
+    "type": "Plechovka",
+    "question": "Jak długo trwa rozkład aluminiowej puszki w przyrodzie?",
+    "options": ["10 lat", "50 lat", "100 lat", "200 lat"],
+    "answer": 3,
+    "hint": "Aluminium jest bardzo odporne na działanie czynników naturalnych."
+  },
+  {
+    "type": "PET",
+    "question": "Jak długo trwa rozkład butelki PET w przyrodzie?",
+    "options": ["10 lat", "50 lat", "200 lat", "450 lat"],
+    "answer": 3,
+    "hint": "Butelki PET to jedne z najbardziej trwałych śmieci."
+  },
+  {
+    "type": "Ohryzek",
+    "question": "Jak długo trwa rozkład ogryzka jabłka w przyrodzie?",
+    "options": ["2 tygodnie", "2 miesiące", "1 rok", "5 lat"],
+    "answer": 0,
+    "hint": "Odpady organiczne rozkładają się szybciej niż plastik czy metal."
+  },
+  {
+    "type": "Lahev",
+    "question": "Jak długo trwa rozkład szklanej butelki w przyrodzie?",
+    "options": ["50 lat", "200 lat", "1000 lat", "praktycznie nigdy"],
+    "answer": 3,
+    "hint": "Szkło praktycznie się nie rozkłada w przyrodzie."
+  },
+  {
+    "type": "Karton",
+    "question": "Jak długo trwa rozkład kartonu po mleku w przyrodzie?",
+    "options": ["3 miesiące", "1 rok", "5 lat", "10 lat"],
+    "answer": 1,
+    "hint": "Karton jest pokryty plastikiem, co spowalnia jego rozkład."
+  },
+  {
+    "type": "Baterie",
+    "question": "Jak długo trwa rozkład baterii AAA w przyrodzie?",
+    "options": ["1 rok", "10 lat", "100 lat", "500 lat"],
+    "answer": 2,
+    "hint": "Baterie zawierają metale i chemikalia, które rozkładają się bardzo długo."
+  },
+  {
+    "type": "Banan",
+    "question": "Jak długo trwa rozkład skórki od banana w przyrodzie?",
+    "options": ["1 tydzień", "1 miesiąc", "6 miesięcy", "2 lata"],
+    "answer": 1,
+    "hint": "Skórka od banana to odpad organiczny, ale rozkład zależy od warunków."
+  }
+]

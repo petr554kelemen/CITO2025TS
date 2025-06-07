@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import DialogManager from "../../utils/DialogManager";
 import { Quiz } from "../../utils/quiz";
+import Scoreboard from "../../utils/scoreboard";
 
 // Extend the Window interface to include DEBUG_MODE
 declare global {
@@ -39,14 +40,25 @@ export default class Game extends Phaser.Scene {
     private pytel!: Phaser.GameObjects.Image;
     private monina!: Phaser.GameObjects.Sprite;
     private quiz!: Quiz;
-    private scoreValue: number = 0;
     private timeLeft: number = 120; // např. 2 minuty
     private timerText!: Phaser.GameObjects.Text;
-    private scoreText!: Phaser.GameObjects.Text;
     private timerEvent!: Phaser.Time.TimerEvent;
 
     private moninaSequence: { key: string; obj: Phaser.GameObjects.Image }[] = [];
     private dialog!: DialogManager;
+
+    private quizActive: boolean = false;
+    private canPlay: boolean = false;
+
+
+    //private odpadyIcons: Phaser.GameObjects.Sprite[] = [];
+    private odpadkyGroup!: Phaser.GameObjects.Group;
+
+    private bagIcons: Phaser.GameObjects.Image[] = [];
+
+    private scoreboard!: Scoreboard;
+
+    //score: number = 0;
 
     constructor() {
         super("Game");
@@ -81,11 +93,14 @@ export default class Game extends Phaser.Scene {
         this.pytel = this.add.image(830, 690, 'prazdnyPytel').setInteractive();
         this.pytel.setOrigin(0.5);
         this.pytel.setScale(0.45);
-        this.pytel.setAlpha(0.85);
-
         // Pak odpadky (budou nad pytlem)
         this.quiz = new Quiz(this.language);
-        await this.quiz.loadQuestions(this.odpadky.length);
+        await this.quiz.loadQuestions();
+
+        // Inicializace scoreboardu
+        this.scoreboard = new Scoreboard(this, this.odpadky.length, 0);
+
+        this.createOdpadky();
 
         this.createOdpadky();
 
@@ -107,28 +122,40 @@ export default class Game extends Phaser.Scene {
 
                     const showMoninaDialogs = async () => {
                         for (const item of this.moninaSequence) {
+                            // Pokud Monina už není viditelná, ukonči sekvenci a skryj dialog
+                            if (!this.monina.visible) {
+                                this.dialog.hideDialog?.();
+                                break;
+                            }
                             await this.dialog.showDialogAbove(item.key, this.monina, -60);
-                            // Delší prodleva na přečtení
                             await new Promise(resolve => this.time.delayedCall(2200, resolve));
-                            // Skryj dialog po každé větě (nebo jen po poslední, podle potřeby)
                             this.dialog.hideDialog?.();
                         }
-                        // Po posledním dialogu nech Moninu zmizet
-                        this.tweens.add({
-                            targets: this.monina,
-                            alpha: 0,
-                            duration: 800,
-                            ease: 'Power2',
-                            onComplete: () => {
-                                this.monina.visible = false;
-                                // Skryj dialog i zde pro jistotu
-                                this.dialog.hideDialog?.();
-                                // Po 2-3 sekundách spusť kvíz nebo další logiku
-                                this.time.delayedCall(2000, () => {
-                                    // this.startQuiz();
-                                });
-                            }
-                        });
+                        // Po posledním dialogu nech Moninu zmizet (pokud ještě nezmizela)
+                        if (this.monina.visible) {
+                            this.tweens.add({
+                                targets: this.monina,
+                                alpha: 0,
+                                duration: 800,
+                                ease: 'Power2',
+                                onComplete: () => {
+                                    this.monina.visible = false;
+                                    this.dialog.hideDialog?.();
+                                    this.time.delayedCall(200, () => {
+                                        this.canPlay = true;
+                                        // Povolit drag & drop až teď:
+                                        this.odpadky.forEach(odpadek => {
+                                            if (odpadek.sprite) {
+                                                this.input.setDraggable(odpadek.sprite, true);
+                                                if ((window as any).DEBUG_MODE) {
+                                                    console.log('setDraggable TRUE', odpadek.sprite);
+                                                }
+                                            }
+                                        });
+                                    });
+                                }
+                            });
+                        }
                     };
                     showMoninaDialogs();
                 }
@@ -144,16 +171,37 @@ export default class Game extends Phaser.Scene {
             // TODO: 8. Po sebrání všech odpadků nebo vypršení času zobrazit skóre a výsledek
             // TODO: 9. Po dokončení vyměnit pytel za plný
 
-            this.input.once('pointerdown', () => {
-                //this.scene.start('GameOver');
-            });
+            const skipMonina = () => {
+                if (this.monina && this.monina.visible) {
+                    // Zobraz poslední monolog Moniny
+                    this.dialog.showDialogAbove('monina-09', this.monina, -60).then(() => {
+                        // Po zobrazení posledního dialogu Moninu animuj pryč
+                        this.tweens.add({
+                            targets: this.monina,
+                            alpha: 0,
+                            duration: 600,
+                            onComplete: () => {
+                                this.monina.visible = false;
+                                this.dialog.hideDialog?.();
+                                this.canPlay = true;
+                                this.input.off('pointerdown', skipMonina);
+                            }
+                        });
+                    });
+                }
+            };
+            this.input.on('pointerdown', skipMonina);
 
             this.score();
         }
 
         // Na začátku scény
         this.quiz = new Quiz(this.language);
-        await this.quiz.loadQuestions(this.odpadky.length);
+        await this.quiz.loadQuestions();
+
+        const test = this.add.sprite(400, 400, this.odpadky[0].typ).setInteractive();
+        this.input.setDraggable(test, true);
+        test.on('pointerdown', () => console.log('test sprite klik'));
     }
 
     private setupMonina(): void {
@@ -175,21 +223,18 @@ export default class Game extends Phaser.Scene {
     }
 
     private score(): void {
-        // Zobraz skóre
-        this.scoreText = this.add.text(32, 32, `Skóre: ${this.scoreValue}`, {
-            fontSize: '28px',
-            color: '#222',
-            fontFamily: 'Arial'
-        }).setScrollFactor(0);
-
-        // Zobraz časovač
+        for (let i = 0; i < this.odpadky.length; i++) {
+            const icon = this.add.image(32 + i * 36, 40, 'miniBag')
+                .setScale(0.32)
+                .setAlpha(0.15)
+                .setScrollFactor(0);
+            this.bagIcons.push(icon);
+        }
         this.timerText = this.add.text(32, 70, `Čas: ${this.timeLeft}`, {
             fontSize: '28px',
             color: '#222',
             fontFamily: 'Arial'
         }).setScrollFactor(0);
-
-        // Časovač nespouštěj zde!
     }
 
     // private quiz(): void {
@@ -198,7 +243,7 @@ export default class Game extends Phaser.Scene {
 
     private createOdpadky(): void {
         // Vytvoř skupinu pro odpadky
-        const odpadkyGroup = this.add.group();
+        this.odpadkyGroup = this.add.group();
 
         this.odpadky.forEach(odpadek => {
             odpadek.sprite = this.add.sprite(
@@ -209,66 +254,97 @@ export default class Game extends Phaser.Scene {
             if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale);
             if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
             odpadek.sprite.setInteractive();
-            this.input.setDraggable(odpadek.sprite);
+            // this.input.setDraggable(odpadek.sprite);  // ZAKOMENTUJ nebo SMAŽ!
 
-            odpadkyGroup.add(odpadek.sprite);
+            if (odpadek.sprite) {
+                this.odpadkyGroup.add(odpadek.sprite);
+            }
         });
 
         // Drag & drop logika
         this.input.on(
             'drag',
             (
-                pointer: Phaser.Input.Pointer,
-                gameObject: Phaser.GameObjects.Sprite,
+                _gameObject: Phaser.GameObjects.Sprite,
                 dragX: number,
                 dragY: number
             ) => {
-                gameObject.x = dragX;
-                gameObject.y = dragY;
+                _gameObject.x = dragX;
+                _gameObject.y = dragY;
             }
         );
 
         let timerStarted = false;
 
-        this.input.on('dragstart', (pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.Sprite) => {
-            // Zeslab všechny odpadky kromě právě taženého
-            odpadkyGroup.getChildren().forEach((obj: any) => {
-                obj.alpha = obj === gameObject ? 1 : 0.5;
-            });
-            // Spusť časovač pouze při prvním drag
-            if (!timerStarted) {
-                this.startTimer();
-                timerStarted = true;
-            }
-        });
+        interface DragStartPointer extends Phaser.Input.Pointer {
+            event: MouseEvent | TouchEvent;
+        }
 
-        this.input.on('dragend', (pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.Sprite) => {
+        interface DragStartGameObject extends Phaser.GameObjects.Sprite {}
+
+        this.input.on(
+            'dragstart',
+            (
+                pointer: DragStartPointer,
+                gameObject: DragStartGameObject
+            ) => {
+                if (!this.canPlay || this.quizActive) {
+                    pointer.event.preventDefault();
+                    return;
+                }
+                // Zeslab všechny odpadky kromě právě taženého
+                this.odpadkyGroup.getChildren().forEach(obj => {
+                    (obj as Phaser.GameObjects.Sprite).alpha = obj === gameObject ? 1 : 0.5;
+                });
+                // Spusť časovač pouze při prvním drag
+                if (!timerStarted) {
+                    this.startTimer();
+                    timerStarted = true;
+                    // Pokud je Monina stále na scéně, odstraníme ji
+                    if (this.monina && this.monina.visible) {
+                        this.tweens.add({
+                            targets: this.monina,
+                            alpha: 0,
+                            duration: 500,
+                            onComplete: () => {
+                                this.monina.visible = false;
+                                this.dialog?.hideDialog?.();
+                            }
+                        });
+                    }
+                }
+            }
+        );
+
+        this.input.on('dragend', (_: unknown, gameObject: Phaser.GameObjects.Sprite) => {
             // Kontrola, zda byl odpadek "odložen" do pytle
             if (Phaser.Geom.Intersects.RectangleToRectangle(
                 gameObject.getBounds(), this.pytel.getBounds()
             )) {
-                // Najdi odpadek podle sprite
                 const odpadek = this.odpadky.find(o => o.sprite === gameObject);
+                if ((window as any).DEBUG_MODE) {
+                    console.log('dragend: odpadek nalezen?', odpadek);
+                }
                 if (odpadek) {
                     // Skryj nebo deaktivuj odpadek
                     if (odpadek.sprite) {
                         odpadek.sprite.visible = false;
                     }
                     odpadek.status = 'in_bag';
+
+                    this.odpadkyGroup.setAlpha(0.3);
+
+                    if ((window as any).DEBUG_MODE) {
+                        console.log('Volám quizForOdpadek');
+                    }
+                    this.quizForOdpadek(odpadek, () => {
+                        this.odpadkyGroup.setAlpha(1);
+                    });
                 }
-
-                // Zeslab celou group odpadků (nelze brát další)
-                odpadkyGroup.setAlpha(0.3);
-
-                // Spusť kvízovou otázku k tomuto odpadku
-                this.quizForOdpadek(odpadek, () => {
-                    // Po zodpovězení otázky opět povol group
-                    odpadkyGroup.setAlpha(1);
-                });
             } else {
                 // Pokud nebyl odložen do pytle, obnov alpha všem (vše zůstává aktivní)
-                odpadkyGroup.getChildren().forEach((obj: any) => {
-                    obj.alpha = 1;
+                this.odpadkyGroup.getChildren().forEach(obj => {
+                    (obj as Phaser.GameObjects.Sprite).alpha = 1;
                 });
             }
         });
@@ -277,39 +353,51 @@ export default class Game extends Phaser.Scene {
     // Přidej metodu pro spuštění kvízu k odpadku
     private quizForOdpadek(odpadek: Odpadek | undefined, onComplete: () => void) {
         if (!odpadek) return;
+        if (this.quizActive) return;
 
-        // Získání otázky podle pořadí odpadku
-        const index = this.odpadky.indexOf(odpadek);
-        const question = this.quiz.getQuestion(index);
+        this.quizActive = true;
+
+        // Zablokuj všechny odpadky
+        this.odpadky.forEach(o => o.sprite?.disableInteractive());
+
+        const question = this.quiz.getQuestionForType(odpadek.typ);
         if (!question) {
+            this.quizActive = false;
+            // Opět povol interaktivitu
+            this.odpadky.forEach(o => o.sprite?.setInteractive());
             onComplete();
             return;
         }
 
-        console.log('Spouštím kvíz pro odpadek:', odpadek, 'Otázka:', question);
+        if ((window as any).DEBUG_MODE) {
+            console.log('Spouštím kvíz pro odpadek:', odpadek, 'Otázka:', question);
+        }
 
-        // Overlay pro otázku
-        const overlay = this.add.rectangle(512, 384, 600, 340, 0x000000, 0.7).setDepth(1000);
-        const box = this.add.rectangle(512, 384, 560, 260, 0xffffff, 1).setDepth(1001).setStrokeStyle(2, 0x222222);
+        // Overlay pro otázku – světlejší pozadí a box
+        const overlay = this.add.rectangle(512, 384, 700, 380, 0xffffff, 0.25).setDepth(1000);
+        const box = this.add.rectangle(512, 384, 660, 300, 0xf5f5dc, 1) // světle béžová
+    .setDepth(1001)
+    .setStrokeStyle(4, 0x4caf50); // zelený rámeček
 
         // Text otázky
-        const questionText = this.add.text(512, 270, question.question, {
-            fontSize: '26px',
-            color: '#222',
+        const questionText = this.add.text(512, 250, question.question, {
+            fontSize: '22px',
+            color: '#2e7d32', // tmavě zelená
             fontFamily: 'Arial',
-            wordWrap: { width: 520 }
+            wordWrap: { width: 600 }
         }).setOrigin(0.5).setDepth(1002);
 
         // Hint tlačítko
-        let hintText: Phaser.GameObjects.Text | null = null;
-        const hintBtn = this.add.text(512, 330, '💡 Nápověda', {
-            fontSize: '22px',
-            color: '#0077cc',
+        const hintBtn = this.add.text(512, 310, '💡 Nápověda', {
+            fontSize: '20px',
+            color: '#1565c0', // modrá
             fontFamily: 'Arial',
-            backgroundColor: '#e0e0e0',
+            backgroundColor: '#e3f2fd', // světle modrá
             padding: { left: 10, right: 10, top: 4, bottom: 4 }
         }).setOrigin(0.5).setDepth(1002).setInteractive();
 
+        // Hint text
+        let hintText: Phaser.GameObjects.Text | null = null;
         let hintUsed = false;
         hintBtn.on('pointerdown', () => {
             if (!hintUsed && question.hint) {
@@ -330,8 +418,8 @@ export default class Game extends Phaser.Scene {
         // Možnosti odpovědí
         const optionButtons: Phaser.GameObjects.Text[] = [];
         question.options.forEach((opt, i) => {
-            const btn = this.add.text(512, 410 + i * 40, opt, {
-                fontSize: '24px',
+            const btn = this.add.text(512, 370 + i * 36, opt, {
+                fontSize: '20px',
                 color: '#222',
                 fontFamily: 'Arial',
                 backgroundColor: '#e0e0e0',
@@ -342,8 +430,7 @@ export default class Game extends Phaser.Scene {
                 // Vyhodnocení odpovědi
                 const correct = i === question.answer;
                 if (correct) {
-                    this.scoreValue += 10;
-                    this.scoreText.setText(`Skóre: ${this.scoreValue}`);
+                    this.scoreboard.markCorrect();
                 }
                 // Zruš UI overlay
                 overlay.destroy();
@@ -353,21 +440,30 @@ export default class Game extends Phaser.Scene {
                 optionButtons.forEach(b => b.destroy());
                 if (hintText) hintText.destroy();
 
-                // Pokračuj ve hře
+                // Opět povol interaktivitu odpadků
+                this.odpadky.forEach(o => {
+                    if (o.sprite) {
+                        o.sprite.setInteractive();
+                        this.input.setDraggable(o.sprite, true);
+                    }
+                });
+                this.quizActive = false;
                 onComplete();
             });
 
             optionButtons.push(btn);
         });
+
+        //console.log('Kvíz overlay by se měl zobrazit právě teď', question);
     }
 
     private startTimer(): void {
-        if (this.timerEvent) return; // už běží
+        if (this.timerEvent) return;
         this.timerEvent = this.time.addEvent({
             delay: 1000,
             callback: () => {
                 this.timeLeft--;
-                this.timerText.setText(`Čas: ${this.timeLeft}`);
+                this.scoreboard.updateTime(this.timeLeft);
                 if (this.timeLeft <= 0) {
                     this.timerEvent.remove();
                     // TODO: Konec hry, vyhodnocení skóre

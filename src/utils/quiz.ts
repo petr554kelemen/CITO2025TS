@@ -1,8 +1,9 @@
 type QuizQuestion = {
+    type: string;
     question: string;
     options: string[];
-    answer: number; // index správné odpovědi
-    hint?: string;  // volitelný hint
+    answer: number;
+    hint?: string;
 };
 
 export class Quiz {
@@ -13,37 +14,22 @@ export class Quiz {
         this.language = language;
     }
 
-    async loadQuestions(count: number) {
-        let questionsData;
+    async loadQuestions() {
+        let questionsArray = [];
         try {
-            questionsData = await import(`../../public/assets/locales/quiz-${this.language}.json`);
+            const res = await fetch(`assets/locales/quiz-${this.language}.json`);
+            questionsArray = await res.json();
         } catch (e) {
-            questionsData = await import(`../../public/assets/locales/quiz-cs.json`);
+            const res = await fetch('assets/locales/quiz-cs.json');
+            questionsArray = await res.json();
         }
-        // Ošetři, zda je data pole nebo objekt s .default
-        const questionsArray = Array.isArray(questionsData.default)
-            ? questionsData.default
-            : Array.isArray(questionsData)
-                ? questionsData
-                : [];
-        if (!questionsArray.length) {
+        if (!Array.isArray(questionsArray) || !questionsArray.length) {
             throw new Error("Quiz: Nenalezeny žádné otázky!");
         }
-        this.questions = this.shuffle(questionsArray).slice(0, count);
+        this.questions = questionsArray;
     }
 
-    getQuestion(index: number): QuizQuestion | null {
-        return this.questions[index] || null;
-    }
-
-    get length(): number {
-        return this.questions.length;
-    }
-
-    private shuffle(array: any[]) {
-        return array
-            .map((a) => [Math.random(), a] as [number, any])
-            .sort((a, b) => a[0] - b[0])
-            .map((a) => a[1]);
+    getQuestionForType(type: string): QuizQuestion | null {
+        return this.questions.find(q => q.type === type) || null;
     }
 }
