@@ -26,8 +26,6 @@ type Odpadek = {
     sprite: Phaser.GameObjects.Sprite | null;
 };
 
-
-
 export default class Game extends Phaser.Scene {
     cam!: Phaser.Cameras.Scene2D.Camera;
     language: 'cs' | 'en' | 'pl';
@@ -41,7 +39,6 @@ export default class Game extends Phaser.Scene {
     private monina!: Phaser.GameObjects.Sprite;
     private quiz!: Quiz;
     private timeLeft: number = 120; // např. 2 minuty
-    private timerText!: Phaser.GameObjects.Text;
     private timerEvent!: Phaser.Time.TimerEvent;
 
     private moninaSequence: { key: string; obj: Phaser.GameObjects.Image }[] = [];
@@ -54,7 +51,7 @@ export default class Game extends Phaser.Scene {
     //private odpadyIcons: Phaser.GameObjects.Sprite[] = [];
     private odpadkyGroup!: Phaser.GameObjects.Group;
 
-    private bagIcons: Phaser.GameObjects.Image[] = [];
+    //private bagIcons: Phaser.GameObjects.Image[] = [];
 
     private scoreboard!: Scoreboard;
 
@@ -93,20 +90,16 @@ export default class Game extends Phaser.Scene {
         this.pytel = this.add.image(830, 690, 'prazdnyPytel').setInteractive();
         this.pytel.setOrigin(0.5);
         this.pytel.setScale(0.45);
-        // Pak odpadky (budou nad pytlem)
-        this.quiz = new Quiz(this.language);
-        await this.quiz.loadQuestions();
+
 
         // Inicializace scoreboardu
         this.scoreboard = new Scoreboard(this, this.odpadky.length, 0);
 
         this.createOdpadky();
 
-        this.createOdpadky();
-
         this.setupMonina();
         this.monina = this.add.sprite(200, 540, "monina", 0); // frame 0
-        
+
         if (this.monina) {
             this.monina.alpha = 0.5; // Nastavení průhlednosti Moniny
             this.monina.visible = true;
@@ -142,19 +135,13 @@ export default class Game extends Phaser.Scene {
                                     this.monina.visible = false;
                                     this.dialog.hideDialog?.();
                                     this.time.delayedCall(200, () => {
-                                        this.canPlay = true;
-                                        // Povolit drag & drop až teď:
-                                        this.odpadky.forEach(odpadek => {
-                                            if (odpadek.sprite) {
-                                                this.input.setDraggable(odpadek.sprite, true);
-                                                if ((window as any).DEBUG_MODE) {
-                                                    console.log('setDraggable TRUE', odpadek.sprite);
-                                                }
-                                            }
-                                        });
+                                        this.enableGamePlay();
                                     });
                                 }
                             });
+                        } else {
+                            // Pokud Monina už není viditelná (přeskočeno), povol hru rovnou
+                            this.enableGamePlay();
                         }
                     };
                     showMoninaDialogs();
@@ -192,16 +179,16 @@ export default class Game extends Phaser.Scene {
             };
             this.input.on('pointerdown', skipMonina);
 
-            this.score();
+            //this.score();
         }
 
         // Na začátku scény
         this.quiz = new Quiz(this.language);
         await this.quiz.loadQuestions();
 
-        const test = this.add.sprite(400, 400, this.odpadky[0].typ).setInteractive();
+        /* const test = this.add.sprite(400, 400, this.odpadky[0].typ).setInteractive();
         this.input.setDraggable(test, true);
-        test.on('pointerdown', () => console.log('test sprite klik'));
+        test.on('pointerdown', () => console.log('test sprite klik')); */
     }
 
     private setupMonina(): void {
@@ -218,11 +205,11 @@ export default class Game extends Phaser.Scene {
             { key: 'monina-06', obj: this.monina },
             { key: 'monina-07', obj: this.monina },
             { key: 'monina-08', obj: this.monina },
-            { key: 'monina-09', obj: this.monina }            
+            { key: 'monina-09', obj: this.monina }
         ];
     }
 
-    private score(): void {
+    /* private score(): void {
         for (let i = 0; i < this.odpadky.length; i++) {
             const icon = this.add.image(32 + i * 36, 40, 'miniBag')
                 .setScale(0.32)
@@ -235,7 +222,7 @@ export default class Game extends Phaser.Scene {
             color: '#222',
             fontFamily: 'Arial'
         }).setScrollFactor(0);
-    }
+    } */
 
     // private quiz(): void {
     //     //TODO: Vytvoreni quizu v ../../utils/quiz.ts
@@ -265,12 +252,16 @@ export default class Game extends Phaser.Scene {
         this.input.on(
             'drag',
             (
-                _gameObject: Phaser.GameObjects.Sprite,
+                pointer: Phaser.Input.Pointer,
+                gameObject: Phaser.GameObjects.Sprite,
                 dragX: number,
                 dragY: number
             ) => {
-                _gameObject.x = dragX;
-                _gameObject.y = dragY;
+                if ((window as any).DEBUG_MODE) {
+                    console.log('drag', gameObject, dragX, dragY);
+                }
+                gameObject.x = dragX;
+                gameObject.y = dragY;
             }
         );
 
@@ -280,7 +271,7 @@ export default class Game extends Phaser.Scene {
             event: MouseEvent | TouchEvent;
         }
 
-        interface DragStartGameObject extends Phaser.GameObjects.Sprite {}
+        interface DragStartGameObject extends Phaser.GameObjects.Sprite { }
 
         this.input.on(
             'dragstart',
@@ -316,7 +307,7 @@ export default class Game extends Phaser.Scene {
             }
         );
 
-        this.input.on('dragend', (_: unknown, gameObject: Phaser.GameObjects.Sprite) => {
+        this.input.on('dragend', ( _: unknown, gameObject: Phaser.GameObjects.Sprite) => {
             // Kontrola, zda byl odpadek "odložen" do pytle
             if (Phaser.Geom.Intersects.RectangleToRectangle(
                 gameObject.getBounds(), this.pytel.getBounds()
@@ -326,18 +317,13 @@ export default class Game extends Phaser.Scene {
                     console.log('dragend: odpadek nalezen?', odpadek);
                 }
                 if (odpadek) {
-                    // Skryj nebo deaktivuj odpadek
-                    if (odpadek.sprite) {
-                        odpadek.sprite.visible = false;
-                    }
-                    odpadek.status = 'in_bag';
-
-                    this.odpadkyGroup.setAlpha(0.3);
-
-                    if ((window as any).DEBUG_MODE) {
-                        console.log('Volám quizForOdpadek');
-                    }
+                    // Nejprve spusť kvíz a až po jeho dokončení znič sprite:
                     this.quizForOdpadek(odpadek, () => {
+                        // Po skončení kvízu odpadek znič
+                        if (odpadek.sprite) {
+                            this.odpadkyGroup.remove(odpadek.sprite, true, true);
+                            odpadek.sprite = null;
+                        }
                         this.odpadkyGroup.setAlpha(1);
                     });
                 }
@@ -345,6 +331,13 @@ export default class Game extends Phaser.Scene {
                 // Pokud nebyl odložen do pytle, obnov alpha všem (vše zůstává aktivní)
                 this.odpadkyGroup.getChildren().forEach(obj => {
                     (obj as Phaser.GameObjects.Sprite).alpha = 1;
+                });
+                // OBNOV INTERAKTIVITU A DRAGGABLE
+                this.odpadky.forEach(o => {
+                    if (o.sprite) {
+                        o.sprite.setInteractive();
+                        this.input.setDraggable(o.sprite, true);
+                    }
                 });
             }
         });
@@ -362,8 +355,8 @@ export default class Game extends Phaser.Scene {
 
         const question = this.quiz.getQuestionForType(odpadek.typ);
         if (!question) {
+            console.warn('Chybí otázka pro typ odpadku:', odpadek.typ);
             this.quizActive = false;
-            // Opět povol interaktivitu
             this.odpadky.forEach(o => o.sprite?.setInteractive());
             onComplete();
             return;
@@ -376,8 +369,8 @@ export default class Game extends Phaser.Scene {
         // Overlay pro otázku – světlejší pozadí a box
         const overlay = this.add.rectangle(512, 384, 700, 380, 0xffffff, 0.25).setDepth(1000);
         const box = this.add.rectangle(512, 384, 660, 300, 0xf5f5dc, 1) // světle béžová
-    .setDepth(1001)
-    .setStrokeStyle(4, 0x4caf50); // zelený rámeček
+            .setDepth(1001)
+            .setStrokeStyle(4, 0x4caf50); // zelený rámeček
 
         // Text otázky
         const questionText = this.add.text(512, 250, question.question, {
@@ -410,7 +403,7 @@ export default class Game extends Phaser.Scene {
                 }).setOrigin(0.5).setDepth(1002);
                 // Penalizace za hint
                 this.timeLeft -= 10;
-                this.timerText.setText(`Čas: ${this.timeLeft}`);
+                //this.timerText.setText(`Čas: ${this.timeLeft}`);
                 hintBtn.setAlpha(0.5).disableInteractive();
             }
         });
@@ -473,9 +466,21 @@ export default class Game extends Phaser.Scene {
         });
     }
 
+    private enableGamePlay() {
+        this.canPlay = true;
+        this.odpadky.forEach(odpadek => {
+            if (odpadek.sprite) {
+                this.input.setDraggable(odpadek.sprite, true);
+                if ((window as any).DEBUG_MODE) {
+                    console.log('setDraggable TRUE', odpadek.sprite);
+                }
+            }
+        });
+    }
+
     update(): void {
         //TODO: Herní logika (např. kontrola dokončení, časovač, animace)
-        
+
 
     }
 }
