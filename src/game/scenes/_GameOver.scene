@@ -32,8 +32,8 @@
             "type": "Text",
             "id": "1e1fcca9-8566-456a-add0-a30e8a31bd2a",
             "label": "textgameover",
-            "x": 512,
-            "y": 384,
+            "x": 509,
+            "y": 63,
             "originX": 0.5,
             "originY": 0.5,
             "text": "Game Over",
@@ -43,12 +43,36 @@
             "color": "#ffffff",
             "stroke": "#000000",
             "strokeThickness": 8
+        },
+        {
+            "type": "Image",
+            "id": "ae3cfc8b-bc26-45ed-9265-ded53d54a818",
+            "label": "pergamen_bkg",
+            "texture": {
+                "key": "pergamen_bkg"
+            },
+            "x": 514,
+            "y": 437,
+            "scaleX": 1.3649455924770206,
+            "scaleY": 1.2673167189356493
+        },
+        {
+            "type": "Image",
+            "id": "0294460c-e22e-4126-9ee5-267baf782607",
+            "label": "prst_1",
+            "texture": {
+                "key": "prst_1"
+            },
+            "x": 801,
+            "y": 582,
+            "scaleX": 1.5,
+            "scaleY": 1.5
         }
     ],
     "plainObjects": [],
     "meta": {
-        "app": "Phaser Editor 2D - Scene Editor",
-        "url": "https://phasereditor2d.com",
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
         "contentType": "phasereditor2d.core.scene.SceneContentType",
         "version": 5
     }

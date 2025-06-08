@@ -4,7 +4,7 @@
     "question": "Jak dlouho trvá, než se v přírodě rozloží žvýkačka?",
     "options": ["5 let", "50 let", "1 měsíc", "25 let"],
     "answer": 1,
-    "hint": "Není to 5 let ani 1 měsíc."
+    "hint": "Není to 5 let ani 25 let."
   },
   {
     "type": "Vajgl",
@@ -16,60 +16,57 @@
   {
     "type": "Plechovka",
     "question": "Jak dlouho trvá, než se v přírodě rozloží hliníková plechovka?",
-    "options": ["100 let", "10 let", "200 let", "50 let"],
-    "answer": 3,
-    "hint": "Není to 10 let ani 200 let."
+    "options": ["100 let", "10 let", "15 let", "50 let"],
+    "answer": 2,
+    "hint": "Není to 10 let ani 100 let."
   },
   {
     "type": "PET",
     "question": "Jak dlouho trvá rozklad PET lahve v přírodě?",
-    "options": ["200 let", "10 let", "450 let", "50 let"],
+    "options": ["200 let", "10 let", "100 let", "50 let"],
     "answer": 2,
-    "hint": "Není to 10 let ani 50 let."
+    "hint": "Není to 10 let ani 200 let."
   },
   {
     "type": "Ohryzek",
     "question": "Jak dlouho trvá rozklad ohryzku v přírodě?",
     "options": ["2 měsíce", "2 týdny", "5 let", "1 rok"],
     "answer": 1,
-    "hint": "Není to 5 let ani 1 rok."
+    "hint": "Není to 2 měsíce ani 5 let."
   },
   {
     "type": "Lahev",
     "question": "Jak dlouho trvá, než se v přírodě rozloží skleněná lahev?",
-    "options": ["prakticky nikdy", "50 let", "1000 let", "200 let"],
-    "answer": 0,
-    "hint": "Není to 50 let ani 200 let."
+    "options": ["prakticky nikdy", "50 let", "1000 let", "tisíce let"],
+    "answer": 3,
+    "hint": "Není to 50 let ani 1000 let."
   },
   {
     "type": "Karton",
     "question": "Jak dlouho trvá rozklad kartonu od mléka v přírodě?",
-    "options": ["1 rok", "3 měsíce", "10 let", "5 let"],
-    "answer": 0,
-    "hint": "Není to 3 měsíce ani 10 let."
+    "options": ["1 rok", "3 měsíce", "100 let", "5 let"],
+    "answer": 2,
+    "hint": "Není to 1 rok ani 3 měsíce."
   },
   {
     "type": "Baterie",
     "question": "Jak dlouho trvá rozklad baterie AAA v přírodě?",
-    "options": ["1 rok", "10 let", "500 let", "100 let"],
-    "answer": 3,
+    "options": ["1 rok", "10 let", "200-500 let", "100 let"],
+    "answer": 2,
     "hint": "Není to 1 rok ani 10 let."
   },
   {
     "type": "Banan",
     "question": "Jak dlouho trvá rozklad banánové slupky v přírodě?",
-    "options": ["1 měsíc", "2 roky", "6 měsíců", "1 týden"],
-    "answer": 0,
-    "hint": "Není to 2 roky ani 6 měsíců."
+    "options": ["1 měsíc", "5 měsíců", "2 roky", "1 týden"],
+    "answer": 1,
+    "hint": "Není to 1 měsíc ani 2 roky."
   },
   {
     "type": "Kapesnik",
     "question": "Jak dlouho trvá rozklad papírových kapesníků v přírodě?",
-    "options": ["1 den", "1 týden", "1 měsíc", "1 rok"],
-    "answer": 1,
-    "hint": "Není to 1 den ani 1 rok."
-  },
-  {
-    "hintButton": "💡 Nápověda ({count})"
+    "options": ["2-4 týdny", "1 týden", "1 měsíc", "1 rok"],
+    "answer": 0,
+    "hint": "Není to 1 měsíc ani 1 rok."
   }
 ]

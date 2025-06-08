@@ -72,6 +72,11 @@
                 "key": "logo"
             },
             {
+                "url": "assets/Images/Pytel_ico.png",
+                "type": "image",
+                "key": "miniBag"
+            },
+            {
                 "url": "assets/Images/motyl.png",
                 "type": "image",
                 "key": "Motyl"
@@ -85,6 +90,11 @@
                 "url": "assets/Images/pergamen.png",
                 "type": "image",
                 "key": "Pergamen"
+            },
+            {
+                "url": "assets/pergamen_bkg.png",
+                "type": "image",
+                "key": "pergamen_bkg"
             },
             {
                 "url": "assets/Images/Obr04.png",
@@ -107,6 +117,11 @@
                 "key": "prazdnyPytel"
             },
             {
+                "url": "assets/Images/prst.png",
+                "type": "image",
+                "key": "prst"
+            },
+            {
                 "url": "assets/Images/Obr09.png",
                 "type": "image",
                 "key": "Vajgl"
@@ -115,11 +130,6 @@
                 "url": "assets/Images/Obr01.png",
                 "type": "image",
                 "key": "Zvykacka"
-            },
-            {
-                "url": "assets/Images/Pytel_ico.png",
-                "type": "image",
-                "key": "miniBag"
             }
         ]
     },

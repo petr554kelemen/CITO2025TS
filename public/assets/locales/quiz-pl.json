@@ -4,7 +4,7 @@
     "question": "Jak długo trwa rozkład gumy do żucia w przyrodzie?",
     "options": ["5 lat", "50 lat", "1 miesiąc", "25 lat"],
     "answer": 1,
-    "hint": "To nie jest 5 lat ani 1 miesiąc."
+    "hint": "To nie jest 5 lat ani 25 lat."
   },
   {
     "type": "Vajgl",
@@ -16,58 +16,58 @@
   {
     "type": "Plechovka",
     "question": "Jak długo trwa rozkład aluminiowej puszki w przyrodzie?",
-    "options": ["100 lat", "10 lat", "200 lat", "50 lat"],
-    "answer": 3,
-    "hint": "To nie jest 10 lat ani 200 lat."
+    "options": ["100 lat", "10 lat", "15 lat", "50 lat"],
+    "answer": 2,
+    "hint": "To nie jest 10 lat ani 100 lat."
   },
   {
     "type": "PET",
     "question": "Jak długo trwa rozkład butelki PET w przyrodzie?",
-    "options": ["200 lat", "10 lat", "450 lat", "50 lat"],
+    "options": ["200 lat", "10 lat", "100 lat", "50 lat"],
     "answer": 2,
-    "hint": "To nie jest 10 lat ani 50 lat."
+    "hint": "To nie jest 10 lat ani 200 lat."
   },
   {
     "type": "Ohryzek",
     "question": "Jak długo trwa rozkład ogryzka w przyrodzie?",
     "options": ["2 miesiące", "2 tygodnie", "5 lat", "1 rok"],
     "answer": 1,
-    "hint": "To nie jest 5 lat ani 1 rok."
+    "hint": "To nie jest 2 miesiące ani 5 lat."
   },
   {
     "type": "Lahev",
     "question": "Jak długo trwa rozkład szklanej butelki w przyrodzie?",
-    "options": ["praktycznie nigdy", "50 lat", "1000 lat", "200 lat"],
-    "answer": 0,
-    "hint": "To nie jest 50 lat ani 200 lat."
+    "options": ["praktycznie nigdy", "50 lat", "1000 lat", "tysiące lat"],
+    "answer": 3,
+    "hint": "To nie jest 50 lat ani 1000 lat."
   },
   {
     "type": "Karton",
     "question": "Jak długo trwa rozkład kartonu po mleku w przyrodzie?",
-    "options": ["1 rok", "3 miesiące", "10 lat", "5 lat"],
-    "answer": 0,
-    "hint": "To nie jest 3 miesiące ani 10 lat."
+    "options": ["1 rok", "3 miesiące", "100 lat", "5 lat"],
+    "answer": 2,
+    "hint": "To nie jest 1 rok ani 3 miesiące."
   },
   {
     "type": "Baterie",
     "question": "Jak długo trwa rozkład baterii AAA w przyrodzie?",
-    "options": ["1 rok", "10 lat", "500 lat", "100 lat"],
-    "answer": 3,
+    "options": ["1 rok", "10 lat", "200-500 lat", "100 lat"],
+    "answer": 2,
     "hint": "To nie jest 1 rok ani 10 lat."
   },
   {
     "type": "Banan",
     "question": "Jak długo trwa rozkład skórki od banana w przyrodzie?",
-    "options": ["1 miesiąc", "2 lata", "6 miesięcy", "1 tydzień"],
-    "answer": 0,
-    "hint": "To nie jest 2 lata ani 6 miesięcy."
+    "options": ["1 miesiąc", "5 miesięcy", "2 lata", "1 tydzień"],
+    "answer": 1,
+    "hint": "To nie jest 1 miesiąc ani 2 lata."
   },
   {
     "type": "Kapesnik",
     "question": "Jak długo trwa rozkład chusteczek papierowych w przyrodzie?",
-    "options": ["1 dzień", "1 tydzień", "1 miesiąc", "1 rok"],
-    "answer": 1,
-    "hint": "To nie jest 1 dzień ani 1 rok."
+    "options": ["2-4 tygodnie", "1 tydzień", "1 miesiąc", "1 rok"],
+    "answer": 0,
+    "hint": "To nie jest 1 miesiąc ani 1 rok."
   },
   {
     "hintButton": "💡 Podpowiedź ({count})"
