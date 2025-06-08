@@ -43,7 +43,16 @@ export default class GameOver extends Phaser.Scene {
 
 		this.editorCreate();
 
-		this.cameras.main.setBackgroundColor(0xff0000);
+		this.cameras.main.setBackgroundColor(0x222222);
+
+        const text = this.add.text(512, 384, "", {
+            fontFamily: "Arial Black",
+            fontSize: "38px",
+            color: "#fff",
+            align: "center",
+            stroke: "#000",
+            strokeThickness: 6
+        }).setOrigin(0.5);
 
         this.input.once('pointerdown', () => {
 

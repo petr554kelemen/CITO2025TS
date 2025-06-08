@@ -58,6 +58,9 @@ export default class Game extends Phaser.Scene {
 
     //score: number = 0;
 
+    private totalHintsLeft: number = 2;
+    private lastGameSuccess: boolean = false;
+
     constructor() {
         super("Game");
     }
@@ -74,6 +77,12 @@ export default class Game extends Phaser.Scene {
     }
 
     async create(): Promise<void> {
+        // Pokud už hráč úspěšně dokončil, rovnou GameOver
+        if (localStorage.getItem('cito2025_success') === '1') {
+            this.scene.start('GameOver');
+            return;
+        }
+
         // pozadí pro hru s kvízem
         const backgroundGame = this.add.image(512, 385, "freepik_forest_01");
         backgroundGame.setOrigin(0.5);
@@ -371,7 +380,8 @@ export default class Game extends Phaser.Scene {
 
         // Hint tlačítko pod otázku, také uvnitř boxu
         let hintBtnY = boxY + padding + questionText.height + 24;
-        const hintBtn = this.add.text(boxX + boxWidth / 2, hintBtnY, '💡 Nápověda', {
+        let hintsLeft = 2;
+        const hintBtn = this.add.text(boxX + boxWidth / 2, hintBtnY, `💡 Nápověda (${this.totalHintsLeft})`, {
             fontSize: '20px',
             color: '#1565c0',
             fontFamily: 'Arial',
@@ -379,15 +389,15 @@ export default class Game extends Phaser.Scene {
             padding: { left: 10, right: 10, top: 4, bottom: 4 }
         }).setOrigin(0.5).setDepth(1002).setInteractive();
 
-        // Možnosti odpovědí budou pod hint tlačítkem (nebo pod hint textem)
         let optionsStartY = hintBtnY + 44;
         let hintText: Phaser.GameObjects.Text | null = null;
-        let hintUsed = 0; // místo booleanu použij čítač
+        let hintUsed = false;
 
-        // --- Hint logika ---
         hintBtn.on('pointerdown', () => {
-            if (hintUsed < 2 && question.hint) {
-                hintUsed++;
+            if (!hintUsed && question.hint && this.totalHintsLeft > 0) {
+                hintUsed = true;
+                this.totalHintsLeft--;
+                hintBtn.setText(`💡 Nápověda (${this.totalHintsLeft})`);
                 // První kliknutí: zobraz hint, druhé kliknutí: zvýrazni nebo zobraz znovu, další už ne
                 if (!hintText) {
                     hintText = this.add.text(boxX + boxWidth / 2, optionsStartY, question.hint, {
@@ -415,11 +425,11 @@ export default class Game extends Phaser.Scene {
 
                 this.timeLeft -= 10;
 
-                if (hintUsed >= 2) {
+                if (this.totalHintsLeft <= 0) {
                     hintBtn.setAlpha(0.5).disableInteractive();
-                    hintBtn.removeAllListeners();
                 }
             }
+            // Pokud už byl hint použit na tuto otázku, nebo došly nápovědy, nic nedělej
         });
 
         // --- Možnosti odpovědí ---
@@ -473,6 +483,7 @@ export default class Game extends Phaser.Scene {
                         dialogKey = "finalSuccess";
                     }
 
+                    this.lastGameSuccess = dialogKey === "finalSuccess";
                     this.dialog.showDialog(dialogKey);
                     this.showFinalScene?.();
 
@@ -553,23 +564,64 @@ export default class Game extends Phaser.Scene {
 
     // Přidáno: Metoda pro zobrazení závěrečné scény
     private showFinalScene(): void {
-        // TODO: Implementace závěrečné scény (např. skóre, animace, restart)
-        // Prozatím zobrazíme jednoduchý text
         const dialogContainer = this.dialog.getBubbleContainer();
         if (dialogContainer) {
-            // Najdi text uvnitř kontejneru
             const textObj = dialogContainer.list.find(obj => obj instanceof Phaser.GameObjects.Text) as Phaser.GameObjects.Text | undefined;
+            let pergamenImg: Phaser.GameObjects.Image | undefined;
+
             if (textObj) {
                 dialogContainer.setSize(textObj.width, textObj.height);
+
+                // Přidej pergamen pouze při úspěchu
+                if (this.lastGameSuccess) {
+                    // Výška obrázku (po načtení) pro lepší zarovnání
+                    const pergamenY = dialogContainer.y - (dialogContainer.height / 2) - 20;
+                    pergamenImg = this.add.image(
+                        -200, // start mimo scénu vlevo
+                        pergamenY,
+                        "Pergamen"
+                    ).setOrigin(0.5, 1)
+                     .setDepth(dialogContainer.depth + 1)
+                     .setScale(0.7)
+                     .setAlpha(0.5);
+
+                    // Cílová pozice je střed obrazovky
+                    const targetX = this.cameras.main.centerX;
+
+                    this.tweens.add({
+                        targets: pergamenImg,
+                        x: targetX,
+                        alpha: 1,
+                        duration: 2000,
+                        ease: 'Power2'
+                    });
+
+                    if (window.DEBUG_MODE) {
+                        console.log('Pergamen se zobrazuje:', pergamenImg);
+                    }
+
+                    pergamenImg.setInteractive({ useHandCursor: true });
+                    pergamenImg.once('pointerdown', () => {
+                        this.dialog.hideDialog();
+                        if (pergamenImg) pergamenImg.destroy();
+                        this.scene.start('GameOver');
+                    });
+
+                    dialogContainer.disableInteractive();
+                }
             } else {
-                // fallback, pokud není text
                 dialogContainer.setSize(300, 100);
             }
+
             dialogContainer.setInteractive();
             dialogContainer.once('pointerdown', () => {
                 this.dialog.hideDialog();
-                // 'success' is not defined in this scope, so you may want to handle this logic differently.
-                this.scene.restart();
+                if (pergamenImg) pergamenImg.destroy();
+                if (this.lastGameSuccess) {
+                    this.scene.start('GameOver');
+                } else {
+                    this.scene.restart();
+                }
             });
         }
     }

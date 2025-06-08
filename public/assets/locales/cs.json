@@ -17,7 +17,7 @@
     "monina-08": "Můžeš použít 2 nápovědy,\nale za cenu ztráty 10 sekund času.",
     "monina-09": "Pojď tedy na to, ať to máš rychle za sebou!",
     "timerLabel": "Čas: {time}",
-    "finalSuccess": "Děkuji za pomoc s úklidem!\nJsi skvělý/á!\n\nKlikni pro finálky.",
+    "finalSuccess": "Děkuji za pomoc s úklidem!\nJsi skvělý/á!\n\nNa pergamenu najdeš finální souřadnice kešky.\nKlikni na pergamen!",
     "finalFail": "To ti nevyšlo...\nZkus to znovu!\n\nKlikni pro novou hru.",
     "finalFailTime": "Čas vypršel!\nZkus to znovu.\n\nKlikni pro novou hru.",
     "finalFailScore": "Potřebuješ alespoň 8 správných odpovědí!\nZkus to znovu.\n\nKlikni pro novou hru."

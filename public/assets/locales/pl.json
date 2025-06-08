@@ -17,7 +17,7 @@
     "monina-08": "Możesz użyć 2 podpowiedzi,\nale każda kosztuje 10 sekund.",
     "monina-09": "No to do dzieła, żeby mieć to szybko z głowy!",
     "timerLabel": "Czas: {time}",
-    "finalSuccess": "Dzięki za pomoc w sprzątaniu!\nJesteś super!\n\nKliknij po finał.",
+    "finalSuccess": "Dzięki za pomoc w sprzątaniu!\nJesteś super!\n\nNa pergaminie znajdziesz finałowe współrzędne kesza.\nKliknij pergamin!",
     "finalFail": "Tym razem się nie udało...\nSpróbuj ponownie!\n\nKliknij, aby zacząć od nowa.",
     "finalFailTime": "Czas minął!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa.",
     "finalFailScore": "Potrzebujesz co najmniej 8 poprawnych odpowiedzi!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa."

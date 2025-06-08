@@ -17,8 +17,9 @@
     "monina-07": "And if you answer at least 8 out of 10 correctly, you'll get the cache finals.",
     "monina-08": "You can use 2 hints,\nbut each will cost you 10 seconds.",
     "monina-09": "Let's get to it, so you can finish quickly!",
+    
     "timerLabel": "Time: {time}",
-    "finalSuccess": "Thanks for helping clean up!\nYou're awesome!\n\nClick for the finals.",
+    "finalSuccess": "Thanks for helping clean up!\nYou're awesome!\n\nThe cache finals are written on the parchment.\nClick the parchment!",
     "finalFail": "Not quite...\nTry again!\n\nClick to restart.",
     "finalFailTime": "Time's up!\nTry again.\n\nClick to restart.",
     "finalFailScore": "You need at least 8 correct answers!\nTry again.\n\nClick to restart."
