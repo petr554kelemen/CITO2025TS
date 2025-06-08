@@ -68,5 +68,8 @@
     "options": ["1 dzień", "1 tydzień", "1 miesiąc", "1 rok"],
     "answer": 1,
     "hint": "To nie jest 1 dzień ani 1 rok."
+  },
+  {
+    "hintButton": "💡 Podpowiedź ({count})"
   }
 ]

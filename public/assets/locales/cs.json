@@ -20,6 +20,7 @@
     "finalSuccess": "Děkuji za pomoc s úklidem!\nJsi skvělý/á!\n\nNa pergamenu najdeš finální souřadnice kešky.\nKlikni na pergamen!",
     "finalFail": "To ti nevyšlo...\nZkus to znovu!\n\nKlikni pro novou hru.",
     "finalFailTime": "Čas vypršel!\nZkus to znovu.\n\nKlikni pro novou hru.",
-    "finalFailScore": "Potřebuješ alespoň 8 správných odpovědí!\nZkus to znovu.\n\nKlikni pro novou hru."
+    "finalFailScore": "Potřebuješ alespoň 8 správných odpovědí!\nZkus to znovu.\n\nKlikni pro novou hru.",
+    "hintButton": "💡 Nápověda ({count})"
   }
 }

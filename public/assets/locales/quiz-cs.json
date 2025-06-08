@@ -68,5 +68,8 @@
     "options": ["1 den", "1 týden", "1 měsíc", "1 rok"],
     "answer": 1,
     "hint": "Není to 1 den ani 1 rok."
+  },
+  {
+    "hintButton": "💡 Nápověda ({count})"
   }
 ]

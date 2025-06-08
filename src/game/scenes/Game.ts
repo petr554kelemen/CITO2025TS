@@ -3,15 +3,6 @@ import DialogManager from "../../utils/DialogManager";
 import { Quiz } from "../../utils/quiz";
 import Scoreboard from "../../utils/scoreboard";
 
-// Extend the Window interface to include DEBUG_MODE
-declare global {
-    interface Window {
-        DEBUG_MODE: boolean;
-    }
-}
-
-window.DEBUG_MODE = true;
-
 type DialogTexts = {
     dialogSequence: Record<string, string>;
     dialogGameSequence?: Record<string, string>;
@@ -77,6 +68,12 @@ export default class Game extends Phaser.Scene {
     }
 
     async create(): Promise<void> {
+        // LADICÍ REŽIM: Přeskoč intro a hned zobraz GameOver
+        if ((window as any).DEBUG_MODE) {
+            this.scene.start('GameOver');
+            return;
+        }
+
         // Pokud už hráč úspěšně dokončil, rovnou GameOver
         if (localStorage.getItem('cito2025_success') === '1') {
             this.scene.start('GameOver');
@@ -380,14 +377,19 @@ export default class Game extends Phaser.Scene {
 
         // Hint tlačítko pod otázku, také uvnitř boxu
         let hintBtnY = boxY + padding + questionText.height + 24;
-        let hintsLeft = 2;
-        const hintBtn = this.add.text(boxX + boxWidth / 2, hintBtnY, `💡 Nápověda (${this.totalHintsLeft})`, {
-            fontSize: '20px',
-            color: '#1565c0',
-            fontFamily: 'Arial',
-            backgroundColor: '#e3f2fd',
-            padding: { left: 10, right: 10, top: 4, bottom: 4 }
-        }).setOrigin(0.5).setDepth(1002).setInteractive();
+        const hintTextTemplate = this.texts.dialogSequence?.hintButton ?? "💡 Nápověda ({count})";
+        const hintBtn = this.add.text(
+            boxX + boxWidth / 2,
+            hintBtnY,
+            hintTextTemplate.replace("{count}", String(this.totalHintsLeft)),
+            {
+                fontSize: '20px',
+                color: '#1565c0',
+                fontFamily: 'Arial',
+                backgroundColor: '#e3f2fd',
+                padding: { left: 10, right: 10, top: 4, bottom: 4 }
+            }
+        ).setOrigin(0.5).setDepth(1002).setInteractive();
 
         let optionsStartY = hintBtnY + 44;
         let hintText: Phaser.GameObjects.Text | null = null;
@@ -397,7 +399,7 @@ export default class Game extends Phaser.Scene {
             if (!hintUsed && question.hint && this.totalHintsLeft > 0) {
                 hintUsed = true;
                 this.totalHintsLeft--;
-                hintBtn.setText(`💡 Nápověda (${this.totalHintsLeft})`);
+                hintBtn.setText(hintTextTemplate.replace("{count}", String(this.totalHintsLeft))); hintBtn.setText(`💡 Nápověda (${this.totalHintsLeft})`);
                 // První kliknutí: zobraz hint, druhé kliknutí: zvýrazni nebo zobraz znovu, další už ne
                 if (!hintText) {
                     hintText = this.add.text(boxX + boxWidth / 2, optionsStartY, question.hint, {
@@ -445,8 +447,7 @@ export default class Game extends Phaser.Scene {
 
             btn.on('pointerdown', () => {
                 // Vyhodnocení odpovědi
-                const correct = i === question.answer;
-                if (correct) {
+                if (i === question.answer) {
                     this.scoreboard.markCorrect();
                 }
                 // Zruš UI overlay
@@ -471,13 +472,11 @@ export default class Game extends Phaser.Scene {
                     this.timerEvent?.remove();
                     this.pytel.setTexture('plnyPytel');
                     const total = this.odpadky.length;
-                    const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
-                    const minCorrect = Math.ceil(total * 0.8);
 
                     let dialogKey: string;
                     if (this.timeLeft <= 0) {
                         dialogKey = "finalFailTime";
-                    } else if (correct < minCorrect) {
+                    } else if (this.scoreboard.getCorrectAnswers?.() ?? 0 < Math.ceil(total * 0.8)) {
                         dialogKey = "finalFailScore";
                     } else {
                         dialogKey = "finalSuccess";
@@ -488,6 +487,7 @@ export default class Game extends Phaser.Scene {
                     this.showFinalScene?.();
 
                     if ((window as any).DEBUG_MODE) {
+                        const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
                         console.log('Konec hry: celkem odpadu:', total, 'správně:', correct);
                     }
                 }
@@ -535,7 +535,6 @@ export default class Game extends Phaser.Scene {
                     // --- Zobraz závěrečný dialog ---
                     const total = this.odpadky.length;
                     const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
-                    const minCorrect = Math.ceil(total * 0.8);
                     let dialogKey = "finalFailTime";
                     this.dialog.showDialog(dialogKey);
                     this.showFinalScene?.();
@@ -581,9 +580,9 @@ export default class Game extends Phaser.Scene {
                         pergamenY,
                         "Pergamen"
                     ).setOrigin(0.5, 1)
-                     .setDepth(dialogContainer.depth + 1)
-                     .setScale(0.7)
-                     .setAlpha(0.5);
+                        .setDepth(dialogContainer.depth + 1)
+                        .setScale(0.7)
+                        .setAlpha(0.5);
 
                     // Cílová pozice je střed obrazovky
                     const targetX = this.cameras.main.centerX;
@@ -596,7 +595,7 @@ export default class Game extends Phaser.Scene {
                         ease: 'Power2'
                     });
 
-                    if (window.DEBUG_MODE) {
+                    if ((window as any).DEBUG_MODE) {
                         console.log('Pergamen se zobrazuje:', pergamenImg);
                     }
 
@@ -617,11 +616,17 @@ export default class Game extends Phaser.Scene {
             dialogContainer.once('pointerdown', () => {
                 this.dialog.hideDialog();
                 if (pergamenImg) pergamenImg.destroy();
-                if (this.lastGameSuccess) {
-                    this.scene.start('GameOver');
-                } else {
-                    this.scene.restart();
-                }
+
+                // Fade out efekt (např. 800 ms, černá)
+                this.cameras.main.fadeOut(800, 0, 0, 0);
+
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    if (this.lastGameSuccess) {
+                        this.scene.start('GameOver');
+                    } else {
+                        this.scene.restart();
+                    }
+                });
             });
         }
     }
