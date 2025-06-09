@@ -70,13 +70,13 @@ export default class Game extends Phaser.Scene {
     async create(): Promise<void> {
         // LADICÍ REŽIM: Přeskoč intro a hned zobraz GameOver
         if ((window as any).DEBUG_MODE) {
-            this.scene.start('GameOver', { texts: this.texts });
+            this.scene.start('GameOver', { texts: this.texts, language: this.language });
             return;
         }
 
         // Pokud už hráč úspěšně dokončil, rovnou GameOver
         if (localStorage.getItem('cito2025_success') === '1') {
-            this.scene.start('GameOver', { texts: this.texts });
+            this.scene.start('GameOver', { texts: this.texts, language: this.language });
             return;
         }
 
@@ -472,10 +472,10 @@ export default class Game extends Phaser.Scene {
                     this.pytel.setTexture('plnyPytel');
 
                     let dialogKey: string;
-                    const total = this.odpadky.length;
+                    const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
                     if (this.timeLeft <= 0) {
                         dialogKey = "finalFailTime";
-                    } else if (this.scoreboard.getCorrectAnswers?.() ?? 0 < Math.ceil(total * 0.8)) {
+                    } else if (correct < 8) { // Pevná hodnota pro úspěch (8 a více)
                         dialogKey = "finalFailScore";
                     } else {
                         dialogKey = "finalSuccess";
@@ -486,7 +486,6 @@ export default class Game extends Phaser.Scene {
                     this.showFinalScene?.();
 
                     if ((window as any).DEBUG_MODE) {
-                        const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
                         const total = this.odpadky.length;
                         console.log('Konec hry: celkem odpadu:', total, 'správně:', correct);
                     }
@@ -557,7 +556,7 @@ export default class Game extends Phaser.Scene {
     }
 
     update(): void {
-        
+
 
     }
 
@@ -577,7 +576,7 @@ export default class Game extends Phaser.Scene {
                     const pergamenY = dialogContainer.y - (dialogContainer.height / 2) - 20;
                     pergamenImg = this.add.image(
                         -200, // start mimo scénu vlevo
-                        pergamenY,
+                        pergamenY + 30,
                         "Pergamen"
                     ).setOrigin(0.5, 1)
                         .setDepth(dialogContainer.depth + 1)
@@ -599,37 +598,25 @@ export default class Game extends Phaser.Scene {
                         console.log('Pergamen se zobrazuje:', pergamenImg);
                     }
 
-                    pergamenImg.setInteractive({ useHandCursor: true });
-                    pergamenImg.once('pointerdown', () => {
+                    // Po zobrazení pergamenu stačí kliknout kamkoliv a spustit GameOver
+                    this.input.once('pointerdown', () => {
                         this.dialog.hideDialog();
                         if (pergamenImg) pergamenImg.destroy();
-                        this.scene.start('GameOver');
+                        this.scene.start('GameOver', { texts: this.texts });
                     });
-
-                    dialogContainer.disableInteractive();
+                    return; // Důležité: ukonči metodu, ať se nespustí kód níže
                 }
             } else {
                 dialogContainer.setSize(300, 100);
             }
 
-            dialogContainer.setInteractive();
-            dialogContainer.once('pointerdown', () => {
-                this.dialog.hideDialog();
-                if (pergamenImg) pergamenImg.destroy();
-
-                // Fade out efekt (např. 800 ms, černá)
-                this.cameras.main.fadeOut(800, 0, 0, 0);
-
-                this.cameras.main.once('camerafadeoutcomplete', () => {
-                    if (this.lastGameSuccess) {
-                        this.scene.start('GameOver');
-                    } else {
-                        this.scene.start('Game', {
-                            odpadkyData: this.odpadky,
-                            language: this.language,
-                            texts: this.texts
-                        });
-                    }
+            // Pokud nebyl zobrazen pergamen (neúspěch), proveď fade out a restart
+            this.cameras.main.fadeOut(800, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('Game', {
+                    odpadkyData: this.odpadky,
+                    language: this.language,
+                    texts: this.texts
                 });
             });
         }

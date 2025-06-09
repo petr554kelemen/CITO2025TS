@@ -67,6 +67,21 @@
             "y": 582,
             "scaleX": 1.5,
             "scaleY": 1.5
+        },
+        {
+            "type": "Image",
+            "id": "f123fecf-20d0-4a11-939f-1fdba518c025",
+            "label": "button",
+            "hitArea.shape": "RECTANGLE",
+            "hitArea.width": 74,
+            "hitArea.height": 50,
+            "texture": {
+                "key": "button"
+            },
+            "x": 529,
+            "y": 608,
+            "scaleX": 3.586583957401992,
+            "scaleY": 1.6404611937460216
         }
     ],
     "plainObjects": [],

@@ -42,6 +42,12 @@ export default class _GameOver extends Phaser.Scene {
 		prst_1.scaleX = 1.5;
 		prst_1.scaleY = 1.5;
 
+		// button
+		const button = this.add.image(529, 608, "button");
+		button.setInteractive(new Phaser.Geom.Rectangle(0, 0, 74, 50), Phaser.Geom.Rectangle.Contains);
+		button.scaleX = 3.586583957401992;
+		button.scaleY = 1.6404611937460216;
+
 		this.events.emit("scene-awake");
 	}
 
