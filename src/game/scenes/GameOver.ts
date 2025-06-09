@@ -5,28 +5,18 @@ import Phaser from "phaser";
 /* END-USER-IMPORTS */
 
 export default class GameOver extends Phaser.Scene {
+	private texts: any; // nebo konkrétní typ, pokud máš
 
 	constructor() {
 		super("GameOver");
 
 	}
 
-	/* editorCreate(): void {
+	init(data: { texts: any }) {
+		this.texts = data.texts;
+	}
 
-		// pergamen_bkg
-		const pergamen_bkg = this.add.image(514, 437, "pergamen_bkg");
-		pergamen_bkg.scaleX = 1.37;
-		pergamen_bkg.scaleY = 1.27;
-
-		// textgameover
-		const textgameover = this.add.text(512, 384, "", {});
-		textgameover.setOrigin(0.5, 0.5);
-		textgameover.text = "Game Over";
-		textgameover.setStyle({ "align": "center", "color": "#ffffff", "fontFamily": "Arial Black", "fontSize": "64px", "stroke": "#000000", "strokeThickness": 8 });
-
-		this.events.emit("scene-awake");
-	} */
-
+	// Inicializace scény
 	create() {
 		// Nastav tmavé pozadí pod pergamen
 		this.cameras.main.setBackgroundColor(0x222222);
@@ -46,9 +36,9 @@ export default class GameOver extends Phaser.Scene {
 		});
 
 		// Souřadnice - na začátku téměř neviditelné
-		const coordsText = "N 50°00.000\nE 017°00.000";
+		const coordsText = "N 50°10.391\nE 017°36.226";
 		const coords = this.add.text(512, 384, coordsText, {
-			fontFamily: "Arial Black",
+			fontFamily: "Merienda, Arial, sans-serif",
 			fontSize: "72px",
 			color: "#207a1e", // tmavě zelená
 			align: "center",
@@ -85,7 +75,9 @@ export default class GameOver extends Phaser.Scene {
 		}).setOrigin(0.5);
 
 		// Tlačítko "Zahrát znovu"
-		const btn = this.add.text(512, 650, "Zahrát znovu", {
+		const playAgainText = this.texts?.gameOver?.playAgain ?? "Zahrát znovu";
+		const confirmResetText = this.texts?.gameOver?.confirmReset ?? "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!";
+		const btn = this.add.text(512, 650, playAgainText, {
 			fontFamily: "Arial Black",
 			fontSize: "32px",
 			color: "#1565c0",
@@ -94,17 +86,18 @@ export default class GameOver extends Phaser.Scene {
 		}).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
 		btn.on('pointerdown', () => {
-			localStorage.removeItem('cito2025_success');
-			this.scene.start('Game');
+			const confirmed = window.confirm(confirmResetText);
+			if (confirmed) {
+				localStorage.removeItem('cito2025_success');
+				this.scene.start('Game');
+			}
 		});
-	}
 
-	//TODO: Doplnit vespod drobnější text s informací, že stav hra dokončena budou uložená.
-	//TODO: Tlačítko pro možnost odehrát hru znovu
-	//TODO: místo pozadí použít obrázek rozevřeného pergamenu (až bude v assets)
-	//TODO: souřadnice zobrazit výrazně na pergamenu (velký font, stín)
-	//TODO: text souřadnic na začátku neviditelný (alpha 0.05), odkrývat tažením prstu/myši
-	//TODO: obrázek prstu pro návod, jak odkrývat souřadnice
-	//TODO: drobný text dole: "Stav dokončení je uložen, souřadnice lze zobrazit kdykoliv znovu."
-	//TODO: tlačítko "Zahrát znovu" pro reset localStorage a návrat do hry
+		// Informace o uložení hry
+		const infoText = this.texts.dialogSequence?.gameSavedInfo || "Tvůj postup byl uložen. Můžeš se vrátit později.";
+		this.add.text(512, 680, infoText, {
+			font: "18px Arial",
+			color: "#fff"
+		}).setOrigin(0.5);
+	}
 }

@@ -7,7 +7,6 @@
     "duch-02": "I can tell you exactly.\nOnly humans can pull this off...",
     "motyl-03": "No way! They call themselves nature lovers.",
     "duch-03": "Hmm... let's vanish, someone's coming.",
-
     "monina-01": "Hi, I'm Monina... I'm out geocaching here...",
     "monina-02": "...and what is this supposed to be?",
     "monina-03": "So...\nBefore I go on, will you help me clean this up?",
@@ -17,12 +16,16 @@
     "monina-07": "And if you answer at least 8 out of 10 correctly, you'll get the cache finals.",
     "monina-08": "You can use 2 hints,\nbut each will cost you 10 seconds.",
     "monina-09": "Let's get to it, so you can finish quickly!",
-    
     "timerLabel": "Time: {time}",
     "finalSuccess": "Thanks for helping clean up!\nYou're awesome!\n\nThe cache finals are written on the parchment.\nClick the parchment!",
     "finalFail": "Not quite...\nTry again!\n\nClick to restart.",
     "finalFailTime": "Time's up!\nTry again.\n\nClick to restart.",
     "finalFailScore": "You need at least 8 correct answers!\nTry again.\n\nClick to restart.",
-    "hintButton": "💡 Hint ({count})"
+    "hintButton": "💡 Hint ({count})",
+    "gameSavedInfo": "Your progress has been saved. You can return later."
+  },
+  "gameOver": {
+    "playAgain": "Play again",
+    "confirmReset": "Are you sure you want to start over?\nThis will remove the saved coordinates and you will have to complete the game again!"
   }
 }

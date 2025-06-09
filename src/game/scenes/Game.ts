@@ -70,13 +70,13 @@ export default class Game extends Phaser.Scene {
     async create(): Promise<void> {
         // LADICÍ REŽIM: Přeskoč intro a hned zobraz GameOver
         if ((window as any).DEBUG_MODE) {
-            this.scene.start('GameOver');
+            this.scene.start('GameOver', { texts: this.texts });
             return;
         }
 
         // Pokud už hráč úspěšně dokončil, rovnou GameOver
         if (localStorage.getItem('cito2025_success') === '1') {
-            this.scene.start('GameOver');
+            this.scene.start('GameOver', { texts: this.texts });
             return;
         }
 
@@ -241,7 +241,7 @@ export default class Game extends Phaser.Scene {
         this.input.on(
             'drag',
             (
-                pointer: Phaser.Input.Pointer,
+                _pointer: Phaser.Input.Pointer,
                 gameObject: Phaser.GameObjects.Sprite,
                 dragX: number,
                 dragY: number
@@ -351,7 +351,6 @@ export default class Game extends Phaser.Scene {
         // --- JEDEN BOX, vyšší neprůhlednost ---
         const questionMaxWidth = 600;
         const padding = 32;
-        const startY = 180;
 
         // Vytvoř text otázky
         const questionText = this.add.text(0, 0, question.question, {
@@ -471,9 +470,9 @@ export default class Game extends Phaser.Scene {
                 if (!zbyva) {
                     this.timerEvent?.remove();
                     this.pytel.setTexture('plnyPytel');
-                    const total = this.odpadky.length;
 
                     let dialogKey: string;
+                    const total = this.odpadky.length;
                     if (this.timeLeft <= 0) {
                         dialogKey = "finalFailTime";
                     } else if (this.scoreboard.getCorrectAnswers?.() ?? 0 < Math.ceil(total * 0.8)) {
@@ -488,6 +487,7 @@ export default class Game extends Phaser.Scene {
 
                     if ((window as any).DEBUG_MODE) {
                         const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
+                        const total = this.odpadky.length;
                         console.log('Konec hry: celkem odpadu:', total, 'správně:', correct);
                     }
                 }
@@ -557,7 +557,7 @@ export default class Game extends Phaser.Scene {
     }
 
     update(): void {
-        //TODO: Herní logika (např. kontrola dokončení, časovač, animace)
+        
 
     }
 
@@ -624,7 +624,11 @@ export default class Game extends Phaser.Scene {
                     if (this.lastGameSuccess) {
                         this.scene.start('GameOver');
                     } else {
-                        this.scene.restart();
+                        this.scene.start('Game', {
+                            odpadkyData: this.odpadky,
+                            language: this.language,
+                            texts: this.texts
+                        });
                     }
                 });
             });

@@ -21,6 +21,11 @@
     "finalFail": "To ti nevyšlo...\nZkus to znovu!\n\nKlikni pro novou hru.",
     "finalFailTime": "Čas vypršel!\nZkus to znovu.\n\nKlikni pro novou hru.",
     "finalFailScore": "Potřebuješ alespoň 8 správných odpovědí!\nZkus to znovu.\n\nKlikni pro novou hru.",
-    "hintButton": "💡 Nápověda ({count})"
+    "hintButton": "💡 Nápověda ({count})",
+    "gameSavedInfo": "Tvůj postup byl uložen. Můžeš se vrátit později."
+  },
+  "gameOver": {
+    "playAgain": "Zahrát znovu",
+    "confirmReset": "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!"
   }
 }
