@@ -128,7 +128,9 @@ export default class GameOver extends Phaser.Scene {
                     duration: 100,
                     onUpdate: (tween) => {
                         const value = tween.getValue();
-                        finger.setTint(Phaser.Display.Color.GetColor(255, 220 + (35 * value), 150 + (55 * value)));
+                        if (value !== null) {
+                            finger.setTint(Phaser.Display.Color.GetColor(255, 220 + (35 * value), 150 + (55 * value)));
+                        }
                     },
                     onComplete: () => {
                         finger.clearTint();

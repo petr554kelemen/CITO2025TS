@@ -173,7 +173,7 @@ export default class Game extends Phaser.Scene {
                         this.tweens.add({
                             targets: this.monina,
                             alpha: 0,
-                            duration: 600,
+                            duration: 300, // Sníženo z 600 na 300 (poloviční doba)
                             onComplete: () => {
                                 this.monina.visible = false;
                                 this.dialog.hideDialog?.();
@@ -605,11 +605,28 @@ export default class Game extends Phaser.Scene {
                         this.scene.start('GameOver', { texts: this.texts });
                     });
                     return; // Důležité: ukonči metodu, ať se nespustí kód níže
+                } 
+                else {
+                    // NOVÉ: Při neúspěchu také počkej na kliknutí, místo automatického restartu
+                    this.input.once('pointerdown', () => {
+                        this.dialog.hideDialog();
+                        // Proveď fade out a restart
+                        this.cameras.main.fadeOut(800, 0, 0, 0);
+                        this.cameras.main.once('camerafadeoutcomplete', () => {
+                            this.scene.start('Game', {
+                                odpadkyData: this.odpadky,
+                                language: this.language,
+                                texts: this.texts
+                            });
+                        });
+                    });
+                    return; // Důležité: ukonči metodu, ať se nespustí automatický kód níže
                 }
             } else {
                 dialogContainer.setSize(300, 100);
             }
 
+            // Tento kód už se nespustí díky return výše, ale necháme ho zde jako zálohu
             // Pokud nebyl zobrazen pergamen (neúspěch), proveď fade out a restart
             this.cameras.main.fadeOut(800, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {

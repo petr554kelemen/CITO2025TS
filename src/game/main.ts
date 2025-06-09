@@ -30,7 +30,7 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const StartGame = (parent: string) => {
-    (window as any).DEBUG_MODE = true;
+    (window as any).DEBUG_MODE = false;
     return new Phaser.Game({ ...config, parent });
 
 }
