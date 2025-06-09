@@ -613,6 +613,7 @@ export default class Game extends Phaser.Scene {
             }
 
             dialogContainer.setInteractive();
+            dialogContainer.setDepth(1000); // Zajisti, aby byl dialog nahoře
             dialogContainer.once('pointerdown', () => {
                 this.dialog.hideDialog();
                 if (pergamenImg) pergamenImg.destroy();
