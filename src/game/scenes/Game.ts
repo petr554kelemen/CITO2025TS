@@ -531,10 +531,19 @@ export default class Game extends Phaser.Scene {
                         this.quizCleanup();
                         this.quizCleanup = null;
                     }
-                    // --- Zobraz závěrečný dialog ---
-                    const total = this.odpadky.length;
+                    
+                    // --- Zkontroluj počet správných odpovědí před zobrazením závěrečného dialogu ---
                     const correct = this.scoreboard.getCorrectAnswers?.() ?? 0;
-                    let dialogKey = "finalFailTime";
+                    let dialogKey;
+                    
+                    if (correct >= 8) {  // Pokud hráč již získal 8+ správných odpovědí, hra je úspěšná
+                        dialogKey = "finalSuccess";
+                        this.lastGameSuccess = true;
+                    } else {
+                        dialogKey = "finalFailTime";
+                        this.lastGameSuccess = false;
+                    }
+                    
                     this.dialog.showDialog(dialogKey);
                     this.showFinalScene?.();
                 }
