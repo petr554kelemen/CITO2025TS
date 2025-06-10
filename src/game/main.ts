@@ -13,8 +13,20 @@ const config: Phaser.Types.Core.GameConfig = {
     width: 1024,
     height: 760,
     scale: {
-        mode: Phaser.Scale.FIT,                   // + přizpůsobí obsah oknu při změně rozměrů
-        autoCenter: Phaser.Scale.CENTER_BOTH,     // + vycentruje hru horizontálně i vertikálně
+        mode: Phaser.Scale.FIT,                    // Zachová poměr stran
+        // nebo použij:
+        // mode: Phaser.Scale.RESIZE,              // Roztáhne na celou obrazovku
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: window.innerWidth,                  // Dynamická šířka
+        height: window.innerHeight,                // Dynamická výška
+        min: {
+            width: 320,                            // Minimální šířka
+            height: 240                            // Minimální výška
+        },
+        max: {
+            width: 1920,                           // Maximální šířka
+            height: 1080                           // Maximální výška
+        }
     },
     parent: 'game-container',
     backgroundColor: '#028af8',
@@ -25,8 +37,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Intro,
         MainGame,
         GameOver
-    ],
-    //physics: "Arcade",
+    ]
 };
 
 const StartGame = (parent: string) => {
