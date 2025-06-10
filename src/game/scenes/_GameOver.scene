@@ -9,8 +9,8 @@
         "createMethodName": "editorCreate",
         "sceneKey": "GameOver",
         "compilerOutputLanguage": "TYPE_SCRIPT",
-        "borderWidth": 1024,
-        "borderHeight": 768
+        "borderWidth": 667,
+        "borderHeight": 375
     },
     "displayList": [
         {
@@ -20,29 +20,15 @@
             "texture": {
                 "key": "background"
             },
-            "x": 512,
-            "y": 384,
+            "x": 331,
+            "y": 191,
+            "scaleX": 0.6719623773560716,
+            "scaleY": 0.5329549532943552,
             "alpha": 0.5,
             "alphaTopLeft": 0.5,
             "alphaTopRight": 0.5,
             "alphaBottomLeft": 0.5,
             "alphaBottomRight": 0.5
-        },
-        {
-            "type": "Text",
-            "id": "1e1fcca9-8566-456a-add0-a30e8a31bd2a",
-            "label": "textgameover",
-            "x": 509,
-            "y": 63,
-            "originX": 0.5,
-            "originY": 0.5,
-            "text": "Game Over",
-            "align": "center",
-            "fontFamily": "Arial Black",
-            "fontSize": "64px",
-            "color": "#ffffff",
-            "stroke": "#000000",
-            "strokeThickness": 8
         },
         {
             "type": "Image",
@@ -51,22 +37,24 @@
             "texture": {
                 "key": "pergamen_bkg"
             },
-            "x": 514,
-            "y": 437,
-            "scaleX": 1.3649455924770206,
-            "scaleY": 1.2673167189356493
+            "x": 324,
+            "y": 170,
+            "scaleX": 0.8586800395840783,
+            "scaleY": 0.7142981835241219,
+            "originX": 0.4863117262250116,
+            "originY": 0.4430365852151844
         },
         {
             "type": "Image",
             "id": "0294460c-e22e-4126-9ee5-267baf782607",
             "label": "prst_1",
             "texture": {
-                "key": "prst_1"
+                "key": "prst"
             },
-            "x": 801,
-            "y": 582,
-            "scaleX": 1.5,
-            "scaleY": 1.5
+            "x": 546,
+            "y": 281,
+            "scaleX": 0.8554139638752319,
+            "scaleY": 0.8106821951535045
         }
     ],
     "plainObjects": [],

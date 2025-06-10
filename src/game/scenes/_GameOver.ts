@@ -19,28 +19,25 @@ export default class _GameOver extends Phaser.Scene {
 	editorCreate(): void {
 
 		// background
-		const background = this.add.image(512, 384, "background");
+		const background = this.add.image(331, 191, "background");
+		background.scaleX = 0.6719623773560716;
+		background.scaleY = 0.5329549532943552;
 		background.alpha = 0.5;
 		background.alphaTopLeft = 0.5;
 		background.alphaTopRight = 0.5;
 		background.alphaBottomLeft = 0.5;
 		background.alphaBottomRight = 0.5;
 
-		// textgameover
-		const textgameover = this.add.text(509, 63, "", {});
-		textgameover.setOrigin(0.5, 0.5);
-		textgameover.text = "Game Over";
-		textgameover.setStyle({ "align": "center", "color": "#ffffff", "fontFamily": "Arial Black", "fontSize": "64px", "stroke": "#000000", "strokeThickness": 8 });
-
 		// pergamen_bkg
-		const pergamen_bkg = this.add.image(514, 437, "pergamen_bkg");
-		pergamen_bkg.scaleX = 1.3649455924770206;
-		pergamen_bkg.scaleY = 1.2673167189356493;
+		const pergamen_bkg = this.add.image(324, 170, "pergamen_bkg");
+		pergamen_bkg.scaleX = 0.85;
+		pergamen_bkg.scaleY = 0.71;
+		pergamen_bkg.setOrigin(0.5, 0.5);
 
 		// prst_1
-		const prst_1 = this.add.image(801, 582, "prst_1");
-		prst_1.scaleX = 1.5;
-		prst_1.scaleY = 1.5;
+		const prst_1 = this.add.image(546, 281, "prst");
+		prst_1.scaleX = 0.85;
+		prst_1.scaleY = 0.85;
 
 		this.events.emit("scene-awake");
 	}

@@ -8,8 +8,8 @@
         "createMethodName": "editorCreate",
         "sceneKey": "Intro",
         "compilerOutputLanguage": "TYPE_SCRIPT",
-        "borderWidth": 1024,
-        "borderHeight": 768
+        "borderWidth": 667,
+        "borderHeight": 375
     },
     "displayList": [
         {
@@ -19,32 +19,10 @@
             "texture": {
                 "key": "freepik_forest_01"
             },
-            "x": 512,
-            "y": 385
-        },
-        {
-            "type": "ArcadeSprite",
-            "id": "2f770cd6-45b1-4e7c-bfda-2daf3885c71b",
-            "label": "arcadesprite_1",
-            "texture": {
-                "key": "Pytle_spritesheet"
-            },
-            "x": 814,
-            "y": 697,
-            "scaleX": 0.28650211977903217,
-            "scaleY": 0.23204674920312762,
-            "body.width": 1536,
-            "body.height": 1024
-        },
-        {
-            "type": "Triangle",
-            "id": "bd9383e1-8245-485e-b10c-d7d265de80f7",
-            "label": "triangle_1",
-            "x": 332,
-            "y": 270,
-            "scaleX": 0.3956147840914417,
-            "scaleY": 0.398221366866901,
-            "isFilled": true
+            "x": 334,
+            "y": 188,
+            "scaleX": 0.5555212936806945,
+            "scaleY": 0.47314471077609577
         },
         {
             "type": "Image",
@@ -53,8 +31,8 @@
             "texture": {
                 "key": "Karton"
             },
-            "x": 670,
-            "y": 505
+            "x": 346,
+            "y": 245
         },
         {
             "type": "Image",
@@ -63,8 +41,8 @@
             "texture": {
                 "key": "Plechovka"
             },
-            "x": 844,
-            "y": 565
+            "x": 471,
+            "y": 282
         },
         {
             "type": "Image",
@@ -73,18 +51,18 @@
             "texture": {
                 "key": "Lahev"
             },
-            "x": 536,
-            "y": 552
+            "x": 406,
+            "y": 257
         },
         {
             "type": "Image",
             "id": "96086d7d-c626-43f2-a009-8d552e8bd253",
             "label": "baterka",
             "texture": {
-                "key": "Baterka"
+                "key": "Baterie"
             },
-            "x": 880,
-            "y": 487
+            "x": 368,
+            "y": 319
         },
         {
             "type": "Image",
@@ -93,8 +71,10 @@
             "texture": {
                 "key": "Zvykacka"
             },
-            "x": 666,
-            "y": 567
+            "x": 539,
+            "y": 274,
+            "scaleX": 0.7,
+            "scaleY": 0.7
         },
         {
             "type": "Image",
@@ -103,8 +83,8 @@
             "texture": {
                 "key": "Kapesnik"
             },
-            "x": 489,
-            "y": 650
+            "x": 265,
+            "y": 327
         },
         {
             "type": "Image",
@@ -113,8 +93,10 @@
             "texture": {
                 "key": "Ohryzek"
             },
-            "x": 603,
-            "y": 722,
+            "x": 188,
+            "y": 344,
+            "scaleX": 0.85,
+            "scaleY": 0.85,
             "angle": 82
         },
         {
@@ -124,8 +106,8 @@
             "texture": {
                 "key": "Banan"
             },
-            "x": 984,
-            "y": 559
+            "x": 296,
+            "y": 273
         },
         {
             "type": "Image",
@@ -134,18 +116,20 @@
             "texture": {
                 "key": "Vajgl"
             },
-            "x": 729,
-            "y": 612
+            "x": 436,
+            "y": 326,
+            "scaleX": 0.8,
+            "scaleY": 0.8
         },
         {
             "type": "Image",
             "id": "393f41c2-eb93-4780-9234-5947fba815d5",
             "label": "petka",
             "texture": {
-                "key": "Petka"
+                "key": "PET"
             },
-            "x": 313,
-            "y": 629
+            "x": 209,
+            "y": 282
         },
         {
             "type": "Image",
@@ -154,8 +138,10 @@
             "texture": {
                 "key": "Motyl"
             },
-            "x": 340,
-            "y": 271
+            "x": 248,
+            "y": 94,
+            "scaleX": 0.55,
+            "scaleY": 0.55
         },
         {
             "type": "Image",
@@ -164,8 +150,10 @@
             "texture": {
                 "key": "Duch"
             },
-            "x": 190,
-            "y": 278
+            "x": 161,
+            "y": 101,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -174,8 +162,22 @@
             "texture": {
                 "key": "DivkaStoji"
             },
-            "x": 93,
-            "y": 529
+            "x": 65,
+            "y": 236,
+            "scaleX": 0.6,
+            "scaleY": 0.6
+        },
+        {
+            "type": "Image",
+            "id": "f3ddb461-07eb-4bea-8ab1-b304810e277b",
+            "label": "prazdnyPytel",
+            "texture": {
+                "key": "prazdnyPytel"
+            },
+            "x": 579,
+            "y": 333,
+            "scaleX": 0.25,
+            "scaleY": 0.25
         }
     ],
     "plainObjects": [],

@@ -205,6 +205,7 @@ export default class Game extends Phaser.Scene {
     private setupMonina(): void {
         this.monina = this.add.sprite(200, 560, "Monina", 0); // frame 0
         this.monina.setOrigin(0.5);
+        this.monina.setScale(0.6); // <-- přidáno
         this.monina.visible = false;
 
         this.moninaSequence = [

@@ -10,8 +10,8 @@ import MainMenu from './scenes/MainMenu';
 // https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    width: 1024,
-    height: 760,
+    width: 667,
+    height: 375,
     scale: {
         mode: Phaser.Scale.FIT,                    // Zachová poměr stran a přizpůsobí velikost
         autoCenter: Phaser.Scale.CENTER_BOTH,     // Vycentruje hru

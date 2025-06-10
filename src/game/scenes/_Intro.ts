@@ -19,59 +19,66 @@ export default class _Intro extends Phaser.Scene {
 	editorCreate(): void {
 
 		// background
-		this.add.image(512, 385, "freepik_forest_01");
-
-		// arcadesprite_1
-		const arcadesprite_1 = this.physics.add.sprite(814, 697, "Pytle_spritesheet");
-		arcadesprite_1.scaleX = 0.28650211977903217;
-		arcadesprite_1.scaleY = 0.23204674920312762;
-		arcadesprite_1.body.setSize(1536, 1024, false);
-
-		// triangle_1
-		const triangle_1 = this.add.triangle(332, 270, 0, 128, 64, 0, 128, 128);
-		triangle_1.scaleX = 0.3956147840914417;
-		triangle_1.scaleY = 0.398221366866901;
-		triangle_1.isFilled = true;
+		const background = this.add.image(334, 188, "freepik_forest_01");
+		background.scaleX = 0.5555212936806945;
+		background.scaleY = 0.47314471077609577;
 
 		// karton
-		this.add.image(670, 505, "Karton");
+		this.add.image(346, 245, "Karton");
 
 		// plechovka
-		this.add.image(844, 565, "Plechovka");
+		this.add.image(471, 282, "Plechovka");
 
 		// lahev
-		this.add.image(536, 552, "Lahev");
+		this.add.image(406, 257, "Lahev");
 
 		// baterka
-		this.add.image(880, 487, "Baterka");
+		this.add.image(368, 319, "Baterie");
 
 		// zvykacka
-		this.add.image(666, 567, "Zvykacka");
+		const zvykacka = this.add.image(539, 274, "Zvykacka");
+		zvykacka.scaleX = 0.7;
+		zvykacka.scaleY = 0.7;
 
 		// kapesnik
-		this.add.image(489, 650, "Kapesnik");
+		this.add.image(265, 327, "Kapesnik");
 
 		// ohryzek
-		const ohryzek = this.add.image(603, 722, "Ohryzek");
+		const ohryzek = this.add.image(188, 344, "Ohryzek");
+		ohryzek.scaleX = 0.85;
+		ohryzek.scaleY = 0.85;
 		ohryzek.angle = 82;
 
 		// banan
-		this.add.image(984, 559, "Banan");
+		this.add.image(296, 273, "Banan");
 
 		// vajgl
-		this.add.image(729, 612, "Vajgl");
+		const vajgl = this.add.image(436, 326, "Vajgl");
+		vajgl.scaleX = 0.8;
+		vajgl.scaleY = 0.8;
 
 		// petka
-		this.add.image(313, 629, "Petka");
+		this.add.image(209, 282, "PET");
 
 		// motyl
-		this.add.image(340, 271, "Motyl");
+		const motyl = this.add.image(248, 94, "Motyl");
+		motyl.scaleX = 0.55;
+		motyl.scaleY = 0.55;
 
 		// duch
-		this.add.image(190, 278, "Duch");
+		const duch = this.add.image(161, 101, "Duch");
+		duch.scaleX = 0.6;
+		duch.scaleY = 0.6;
 
 		// divkaStoji
-		this.add.image(93, 529, "DivkaStoji");
+		const divkaStoji = this.add.image(65, 236, "DivkaStoji");
+		divkaStoji.scaleX = 0.6;
+		divkaStoji.scaleY = 0.6;
+
+		// prazdnyPytel
+		const prazdnyPytel = this.add.image(579, 333, "prazdnyPytel");
+		prazdnyPytel.scaleX = 0.25;
+		prazdnyPytel.scaleY = 0.25;
 
 		this.events.emit("scene-awake");
 	}
