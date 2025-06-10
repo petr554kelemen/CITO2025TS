@@ -13,9 +13,9 @@ const config: Phaser.Types.Core.GameConfig = {
     width: 1024,
     height: 760,
     scale: {
-        mode: Phaser.Scale.FIT,                    // Zachová poměr stran
+        //mode: Phaser.Scale.FIT,                    // Zachová poměr stran
         // nebo použij:
-        // mode: Phaser.Scale.RESIZE,              // Roztáhne na celou obrazovku
+        mode: Phaser.Scale.RESIZE,              // Roztáhne na celou obrazovku
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: window.innerWidth,                  // Dynamická šířka
         height: window.innerHeight,                // Dynamická výška
