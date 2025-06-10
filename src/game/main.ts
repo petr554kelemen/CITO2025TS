@@ -51,7 +51,7 @@ const game = new Phaser.Game(config);
 
 // Přizpůsobení při změně orientace nebo velikosti
 window.addEventListener('resize', () => {
-    game.scale.refresh();
+    game.scale.resize(window.innerWidth, window.innerHeight);
 });
 
 window.addEventListener('orientationchange', () => {
