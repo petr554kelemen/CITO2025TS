@@ -25,7 +25,8 @@
     "gameSavedInfo": "Tvůj postup byl uložen. Můžeš se vrátit později."
   },
   "gameOver": {
-    "playAgain": "Zahrát znovu",
-    "confirmReset": "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!"
+    "playAgain": "🔄 Zahrát znovu",
+    "confirmReset": "Opravdu chceš začít znovu?\nTímto smažeš uložené souřadnice a budeš muset hru znovu úspěšně dokončit!",
+    "exploreHint": "Zkus prozkoumat pergamen"
   }
 }

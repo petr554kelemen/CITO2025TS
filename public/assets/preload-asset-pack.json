@@ -12,6 +12,11 @@
                 "key": "Baterie"
             },
             {
+                "url": "assets/Images/button.png",
+                "type": "image",
+                "key": "button"
+            },
+            {
                 "url": "assets/Images/Cito_logo.PNG",
                 "type": "image",
                 "key": "Cito_logo"

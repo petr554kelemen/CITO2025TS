@@ -5,9 +5,14 @@ export default class Scoreboard {
     private timerText!: Phaser.GameObjects.Text;
     private correctAnswers: number = 0;
     private timeLeft: number;
+    private timerLabelTemplate: string;
 
     constructor(scene: Phaser.Scene, odpadkyCount: number, timeLeft: number) {
         this.timeLeft = timeLeft;
+        
+        // Získej lokalizovaný text pro časovač
+        const texts = (scene as any).texts || {};
+        this.timerLabelTemplate = texts?.dialogSequence?.timerLabel || "Čas: {time}";
 
         // Rozměry a pozice boxu
         const boxWidth = odpadkyCount * 36 + 80;
@@ -36,11 +41,12 @@ export default class Scoreboard {
             this.bagIcons.push(icon);
         }
 
-        // Timer na střed boxu, o 15px níž
+        // Timer text - použijeme lokalizovaný formát
+        const initialTimerText = this.timerLabelTemplate.replace("{time}", this.timeLeft.toString());
         this.timerText = scene.add.text(
             boxX,
             boxY + 15,
-            `Čas: ${this.timeLeft}`,
+            initialTimerText,
             {
                 fontSize: '28px',
                 color: '#f8f8f8',
@@ -60,7 +66,8 @@ export default class Scoreboard {
 
     public updateTime(timeLeft: number): void {
         this.timeLeft = timeLeft;
-        this.timerText.setText(`Čas: ${this.timeLeft}`);
+        // Použij lokalizovaný formát
+        this.timerText.setText(this.timerLabelTemplate.replace("{time}", this.timeLeft.toString()));
     }
 
     public reset(): void {

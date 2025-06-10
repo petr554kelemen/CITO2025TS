@@ -10,6 +10,9 @@ export default class GameOver extends Phaser.Scene {
     constructor() {
         super("GameOver");
     }
+    constructor() {
+        super("GameOver");
+    }
 
     init(data: { texts: any }) {
         this.texts = data.texts;

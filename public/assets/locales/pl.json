@@ -23,5 +23,10 @@
     "finalFailScore": "Potrzebujesz co najmniej 8 poprawnych odpowiedzi!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa.",
     "hintButton": "💡 Podpowiedź ({count})",
     "gameSavedInfo": "Twój postęp został zapisany. Możesz wrócić później."
+  },
+  "gameOver": {
+    "playAgain": "🔄 Zagrać ponownie",
+    "confirmReset": "Czy na pewno chcesz zacząć od nowa?\nSpowoduje to usunięcie zapisanych współrzędnych i będziesz musiał pomyślnie ukończyć grę ponownie!",
+    "exploreHint": "Spróbuj zbadać pergamin"
   }
 }
