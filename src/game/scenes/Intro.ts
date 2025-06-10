@@ -77,6 +77,17 @@ export default class Intro extends Phaser.Scene {
 
 
 	create(): void {
+		// Debug info na obrazovku (pouze pokud je zapnutý DEBUG_MODE)
+		if ((window as any).DEBUG_MODE) {
+			const debugText = `Phaser: ${this.scale.width}x${this.scale.height}\nWindow: ${window.innerWidth}x${window.innerHeight}`;
+			this.add.text(10, 10, debugText, {
+				font: "16px Arial",
+				color: "#fff",
+				backgroundColor: "#000a",
+				padding: { left: 8, right: 8, top: 4, bottom: 4 }
+			}).setScrollFactor(0).setDepth(1000);
+		}
+
 		if (this.scale.width <= 700 || this.scale.height <= 400) {
 			this.odpadkyData = this.odpadkyDataMobile.map(o => ({ ...o, sprite: null }));
 			this.createMobileLayout();
@@ -85,11 +96,9 @@ export default class Intro extends Phaser.Scene {
 			this.createDesktopLayout();
 		}
 
-		// V obou případech:
 		this.createOdpadky();
 		this.createMotylAndAnimate();
 
-		// Umožní přeskočit intro kliknutím kamkoliv
 		this.input.once('pointerdown', () => {
 			this.skipIntro();
 		});
