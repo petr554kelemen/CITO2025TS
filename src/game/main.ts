@@ -13,14 +13,12 @@ const config: Phaser.Types.Core.GameConfig = {
     width: 1024,
     height: 760,
     scale: {
-        //mode: Phaser.Scale.FIT,                    // Zachová poměr stran
-        // nebo použij:
-        mode: Phaser.Scale.RESIZE,              // Roztáhne na celou obrazovku
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+        mode: Phaser.Scale.FIT,                    // Zachová poměr stran a přizpůsobí velikost
+        autoCenter: Phaser.Scale.CENTER_BOTH,     // Vycentruje hru
         width: window.innerWidth,                  // Dynamická šířka
         height: window.innerHeight,                // Dynamická výška
         min: {
-            width: 320,                            // Minimální šířka
+            width: 320,                            // Minimální šířka pro mobily
             height: 240                            // Minimální výška
         },
         max: {
@@ -47,3 +45,17 @@ const StartGame = (parent: string) => {
 }
 
 export default StartGame;
+
+// Přidej po vytvoření hry
+const game = new Phaser.Game(config);
+
+// Přizpůsobení při změně orientace nebo velikosti
+window.addEventListener('resize', () => {
+    game.scale.refresh();
+});
+
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        game.scale.refresh();
+    }, 100);
+});
