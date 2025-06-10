@@ -86,6 +86,7 @@ export default class Intro extends Phaser.Scene {
 				backgroundColor: "#000a",
 				padding: { left: 8, right: 8, top: 4, bottom: 4 }
 			}).setScrollFactor(0).setDepth(1000);
+			this.add.text(10, 10, `Phaser: ${this.scale.width}x${this.scale.height}`, { font: "16px Arial", color: "#fff" });
 		}
 
 		if (this.scale.width <= 700 || this.scale.height <= 400) {
