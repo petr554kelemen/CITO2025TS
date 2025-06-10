@@ -22,8 +22,8 @@ export default class Intro extends Phaser.Scene {
 	private dialog!: DialogManager;
 
 
-	// data odpadků na scéně
-	odpadkyData: Odpadek[] = [
+	// Desktop rozmístění (původní hodnoty)
+	private odpadkyDataDesktop: Odpadek[] = [
 		{ typ: "Banan", pozice: { x: 985, y: 555 }, scale: 1.4, status: 'default', sprite: null },
 		{ typ: "Baterie", pozice: { x: 880, y: 485 }, scale: 0.75, status: 'default', sprite: null },
 		{ typ: "Lahev", pozice: { x: 535, y: 550 }, scale: 1.5, status: 'default', sprite: null },
@@ -35,6 +35,23 @@ export default class Intro extends Phaser.Scene {
 		{ typ: "Plechovka", pozice: { x: 845, y: 565 }, angle: 14, status: 'default', sprite: null },
 		{ typ: "PET", pozice: { x: 310, y: 630 }, scale: 1.5, angle: -44, status: 'default', sprite: null }
 	];
+
+	// Mobilní rozmístění (tvé hodnoty)
+	private odpadkyDataMobile: Odpadek[] = [
+		{ typ: "Banan", pozice: { x: 296, y: 273 }, status: 'default', sprite: null },
+		{ typ: "Baterie", pozice: { x: 368, y: 319 }, status: 'default', sprite: null },
+		{ typ: "Lahev", pozice: { x: 406, y: 257 }, status: 'default', sprite: null },
+		{ typ: "Ohryzek", pozice: { x: 188, y: 344 }, scale: 0.85, angle: 82, status: 'default', sprite: null },
+		{ typ: "Kapesnik", pozice: { x: 265, y: 327 }, status: 'default', sprite: null },
+		{ typ: "Vajgl", pozice: { x: 436, y: 326 }, scale: 0.8, status: 'default', sprite: null },
+		{ typ: "Karton", pozice: { x: 346, y: 245 }, status: 'default', sprite: null },
+		{ typ: "Zvykacka", pozice: { x: 539, y: 274 }, scale: 0.7, status: 'default', sprite: null },
+		{ typ: "Plechovka", pozice: { x: 471, y: 282 }, status: 'default', sprite: null },
+		{ typ: "PET", pozice: { x: 209, y: 282 }, status: 'default', sprite: null }
+	];
+
+	// data odpadků na scéně (bude nastaveno v create)
+	odpadkyData: Odpadek[] = [];
 
 	// Další property (třeba sprite pro pytel, logo...)
 	pytel!: Phaser.GameObjects.Sprite;
@@ -61,10 +78,16 @@ export default class Intro extends Phaser.Scene {
 
 	create(): void {
 		if (this.scale.width <= 700 || this.scale.height <= 400) {
+			this.odpadkyData = this.odpadkyDataMobile.map(o => ({ ...o, sprite: null }));
 			this.createMobileLayout();
 		} else {
+			this.odpadkyData = this.odpadkyDataDesktop.map(o => ({ ...o, sprite: null }));
 			this.createDesktopLayout();
 		}
+
+		// V obou případech:
+		this.createOdpadky();
+		this.createMotylAndAnimate();
 
 		// Umožní přeskočit intro kliknutím kamkoliv
 		this.input.once('pointerdown', () => {
@@ -74,61 +97,20 @@ export default class Intro extends Phaser.Scene {
 
 	private createMobileLayout(): void {
 		// background
-		const background = this.add.image(334, 188, "freepik_forest_01");
-		background.scaleX = 0.5555212936806945;
-		background.scaleY = 0.47314471077609577;
-
-		// karton
-		this.add.image(346, 245, "Karton");
-
-		// plechovka
-		this.add.image(471, 282, "Plechovka");
-
-		// lahev
-		this.add.image(406, 257, "Lahev");
-
-		// baterka
-		this.add.image(368, 319, "Baterie");
-
-		// zvykacka
-		const zvykacka = this.add.image(539, 274, "Zvykacka");
-		zvykacka.scaleX = 0.7;
-		zvykacka.scaleY = 0.7;
-
-		// kapesnik
-		this.add.image(265, 327, "Kapesnik");
-
-		// ohryzek
-		const ohryzek = this.add.image(188, 344, "Ohryzek");
-		ohryzek.scaleX = 0.85;
-		ohryzek.scaleY = 0.85;
-		ohryzek.angle = 82;
-
-		// banan
-		this.add.image(296, 273, "Banan");
-
-		// vajgl
-		const vajgl = this.add.image(436, 326, "Vajgl");
-		vajgl.scaleX = 0.8;
-		vajgl.scaleY = 0.8;
-
-		// petka
-		this.add.image(209, 282, "PET");
-
-		// motyl
-		const motyl = this.add.image(248, 94, "Motyl");
-		motyl.scaleX = 0.55;
-		motyl.scaleY = 0.55;
+		this.background = this.add.image(334, 188, "freepik_forest_01");
+		this.background.scaleX = 0.5555212936806945;
+		this.background.scaleY = 0.47314471077609577;
 
 		// duch
-		const duch = this.add.image(161, 101, "Duch");
-		duch.scaleX = 0.6;
-		duch.scaleY = 0.6;
+		this.duch = this.add.sprite(161, 101, "Duch", 0).setAlpha(0).setVisible(false);
 
 		// prazdnyPytel
-		const prazdnyPytel = this.add.image(579, 333, "prazdnyPytel");
-		prazdnyPytel.scaleX = 0.25;
-		prazdnyPytel.scaleY = 0.25;
+		this.pytel = this.add.sprite(579, 333, "prazdnyPytel");
+		this.pytel.scaleX = 0.25;
+		this.pytel.scaleY = 0.25;
+		this.pytel.setVisible(false);
+
+		// případně další objekty (logo, UI prvky...)
 	}
 
 	private createDesktopLayout(): void {
