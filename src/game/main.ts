@@ -12,20 +12,20 @@ const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: 667,
     height: 375,
-    scale: {
-        mode: Phaser.Scale.FIT,                    // Zachová poměr stran a přizpůsobí velikost
-        autoCenter: Phaser.Scale.CENTER_BOTH,     // Vycentruje hru
-        width: window.innerWidth,                  // Dynamická šířka
-        height: window.innerHeight,                // Dynamická výška
-        min: {
-            width: 320,                            // Minimální šířka pro mobily
-            height: 240                            // Minimální výška
-        },
-        max: {
-            width: 1920,                           // Maximální šířka
-            height: 1080                           // Maximální výška
-        }
-    },
+    // scale: {
+    //     mode: Phaser.Scale.FIT,                    // Zachová poměr stran a přizpůsobí velikost
+    //     autoCenter: Phaser.Scale.CENTER_BOTH,     // Vycentruje hru
+    //     width: window.innerWidth,                  // Dynamická šířka
+    //     height: window.innerHeight,                // Dynamická výška
+    //     min: {
+    //         width: 320,                            // Minimální šířka pro mobily
+    //         height: 240                            // Minimální výška
+    //     },
+    //     max: {
+    //         width: 1920,                           // Maximální šířka
+    //         height: 1080                           // Maximální výška
+    //     }
+    // },
     parent: 'game-container',
     backgroundColor: '#028af8',
     scene: [
@@ -39,7 +39,7 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const StartGame = (parent: string) => {
-    (window as any).DEBUG_MODE = false;
+    (window as any).DEBUG_MODE = true;
     return new Phaser.Game({ ...config, parent });
 
 }
