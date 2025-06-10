@@ -1,6 +1,7 @@
 import { addGuides } from '../../utils/ZlatyRez';
 import Phaser from 'phaser';
 import DialogManager from '../../utils/DialogManager';
+import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
 
 type Odpadek = {
 	typ: string;
@@ -20,7 +21,7 @@ type DialogTexts = {
 
 export default class Intro extends Phaser.Scene {
 	private dialog!: DialogManager;
-
+	private responsive!: ResponsiveManager;
 
 	// Desktop rozmístění (původní hodnoty)
 	private odpadkyDataDesktop: Odpadek[] = [
@@ -77,19 +78,19 @@ export default class Intro extends Phaser.Scene {
 
 
 	create(): void {
-		// Debug info na obrazovku (pouze pokud je zapnutý DEBUG_MODE)
+		// Inicializace ResponsiveManager
+		//this.responsive = new ResponsiveManager(this);
+		// Přidej do metody create() každé scény po inicializaci ResponsiveManager
+		this.responsive = new ResponsiveManager(this);
+		this.responsive.checkAndForceOrientation();
+
+		// Debug info pro ladění
 		if ((window as any).DEBUG_MODE) {
-			const debugText = `Phaser: ${this.scale.width}x${this.scale.height}\nWindow: ${window.innerWidth}x${window.innerHeight}`;
-			this.add.text(10, 10, debugText, {
-				font: "16px Arial",
-				color: "#fff",
-				backgroundColor: "#000a",
-				padding: { left: 8, right: 8, top: 4, bottom: 4 }
-			}).setScrollFactor(0).setDepth(1000);
-			this.add.text(10, 10, `Phaser: ${this.scale.width}x${this.scale.height}`, { font: "16px Arial", color: "#fff" });
+			this.responsive.addDebugOverlay();
 		}
 
-		if (this.scale.width <= 700 || this.scale.height <= 400) {
+		// Použij isMobile() pro výběr layoutu
+		if (this.responsive.isMobile()) {
 			this.odpadkyData = this.odpadkyDataMobile.map(o => ({ ...o, sprite: null }));
 			this.createMobileLayout();
 		} else {
@@ -99,6 +100,25 @@ export default class Intro extends Phaser.Scene {
 
 		this.createOdpadky();
 		this.createMotylAndAnimate();
+
+		// Reaguj na změny layoutu
+		this.responsive.on('layoutchange', (layout: LayoutType) => {
+			// Vyčisti existující layout
+			this.cleanExistingLayout();
+
+			// Vytvoř nový layout
+			if (layout === LayoutType.MOBILE) {
+				this.odpadkyData = this.odpadkyDataMobile.map(o => ({ ...o, sprite: null }));
+				this.createMobileLayout();
+			} else {
+				this.odpadkyData = this.odpadkyDataDesktop.map(o => ({ ...o, sprite: null }));
+				this.createDesktopLayout();
+			}
+
+			// Znovu vytvoř společné prvky
+			this.createOdpadky();
+			this.createMotylAndAnimate();
+		});
 
 		this.input.once('pointerdown', () => {
 			this.skipIntro();
@@ -422,5 +442,18 @@ export default class Intro extends Phaser.Scene {
 		}
 
 		this.prevX = curX;
+	}
+
+	// Přidej metodu pro čištění layoutu
+	private cleanExistingLayout(): void {
+		if (this.background) this.background.destroy();
+		if (this.duch) this.duch.destroy();
+		if (this.pytel) this.pytel.destroy();
+		if (this.citoLogo) this.citoLogo.destroy();
+		if (this.motyl) this.motyl.destroy();
+
+		this.odpadkyData.forEach(odpadek => {
+			if (odpadek.sprite) odpadek.sprite.destroy();
+		});
 	}
 }

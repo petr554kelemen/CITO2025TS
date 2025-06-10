@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import DialogManager from "../../utils/DialogManager";
 import { Quiz } from "../../utils/quiz";
 import Scoreboard from "../../utils/scoreboard";
+import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
 
 type DialogTexts = {
     dialogSequence: Record<string, string>;
@@ -54,6 +55,8 @@ export default class Game extends Phaser.Scene {
 
     private originalOdpadky: Odpadek[] = [];
 
+    private responsive!: ResponsiveManager;
+
     constructor() {
         super("Game");
     }
@@ -84,8 +87,27 @@ export default class Game extends Phaser.Scene {
             return;
         }
 
-        // pozadí pro hru s kvízem
-        const backgroundGame = this.add.image(512, 385, "freepik_forest_01");
+        // Inicializace ResponsiveManager
+        //this.responsive = new ResponsiveManager(this);
+        // Přidej do metody create() každé scény po inicializaci ResponsiveManager
+        this.responsive = new ResponsiveManager(this);
+        this.responsive.checkAndForceOrientation();
+
+        // Debug info pro ladění
+        if ((window as any).DEBUG_MODE) {
+            this.responsive.addDebugOverlay();
+        }
+
+        // Použij isMobile() pro výběr layoutu a velikostí
+        const backgroundGame = this.add.image(
+            this.responsive.isMobile() ? 334 : 512,
+            this.responsive.isMobile() ? 188 : 385,
+            "freepik_forest_01"
+        );
+
+        if (this.responsive.isMobile()) {
+            backgroundGame.setScale(0.5555212936806945, 0.47314471077609577);
+        }
         backgroundGame.setOrigin(0.5);
 
         this.cam = this.cameras.main;
@@ -95,21 +117,30 @@ export default class Game extends Phaser.Scene {
         this.cam.setBounds(0, 0, 1024, 768);
         this.cam.setZoom(1);
 
-        // Nastavení scény
-
-        // Nejprve pytel
-        this.pytel = this.add.image(830, 690, 'prazdnyPytel').setInteractive();
+        // Pytel podle typu zařízení
+        if (this.responsive.isMobile()) {
+            this.pytel = this.add.image(579, 333, 'prazdnyPytel').setInteractive();
+            this.pytel.setScale(0.25);
+        } else {
+            this.pytel = this.add.image(830, 690, 'prazdnyPytel').setInteractive();
+            this.pytel.setScale(0.45);
+        }
         this.pytel.setOrigin(0.5);
-        this.pytel.setScale(0.45);
-
 
         // Inicializace scoreboardu
         this.scoreboard = new Scoreboard(this, this.odpadky.length, 0);
 
         this.createOdpadky();
 
+        // Nastav Moninu podle typu zařízení
         this.setupMonina();
-        this.monina = this.add.sprite(200, 540, "monina", 0); // frame 0
+        if (this.responsive.isMobile()) {
+            this.monina.setPosition(160, 310);
+            this.monina.setScale(0.4);
+        } else {
+            this.monina.setPosition(200, 560);
+            this.monina.setScale(0.6);
+        }
 
         if (this.monina) {
             this.monina.alpha = 0.5; // Nastavení průhlednosti Moniny
@@ -562,7 +593,7 @@ export default class Game extends Phaser.Scene {
     }
 
     update(): void {
-        
+
 
     }
 
@@ -638,6 +669,65 @@ export default class Game extends Phaser.Scene {
                 });
             });
         }
+    }
+
+    // Přidej metodu pro reset layoutu
+    private resetLayout(layout: LayoutType): void {
+        // Resetování pozic po změně layoutu
+        const background = this.children.list.find(
+            child => child instanceof Phaser.GameObjects.Image &&
+                (child as Phaser.GameObjects.Image).texture.key === "freepik_forest_01"
+        ) as Phaser.GameObjects.Image;
+
+        if (background) {
+            if (layout === LayoutType.MOBILE) {
+                background.setPosition(334, 188);
+                background.setScale(0.5555212936806945, 0.47314471077609577);
+            } else {
+                background.setPosition(512, 385);
+                background.setScale(1);
+            }
+        }
+
+        // Přemístění pytle
+        if (this.pytel) {
+            if (layout === LayoutType.MOBILE) {
+                this.pytel.setPosition(579, 333);
+                this.pytel.setScale(0.25);
+            } else {
+                this.pytel.setPosition(830, 690);
+                this.pytel.setScale(0.45);
+            }
+        }
+
+        // Přemístění Moniny (pokud je viditelná)
+        if (this.monina && this.monina.visible) {
+            if (layout === LayoutType.MOBILE) {
+                this.monina.setPosition(160, 310);
+                this.monina.setScale(0.4);
+            } else {
+                this.monina.setPosition(200, 560);
+                this.monina.setScale(0.6);
+            }
+        }
+
+        // Přemístění odpadků podle layoutu
+        this.odpadky.forEach((odpadek, index) => {
+            if (odpadek.sprite) {
+                const newPos = layout === LayoutType.MOBILE ?
+                    this.originalOdpadky[index].pozice : // Použij původní pozice
+                    this.originalOdpadky[index].pozice;
+
+                odpadek.sprite.setPosition(newPos.x, newPos.y);
+
+                // Nastav scale podle layoutu
+                const scale = layout === LayoutType.MOBILE ?
+                    (this.originalOdpadky[index].scale || 1) * 0.7 : // Menší pro mobil
+                    (this.originalOdpadky[index].scale || 1);
+
+                odpadek.sprite.setScale(scale);
+            }
+        });
     }
 }
 

@@ -1,11 +1,13 @@
 // Scene: Zobrazení konce hry
 
 import Phaser from "phaser";
+import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
 /* START-USER-IMPORTS */
 /* END-USER-IMPORTS */
 
 export default class GameOver extends Phaser.Scene {
     private texts: any;
+    private responsive!: ResponsiveManager;
 
     constructor() {
         super("GameOver");
@@ -165,6 +167,17 @@ export default class GameOver extends Phaser.Scene {
     create() {
         this.cameras.main.setBackgroundColor(0x222222);
 
+        // Inicializace ResponsiveManager
+        //this.responsive = new ResponsiveManager(this);
+        // Přidej do metody create() každé scény po inicializaci ResponsiveManager
+        this.responsive = new ResponsiveManager(this);
+        this.responsive.checkAndForceOrientation();
+
+        // Debug info pro ladění
+        if ((window as any).DEBUG_MODE) {
+            this.responsive.addDebugOverlay();
+        }
+
         // Efekt: zoom + fade-in
         this.cameras.main.setZoom(0.5);
         this.cameras.main.fadeIn(1200, 0, 0, 0);
@@ -175,11 +188,28 @@ export default class GameOver extends Phaser.Scene {
             ease: 'Quad.easeOut'
         });
 
-        // Rozhodnutí podle šířky (můžeš upravit hranici podle potřeby)
-        if (this.scale.width <= 700 || this.scale.height <= 400) {
+        // Použij isMobile() pro výběr layoutu
+        if (this.responsive.isMobile()) {
             this.createMobileLayout();
         } else {
             this.createDesktopLayout();
         }
+
+        // Reaguj na změny layoutu
+        this.responsive.on('layoutchange', (layout: LayoutType) => {
+            // Vyčisti existující layout
+            this.children.list.forEach((child) => {
+                if (child instanceof Phaser.GameObjects.GameObject) {
+                    child.destroy();
+                }
+            });
+
+            // Vytvoř nový layout
+            if (layout === LayoutType.MOBILE) {
+                this.createMobileLayout();
+            } else {
+                this.createDesktopLayout();
+            }
+        });
     }
 }

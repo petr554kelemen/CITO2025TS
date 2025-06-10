@@ -4,6 +4,7 @@
 
 import Phaser from "phaser";
 /* START-USER-IMPORTS */
+import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
 /* END-USER-IMPORTS */
 
 declare global {
@@ -35,6 +36,7 @@ export default class Preloader extends Phaser.Scene {
     }
 
     private progressBar!: Phaser.GameObjects.Rectangle;
+    private responsive!: ResponsiveManager;
 
     /* START-USER-CODE */
 
@@ -77,6 +79,21 @@ export default class Preloader extends Phaser.Scene {
     create() {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
+
+        // Inicializace ResponsiveManager
+        this.responsive = new ResponsiveManager(this);
+        
+        // Debug info pro ladění
+        if ((window as any).DEBUG_MODE) {
+            this.responsive.addDebugOverlay();
+        }
+        
+        // Přizpůsobit pozice loading baru podle zařízení
+        if (this.responsive.isMobile()) {
+            // Mobilní layout - menší a více nahoru
+            this.progressBar.setPosition(334, 200);
+            this.progressBar.displayWidth = 300;
+        }
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         window.WebFont.load({

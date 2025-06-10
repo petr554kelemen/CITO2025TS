@@ -9,9 +9,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DynaPuff:wdth,wght@95,600&family=Barrio&family=WDXL+Lubrifont+TC&family=Kings&family=Merienda:wght@300..900&display=swap"
         rel="stylesheet">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="orientation" content="landscape">
     <title>Geocaching hra - Virtuální CITO</title>
 
     <style>
@@ -41,16 +42,26 @@
             background-color: #000000;
         }
 
-        #game-container,
-        canvas {
-            width: 100vw !important;
-            height: 100vh !important;
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #000;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #game-container canvas {
             display: block;
             margin: 0 auto;
-            padding: 0;
-            box-sizing: border-box;
             background: #000;
-            /* pro lepší kontrast okrajů */
+            max-width: 100vw;
+            max-height: 100vh;
+            aspect-ratio: 16/9;
+            /* Maximální velikost canvasu, aby nebyl příliš velký na desktopech */
+            max-width: 1024px;
+            max-height: 576px;
         }
     </style>
 </head>
