@@ -89,7 +89,7 @@ export default class GameOver extends Phaser.Scene {
 			const confirmed = window.confirm(confirmResetText);
 			if (confirmed) {
 				localStorage.removeItem('cito2025_success');
-				this.scene.start('Game');
+				this.scene.start('Intro'); // Přesměruj na Intro, která má všechne potřebné data
 			}
 		});
 
