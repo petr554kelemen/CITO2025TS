@@ -52,6 +52,8 @@ export default class Game extends Phaser.Scene {
     private totalHintsLeft: number = 2;
     private lastGameSuccess: boolean = false;
 
+    private originalOdpadky: Odpadek[] = [];
+
     constructor() {
         super("Game");
     }
@@ -64,7 +66,9 @@ export default class Game extends Phaser.Scene {
         } else {
             this.language = 'cs'; // výchozí jazyk
         }
-        this.odpadky = data.odpadkyData; // <-- přidej toto
+        // Ulož originál pro restart
+        this.originalOdpadky = data.odpadkyData.map(o => ({ ...o, sprite: null }));
+        this.odpadky = data.odpadkyData.map(o => ({ ...o, sprite: null }));
     }
 
     async create(): Promise<void> {
@@ -622,10 +626,10 @@ export default class Game extends Phaser.Scene {
 
                 this.cameras.main.once('camerafadeoutcomplete', () => {
                     if (this.lastGameSuccess) {
-                        this.scene.start('GameOver');
+                        this.scene.start('GameOver', { texts: this.texts });
                     } else {
                         this.scene.start('Game', {
-                            odpadkyData: this.odpadky,
+                            odpadkyData: this.originalOdpadky.map(o => ({ ...o, sprite: null })), // ✅ Použij originální data
                             language: this.language,
                             texts: this.texts
                         });
