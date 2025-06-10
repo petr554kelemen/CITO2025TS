@@ -6,21 +6,22 @@
     <link rel="icon" type="image/png" href="./favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wdth,wght@95,600&family=Barrio&family=WDXL+Lubrifont+TC&family=Kings&family=Merienda:wght@300..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DynaPuff:wdth,wght@95,600&family=Barrio&family=WDXL+Lubrifont+TC&family=Kings&family=Merienda:wght@300..900&display=swap"
+        rel="stylesheet">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Geocaching hra - Virtuální CITO</title>
-    
+
     <style>
-        html, body {
+        body,
+        html {
+            width: 100vw;
+            height: 100vh;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
-            touch-action: none; /* Zakáže scrollování na touch zařízeních */
-            background-color: #000000;
         }
 
         /* Pro iOS Safari - skryje address bar */
@@ -40,21 +41,16 @@
             background-color: #000000;
         }
 
-        #game-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
+        #game-container,
         canvas {
+            width: 100vw !important;
+            height: 100vh !important;
             display: block;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100vw;
-            max-height: 100vh;
-            object-fit: contain; /* Zachová poměr stran */
+            margin: 0 auto;
+            padding: 0;
+            box-sizing: border-box;
+            background: #000;
+            /* pro lepší kontrast okrajů */
         }
     </style>
 </head>
