@@ -8,20 +8,10 @@
         "createMethodName": "editorCreate",
         "sceneKey": "MainMenu",
         "compilerOutputLanguage": "TYPE_SCRIPT",
-        "borderWidth": 1024,
-        "borderHeight": 768
+        "borderWidth": 667,
+        "borderHeight": 375
     },
     "displayList": [
-        {
-            "type": "Image",
-            "id": "eddaf8e1-94d1-401d-a328-cdfb23d1fef5",
-            "label": "background",
-            "texture": {
-                "key": "background"
-            },
-            "x": 512,
-            "y": 384
-        },
         {
             "type": "Image",
             "id": "2342b7f3-7702-4d62-b539-e4e6679f8290",
@@ -29,15 +19,19 @@
             "texture": {
                 "key": "freepik_forest_02"
             },
-            "x": 583,
-            "y": 383
+            "x": 337,
+            "y": 187,
+            "scaleX": 0.5824542029273708,
+            "scaleY": 0.4735762549744301
         },
         {
             "type": "Text",
             "id": "e5babb96-c526-40f4-94d3-ce0955d9767d",
             "label": "logo",
-            "x": 512,
-            "y": 167,
+            "x": 377,
+            "y": 61,
+            "scaleX": 0.5877001169079235,
+            "scaleY": 0.5215138914070222,
             "originX": 0.5,
             "originY": 0.5,
             "text": "Virtuální CITO",
@@ -56,8 +50,8 @@
             "type": "Text",
             "id": "849c46c6-b507-4dba-9e0b-1d60465186c2",
             "label": "text",
-            "x": 517,
-            "y": 276,
+            "x": 392,
+            "y": 113,
             "originX": 0.5,
             "originY": 0.5,
             "text": "GEOCACHING GAME",
@@ -75,10 +69,10 @@
             "texture": {
                 "key": "Cito_logo"
             },
-            "x": 524,
-            "y": 448,
-            "scaleX": 0.25,
-            "scaleY": 0.25
+            "x": 370,
+            "y": 193,
+            "scaleX": 0.15,
+            "scaleY": 0.15
         },
         {
             "type": "Image",
@@ -87,8 +81,8 @@
             "texture": {
                 "key": "flag_cs"
             },
-            "x": 374,
-            "y": 636
+            "x": 270,
+            "y": 296
         },
         {
             "type": "Image",
@@ -97,8 +91,8 @@
             "texture": {
                 "key": "flag_en"
             },
-            "x": 512,
-            "y": 633
+            "x": 370,
+            "y": 300
         },
         {
             "type": "Image",
@@ -107,15 +101,17 @@
             "texture": {
                 "key": "flag_pl"
             },
-            "x": 664,
-            "y": 634
+            "x": 470,
+            "y": 300
         },
         {
             "type": "Text",
             "id": "0eaffb04-737c-41e3-aefe-5291650677b2",
             "label": "text_1",
-            "x": 496,
-            "y": 723,
+            "x": 368,
+            "y": 347,
+            "originX": 0.5,
+            "originY": 0.5,
             "text": "(c) 2022 - 2025, pettr554\nlicence MIT"
         },
         {
@@ -125,10 +121,10 @@
             "texture": {
                 "key": "DivkaStoji"
             },
-            "x": 123,
-            "y": 421,
-            "scaleX": 0.75,
-            "scaleY": 0.75
+            "x": 107,
+            "y": 218,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -137,10 +133,10 @@
             "texture": {
                 "key": "plnyPytel"
             },
-            "x": 874,
-            "y": 524,
-            "scaleX": 0.25,
-            "scaleY": 0.45
+            "x": 604,
+            "y": 264,
+            "scaleX": 0.2,
+            "scaleY": 0.35
         }
     ],
     "plainObjects": [],

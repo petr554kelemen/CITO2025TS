@@ -133,143 +133,159 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     private createMobileLayout(): void {
+        // Designové rozměry z main.ts
+        const DESIGN_WIDTH = 667;
+        const DESIGN_HEIGHT = 375;
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const centerX = gameWidth / 2;
-        const centerY = gameHeight / 2;
-        
-        // Pozadí - vždy centrováno
-        const background = this.add.image(centerX, centerY, "freepik_forest_02");
-        
-        // Zachováme poměr stran a zajistíme, že bude pokrývat celou plochu
-        const scaleX = gameWidth / background.width;
-        const scaleY = gameHeight / background.height;
-        const scale = Math.max(scaleX, scaleY);
-        background.setScale(scale);
-        
-        // Název hry - umístěn relativně k horní části obrazovky
-        const titleY = gameHeight * 0.22;
-        this.add.text(centerX, titleY, "Virtuální CITO", {
-            fontFamily: "Kings",
-            fontSize: Math.min(48, gameWidth * 0.14) + "px", // Menší font pro malé displeje
-            color: "#d1d289ff",
-            stroke: "#931616ff",
-            strokeThickness: 3,
-            align: "center"
-        }).setOrigin(0.5);
+        const scaleFactor = this.responsive.getScaleFactor(DESIGN_WIDTH, DESIGN_HEIGHT);
 
-        // Podnadpis
-        this.add.text(centerX, titleY + (gameHeight * 0.12), "GEOCACHING GAME", {
-            fontFamily: "Arial Black",
-            fontSize: Math.min(22, gameWidth * 0.065) + "px",
-            color: "#fff",
-            stroke: "#000",
-            strokeThickness: 5,
-            align: "center"
-        }).setOrigin(0.5);
-
-        // Logo - přizpůsobení velikosti obrazovce
-        const logoScale = Math.min(0.18, gameWidth * 0.0005);
-        this.add.image(centerX, centerY, "Cito_logo")
-            .setOrigin(0.5)
-            .setScale(logoScale);
-
-        // Dívka - umístěna relativně vlevo
-        this.add.image(gameWidth * 0.2, gameHeight * 0.75, "DivkaStoji")
-            .setOrigin(0.5)
-            .setScale(Math.min(0.6, gameHeight * 0.0015));
-
-        // Plný pytel - umístěn relativně vpravo
-        this.add.image(gameWidth * 0.8, gameHeight * 0.7, "plnyPytel")
-            .setOrigin(0.5)
-            .setScale(Math.min(0.18, gameHeight * 0.0005), Math.min(0.32, gameHeight * 0.0009));
-
-        // Vlajky pro výběr jazyka - relativní k šířce obrazovky
-        const langs: Lang[] = ['cs', 'en', 'pl'];
-        const rozestup = gameWidth * 0.15; // Relativní rozestupy
-        langs.forEach((lang, idx) => {
-            let x = centerX + (idx - 1) * rozestup;
-            this.add.image(x, gameHeight * 0.85, `flag_${lang}`)
-                .setInteractive()
-                .setOrigin(0.5)
-                .setScale(Math.min(0.7, gameHeight * 0.002))
-                .on('pointerup', () => this.selectLang(lang));
-        });
-
-        // Licence - umístěna relativně ke spodní části
-        this.add.text(centerX, gameHeight * 0.95, "(c) 2022 - 2025, pettr554\nlicence MIT", {
-            fontFamily: "Arial",
-            fontSize: Math.min(12, gameWidth * 0.03) + "px",
-            color: "#fff",
-            align: "center"
-        }).setOrigin(0.5);
-    }
-
-    private createDesktopLayout(): void {
-        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const centerX = gameWidth / 2;
-        const centerY = gameHeight / 2;
+        // Přepočet souřadnic a scale z editoru (pro design 667x375)
+        const px = (x: number) => x * (gameWidth / DESIGN_WIDTH);
+        const py = (y: number) => y * (gameHeight / DESIGN_HEIGHT);
 
         // Pozadí
-        const background = this.add.image(centerX, centerY, "freepik_forest_02");
-        const scaleX = gameWidth / background.width;
-        const scaleY = gameHeight / background.height;
-        const scale = Math.max(scaleX, scaleY);
-        background.setScale(scale);
+        const background = this.add.image(px(337), py(187), "freepik_forest_02");
+        background.setScale(0.582 * scaleFactor, 0.474 * scaleFactor);
 
         // Název hry
-        this.add.text(centerX, gameHeight * 0.22, "Virtuální CITO", {
-            fontFamily: "Kings",
-            fontSize: Math.min(96, gameWidth * 0.14) + "px",
+        const logo = this.add.text(px(377), py(61), "Virtuální CITO", {
+            fontFamily: "Barrio",
+            fontSize: 96 * scaleFactor + "px",
             color: "#d1d289ff",
+            fontStyle: "bold",
             stroke: "#931616ff",
-            strokeThickness: 5,
-            align: "center"
+            strokeThickness: 5 * scaleFactor,
+            align: "center",
+            shadow: {
+                offsetX: 5 * scaleFactor,
+                offsetY: 5 * scaleFactor,
+                fill: true
+            }
         }).setOrigin(0.5);
+        logo.setScale(0.588 * scaleFactor, 0.522 * scaleFactor);
 
         // Podnadpis
-        this.add.text(centerX, gameHeight * 0.36, "GEOCACHING GAME", {
+        const subtitle = this.add.text(px(392), py(113), "GEOCACHING GAME", {
             fontFamily: "Arial Black",
-            fontSize: Math.min(38, gameWidth * 0.065) + "px",
-            color: "#fff",
-            stroke: "#000",
-            strokeThickness: 8,
+            fontSize: 38 * scaleFactor + "px",
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 8 * scaleFactor,
             align: "center"
         }).setOrigin(0.5);
 
-        // Logo
-        this.add.image(centerX, centerY, "Cito_logo")
-            .setOrigin(0.5)
-            .setScale(Math.min(0.25, gameWidth * 0.0005));
+        // Logo CITO
+        const citoLogo = this.add.image(px(370), py(193), "Cito_logo");
+        citoLogo.setScale(0.15 * scaleFactor);
 
-        // Dívka
-        this.add.image(gameWidth * 0.12, gameHeight * 0.55, "DivkaStoji")
-            .setOrigin(0.5)
-            .setScale(Math.min(0.75, gameHeight * 0.0015));
-
-        // Plný pytel
-        this.add.image(gameWidth * 0.85, gameHeight * 0.68, "plnyPytel")
-            .setOrigin(0.5)
-            .setScale(Math.min(0.25, gameHeight * 0.0005), Math.min(0.45, gameHeight * 0.0009));
-
-        // Vlajky pro výběr jazyka
-        const langs: Lang[] = ['cs', 'en', 'pl'];
-        const rozestup = gameWidth * 0.15;
-        langs.forEach((lang, idx) => {
-            let x = centerX + (idx - 1) * rozestup;
-            this.add.image(x, gameHeight * 0.85, `flag_${lang}`)
+        // Vlajky
+        const flags: { lang: Lang, x: number, y: number }[] = [
+            { lang: 'cs', x: 270, y: 296 },
+            { lang: 'en', x: 370, y: 300 },
+            { lang: 'pl', x: 470, y: 300 }
+        ];
+        flags.forEach(flag => {
+            this.add.image(px(flag.x), py(flag.y), `flag_${flag.lang}`)
                 .setInteractive()
                 .setOrigin(0.5)
-                .setScale(Math.min(0.8, gameHeight * 0.002))
-                .on('pointerup', () => this.selectLang(lang));
+                .on('pointerup', () => this.selectLang(flag.lang));
         });
 
         // Licence
-        this.add.text(centerX, gameHeight * 0.95, "(c) 2022 - 2025, pettr554\nlicence MIT", {
+        this.add.text(px(368), py(347), "(c) 2022 - 2025, pettr554\nlicence MIT", {
             fontFamily: "Arial",
-            fontSize: Math.min(18, gameWidth * 0.03) + "px",
+            fontSize: 18 * scaleFactor + "px",
             color: "#fff",
             align: "center"
         }).setOrigin(0.5);
+
+        // Dívka
+        const divkaStoji = this.add.image(px(107), py(218), "DivkaStoji")
+            .setOrigin(0.5)
+            .setScale(0.6 * scaleFactor);
+
+        // Plný pytel
+        const plnyPytel = this.add.image(px(604), py(264), "plnyPytel")
+            .setOrigin(0.5)
+            .setScale(0.2 * scaleFactor, 0.35 * scaleFactor);
+    }
+
+    private createDesktopLayout(): void {
+        // Designové rozměry z main.ts
+        const DESIGN_WIDTH = 667;
+        const DESIGN_HEIGHT = 375;
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
+        const scaleFactor = this.responsive.getScaleFactor(DESIGN_WIDTH, DESIGN_HEIGHT);
+
+        // Přepočet souřadnic a scale z editoru (pro design 667x375)
+        const px = (x: number) => x * (gameWidth / DESIGN_WIDTH);
+        const py = (y: number) => y * (gameHeight / DESIGN_HEIGHT);
+
+        // Pozadí
+        const background = this.add.image(px(337), py(187), "freepik_forest_02");
+        background.setScale(0.582 * scaleFactor, 0.474 * scaleFactor);
+
+        // Název hry
+        const logo = this.add.text(px(377), py(61), "Virtuální CITO", {
+            fontFamily: "Barrio",
+            fontSize: 96 * scaleFactor + "px",
+            color: "#d1d289ff",
+            fontStyle: "bold",
+            stroke: "#931616ff",
+            strokeThickness: 5 * scaleFactor,
+            align: "center",
+            shadow: {
+                offsetX: 5 * scaleFactor,
+                offsetY: 5 * scaleFactor,
+                fill: true
+            }
+        }).setOrigin(0.5);
+        logo.setScale(0.588 * scaleFactor, 0.522 * scaleFactor);
+
+        // Podnadpis
+        const subtitle = this.add.text(px(392), py(113), "GEOCACHING GAME", {
+            fontFamily: "Arial Black",
+            fontSize: 38 * scaleFactor + "px",
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 8 * scaleFactor,
+            align: "center"
+        }).setOrigin(0.5);
+
+        // Logo CITO
+        const citoLogo = this.add.image(px(370), py(193), "Cito_logo");
+        citoLogo.setScale(0.15 * scaleFactor);
+
+        // Vlajky
+        const flags: { lang: Lang, x: number, y: number }[] = [
+            { lang: 'cs', x: 270, y: 296 },
+            { lang: 'en', x: 370, y: 300 },
+            { lang: 'pl', x: 470, y: 300 }
+        ];
+        flags.forEach(flag => {
+            this.add.image(px(flag.x), py(flag.y), `flag_${flag.lang}`)
+                .setInteractive()
+                .setOrigin(0.5)
+                .on('pointerup', () => this.selectLang(flag.lang));
+        });
+
+        // Licence
+        this.add.text(px(368), py(347), "(c) 2022 - 2025, pettr554\nlicence MIT", {
+            fontFamily: "Arial",
+            fontSize: 18 * scaleFactor + "px",
+            color: "#fff",
+            align: "center"
+        }).setOrigin(0.5);
+
+        // Dívka
+        const divkaStoji = this.add.image(px(107), py(218), "DivkaStoji")
+            .setOrigin(0.5)
+            .setScale(0.6 * scaleFactor);
+
+        // Plný pytel
+        const plnyPytel = this.add.image(px(604), py(264), "plnyPytel")
+            .setOrigin(0.5)
+            .setScale(0.2 * scaleFactor, 0.35 * scaleFactor);
     }
 
 
