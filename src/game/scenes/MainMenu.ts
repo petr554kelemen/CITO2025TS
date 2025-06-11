@@ -108,7 +108,7 @@ export default class MainMenu extends Phaser.Scene {
         const deviceType = this.responsive.getDeviceType();
         
         // Použij pouze mobilní nebo desktopový layout (tablety použijí mobilní)
-        if (deviceType === DeviceType.MOBILE || deviceType === DeviceType.TABLET) {
+        if (deviceType === DeviceType.MOBILE) {
             this.createMobileLayout();
         } else {
             this.createDesktopLayout();
@@ -207,13 +207,22 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     private createDesktopLayout(): void {
+        const gameWidth = this.scale.width;
+        const gameHeight = this.scale.height;
+        const centerX = gameWidth / 2;
+        const centerY = gameHeight / 2;
+
         // Pozadí
-        this.add.image(583, 383, "freepik_forest_02");
+        const background = this.add.image(centerX, centerY, "freepik_forest_02");
+        const scaleX = gameWidth / background.width;
+        const scaleY = gameHeight / background.height;
+        const scale = Math.max(scaleX, scaleY);
+        background.setScale(scale);
 
         // Název hry
-        this.add.text(512, 180, "Virtuální CITO", {
+        this.add.text(centerX, gameHeight * 0.22, "Virtuální CITO", {
             fontFamily: "Kings",
-            fontSize: "96px",
+            fontSize: Math.min(96, gameWidth * 0.14) + "px",
             color: "#d1d289ff",
             stroke: "#931616ff",
             strokeThickness: 5,
@@ -221,9 +230,9 @@ export default class MainMenu extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Podnadpis
-        this.add.text(512, 276, "GEOCACHING GAME", {
+        this.add.text(centerX, gameHeight * 0.36, "GEOCACHING GAME", {
             fontFamily: "Arial Black",
-            fontSize: "38px",
+            fontSize: Math.min(38, gameWidth * 0.065) + "px",
             color: "#fff",
             stroke: "#000",
             strokeThickness: 8,
@@ -231,31 +240,36 @@ export default class MainMenu extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Logo
-        this.add.image(524, 448, "Cito_logo").setOrigin(0.5).setScale(0.25);
+        this.add.image(centerX, centerY, "Cito_logo")
+            .setOrigin(0.5)
+            .setScale(Math.min(0.25, gameWidth * 0.0005));
 
         // Dívka
-        this.add.image(123, 421, "DivkaStoji").setOrigin(0.5).setScale(0.75);
+        this.add.image(gameWidth * 0.12, gameHeight * 0.55, "DivkaStoji")
+            .setOrigin(0.5)
+            .setScale(Math.min(0.75, gameHeight * 0.0015));
 
         // Plný pytel
-        this.add.image(874, 524, "plnyPytel").setOrigin(0.5).setScale(0.25, 0.45);
+        this.add.image(gameWidth * 0.85, gameHeight * 0.68, "plnyPytel")
+            .setOrigin(0.5)
+            .setScale(Math.min(0.25, gameHeight * 0.0005), Math.min(0.45, gameHeight * 0.0009));
 
         // Vlajky pro výběr jazyka
         const langs: Lang[] = ['cs', 'en', 'pl'];
-        const rozestup = 100;
-        let xPosVlajek = 512;
+        const rozestup = gameWidth * 0.15;
         langs.forEach((lang, idx) => {
-            let x = xPosVlajek + (idx - 1) * rozestup;
-            this.add.image(x, 600, `flag_${lang}`)
+            let x = centerX + (idx - 1) * rozestup;
+            this.add.image(x, gameHeight * 0.85, `flag_${lang}`)
                 .setInteractive()
                 .setOrigin(0.5)
-                .setScale(0.8)
+                .setScale(Math.min(0.8, gameHeight * 0.002))
                 .on('pointerup', () => this.selectLang(lang));
         });
 
         // Licence
-        this.add.text(512, 725, "(c) 2022 - 2025, pettr554\nlicence MIT", {
+        this.add.text(centerX, gameHeight * 0.95, "(c) 2022 - 2025, pettr554\nlicence MIT", {
             fontFamily: "Arial",
-            fontSize: "18px",
+            fontSize: Math.min(18, gameWidth * 0.03) + "px",
             color: "#fff",
             align: "center"
         }).setOrigin(0.5);
@@ -263,6 +277,11 @@ export default class MainMenu extends Phaser.Scene {
 
 
     private selectLang(lang: string): void {
+        // Pokus o fullscreen (funguje jen na základě uživatelské akce)
+        if (!this.scale.isFullscreen) {
+            this.scale.startFullscreen();
+        }
+
         const texts = this.cache.json.get(`lang-${lang}`);
         if (!texts) {
             // Pro případ, že by nebyl daný jazyk v cache, fallback na angličtinu

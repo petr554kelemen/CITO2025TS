@@ -18,17 +18,20 @@ export default class GameOver extends Phaser.Scene {
     }
 
     private createMobileLayout(): void {
+        const gameWidth = this.scale.width;
+        const gameHeight = this.scale.height;
+        const centerX = gameWidth / 2;
+        const centerY = gameHeight / 2;
+
         // Pergamen
-        const pergamen_bkg = this.add.image(324, 170, "pergamen_bkg");
-        pergamen_bkg.scaleX = 0.85;
-        pergamen_bkg.scaleY = 0.71;
-        pergamen_bkg.setOrigin(0.5, 0.5);
+        const pergamen_bkg = this.add.image(centerX, centerY, "pergamen_bkg");
+        pergamen_bkg.setScale(Math.min(0.85, gameWidth * 0.0025), Math.min(0.71, gameHeight * 0.004));
 
         // Souřadnice
         const coordsText = "N 50°10.391\nE 017°36.226";
-        const coords = this.add.text(324, 170, coordsText, {
+        const coords = this.add.text(centerX, centerY, coordsText, {
             fontFamily: "Merienda, Arial, sans-serif",
-            fontSize: "40px",
+            fontSize: Math.min(40, gameWidth * 0.07) + "px",
             color: "#207a1e",
             align: "center",
             stroke: "#ffe066",
@@ -38,9 +41,8 @@ export default class GameOver extends Phaser.Scene {
         coords.setAlpha(0.05);
 
         // Prst
-        const prst_1 = this.add.image(546, 281, "prst");
-        prst_1.scaleX = 0.85;
-        prst_1.scaleY = 0.85;
+        const prst_1 = this.add.image(centerX + gameWidth * 0.34, centerY + gameHeight * 0.22, "prst");
+        prst_1.setScale(Math.min(0.85, gameWidth * 0.0015));
         prst_1.setDepth(10).setVisible(true);
 
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
@@ -58,9 +60,9 @@ export default class GameOver extends Phaser.Scene {
         });
 
         // Drobnější text dole
-        this.add.text(324, 340, "Stav dokončení je uložen, souřadnice lze zobrazit kdykoliv znovu.", {
+        this.add.text(centerX, gameHeight * 0.92, "Stav dokončení je uložen, souřadnice lze zobrazit kdykoliv znovu.", {
             fontFamily: "Arial",
-            fontSize: "14px",
+            fontSize: Math.min(14, gameWidth * 0.025) + "px",
             color: "#fff",
             align: "center"
         }).setOrigin(0.5);
@@ -68,9 +70,9 @@ export default class GameOver extends Phaser.Scene {
         // Tlačítko "Zahrát znovu"
         const playAgainText = this.texts?.gameOver?.playAgain ?? "Zahrát znovu";
         const confirmResetText = this.texts?.gameOver?.confirmReset ?? "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!";
-        const btn = this.add.text(324, 300, playAgainText, {
+        const btn = this.add.text(centerX, centerY + gameHeight * 0.18, playAgainText, {
             fontFamily: "Arial Black",
-            fontSize: "22px",
+            fontSize: Math.min(22, gameWidth * 0.04) + "px",
             color: "#1565c0",
             backgroundColor: "#fff",
             padding: { left: 16, right: 16, top: 6, bottom: 6 }
@@ -86,22 +88,27 @@ export default class GameOver extends Phaser.Scene {
 
         // Informace o uložení hry
         const infoText = this.texts.dialogSequence?.gameSavedInfo || "Tvůj postup byl uložen. Můžeš se vrátit později.";
-        this.add.text(324, 320, infoText, {
-            font: "14px Arial",
+        this.add.text(centerX, centerY + gameHeight * 0.22, infoText, {
+            font: Math.min(14, gameWidth * 0.025) + "px Arial",
             color: "#fff"
         }).setOrigin(0.5);
     }
 
     private createDesktopLayout(): void {
+        const gameWidth = this.scale.width;
+        const gameHeight = this.scale.height;
+        const centerX = gameWidth / 2;
+        const centerY = gameHeight / 2;
+
         // Pergamen
-        const pergamen = this.add.image(512, 384, "pergamen_bkg");
-        pergamen.setOrigin(0.5).setScale(1.2);
+        const pergamen = this.add.image(centerX, centerY, "pergamen_bkg");
+        pergamen.setScale(Math.min(1.2, gameWidth * 0.0025));
 
         // Souřadnice
         const coordsText = "N 50°10.391\nE 017°36.226";
-        const coords = this.add.text(512, 384, coordsText, {
+        const coords = this.add.text(centerX, centerY, coordsText, {
             fontFamily: "Merienda, Arial, sans-serif",
-            fontSize: "72px",
+            fontSize: Math.min(72, gameWidth * 0.11) + "px",
             color: "#207a1e",
             align: "center",
             stroke: "#ffe066",
@@ -111,8 +118,9 @@ export default class GameOver extends Phaser.Scene {
         coords.setAlpha(0.05);
 
         // Prst
-        const finger = this.add.image(512, 600, "prst");
-        finger.setScale(0.5).setDepth(10).setVisible(true);
+        const finger = this.add.image(centerX, centerY + gameHeight * 0.28, "prst");
+        finger.setScale(Math.min(0.5, gameWidth * 0.001));
+        finger.setDepth(10).setVisible(true);
 
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
             finger.setPosition(pointer.x, pointer.y);
@@ -129,9 +137,9 @@ export default class GameOver extends Phaser.Scene {
         });
 
         // Drobnější text dole
-        this.add.text(512, 700, "Stav dokončení je uložen, souřadnice lze zobrazit kdykoliv znovu.", {
+        this.add.text(centerX, gameHeight * 0.92, "Stav dokončení je uložen, souřadnice lze zobrazit kdykoliv znovu.", {
             fontFamily: "Arial",
-            fontSize: "20px",
+            fontSize: Math.min(20, gameWidth * 0.03) + "px",
             color: "#fff",
             align: "center"
         }).setOrigin(0.5);
@@ -139,9 +147,9 @@ export default class GameOver extends Phaser.Scene {
         // Tlačítko "Zahrát znovu"
         const playAgainText = this.texts?.gameOver?.playAgain ?? "Zahrát znovu";
         const confirmResetText = this.texts?.gameOver?.confirmReset ?? "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!";
-        const btn = this.add.text(512, 650, playAgainText, {
+        const btn = this.add.text(centerX, centerY + gameHeight * 0.34, playAgainText, {
             fontFamily: "Arial Black",
-            fontSize: "32px",
+            fontSize: Math.min(32, gameWidth * 0.05) + "px",
             color: "#1565c0",
             backgroundColor: "#fff",
             padding: { left: 20, right: 20, top: 8, bottom: 8 }
@@ -157,8 +165,8 @@ export default class GameOver extends Phaser.Scene {
 
         // Informace o uložení hry
         const infoText = this.texts.dialogSequence?.gameSavedInfo || "Tvůj postup byl uložen. Můžeš se vrátit později.";
-        this.add.text(512, 680, infoText, {
-            font: "18px Arial",
+        this.add.text(centerX, centerY + gameHeight * 0.38, infoText, {
+            font: Math.min(18, gameWidth * 0.025) + "px Arial",
             color: "#fff"
         }).setOrigin(0.5);
     }

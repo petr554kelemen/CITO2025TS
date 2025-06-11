@@ -126,33 +126,57 @@ export default class Intro extends Phaser.Scene {
 	}
 
 	private createMobileLayout(): void {
-		// background
-		this.background = this.add.image(334, 188, "freepik_forest_01");
-		this.background.scaleX = 0.5555212936806945;
-		this.background.scaleY = 0.47314471077609577;
+		const gameWidth = this.scale.width;
+		const gameHeight = this.scale.height;
+		const centerX = gameWidth / 2;
+		const centerY = gameHeight / 2;
 
-		// duch
-		this.duch = this.add.sprite(161, 101, "Duch", 0).setAlpha(0).setVisible(false);
+		// Pozadí
+		this.background = this.add.image(centerX, centerY, "freepik_forest_01");
+		const scaleX = gameWidth / this.background.width;
+		const scaleY = gameHeight / this.background.height;
+		const scale = Math.max(scaleX, scaleY);
+		this.background.setScale(scale);
 
-		// prazdnyPytel
-		this.pytel = this.add.sprite(579, 333, "prazdnyPytel");
-		this.pytel.scaleX = 0.25;
-		this.pytel.scaleY = 0.25;
+		// Duch
+		this.duch = this.add.sprite(gameWidth * 0.24, gameHeight * 0.27, "Duch", 0).setAlpha(0).setVisible(false);
+
+		// Pytel
+		this.pytel = this.add.sprite(gameWidth * 0.87, gameHeight * 0.88, "prazdnyPytel");
+		this.pytel.setScale(Math.min(0.25, gameWidth * 0.0005));
 		this.pytel.setVisible(false);
 
-		// případně další objekty (logo, UI prvky...)
+		// Logo
+		this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
+		this.citoLogo.setScale(Math.min(0.2, gameWidth * 0.0005));
+		this.citoLogo.setAlpha(0.9);
 	}
 
 	private createDesktopLayout(): void {
-		// Původní rozmístění pro desktop (příklad, uprav dle potřeby)
-		this.createBackground();
-		this.createGuides();
-		this.createDialogManager();
-		this.createDuch();
-		this.createPytel();
-		this.createOdpadky();
-		this.createMotylAndAnimate();
-		this.createCitoLogo();
+		const gameWidth = this.scale.width;
+		const gameHeight = this.scale.height;
+		const centerX = gameWidth / 2;
+		const centerY = gameHeight / 2;
+
+		// Pozadí
+		this.background = this.add.image(centerX, centerY, "freepik_forest_01");
+		const scaleX = gameWidth / this.background.width;
+		const scaleY = gameHeight / this.background.height;
+		const scale = Math.max(scaleX, scaleY);
+		this.background.setScale(scale);
+
+		// Duch
+		this.duch = this.add.sprite(gameWidth * 0.19, gameHeight * 0.36, "Duch", 0).setAlpha(0).setVisible(false);
+
+		// Pytel
+		this.pytel = this.add.sprite(gameWidth * 0.79, gameHeight * 0.9, "prazdnyPytel");
+		this.pytel.setScale(Math.min(0.5, gameWidth * 0.0008));
+		this.pytel.setVisible(false);
+
+		// Logo
+		this.citoLogo = this.add.image(gameWidth * 0.89, gameHeight * 0.14, "Cito_logo");
+		this.citoLogo.setScale(Math.min(0.2, gameWidth * 0.0005));
+		this.citoLogo.setAlpha(0.9);
 	}
 
 	/**
@@ -269,7 +293,9 @@ export default class Intro extends Phaser.Scene {
 						if (Math.random() <= 0.33) {
 							this.doFlip(this.motyl);
 						}
-						this.dialog.showDialogAbove('motyl-00', this.motyl);
+						if (this.dialog && typeof this.dialog.showDialogAbove === 'function') {
+							this.dialog.showDialogAbove('motyl-00', this.motyl);
+						}
 					}
 				}))
 			]
@@ -298,7 +324,9 @@ export default class Intro extends Phaser.Scene {
 			alpha: .65,
 			duration: 2500,
 			onStart: () => {
-				this.dialog.hideDialog(); // Skryjeme dialog motýla hned na začátku animace ducha
+				if (this.dialog && typeof this.dialog.hideDialog === 'function') {
+					this.dialog.hideDialog(); // Skryjeme dialog motýla hned na začátku animace ducha
+				}
 			},
 			onComplete: () => {
 				this.motyl.setFlipX(false);
@@ -433,7 +461,9 @@ export default class Intro extends Phaser.Scene {
 		// NOVINKA: Jediný řádek pro aktualizaci pozice bubliny přes DialogManager
 		// DialogManager se sám postará o správné umístění bubliny,
 		// pokud má nastavený followTarget.
-		this.dialog.updateBubblePosition(); // <--- Zde se volá nová metoda
+		if (this.dialog && typeof this.dialog.updateBubblePosition === 'function') {
+			this.dialog.updateBubblePosition();
+		}
 
 		if (curX > this.prevX) {
 			this.motyl.setFlipX(true);
