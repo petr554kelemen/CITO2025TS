@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import DialogManager from '../../utils/DialogManager';
-import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
+import ResponsiveManager from '../../utils/ResponsiveManager';
 
 type Odpadek = {
     typ: string;
-    pozice: { x: number; y: number };
+    x: number;
+    y: number;
     scale?: number;
     angle?: number;
-    status: string;
-    sprite: Phaser.GameObjects.Sprite | null;
+    sprite?: Phaser.GameObjects.Sprite | null;
 };
 
 type DialogTexts = {
@@ -20,47 +20,27 @@ export default class Intro extends Phaser.Scene {
     private dialog!: DialogManager;
     private responsive!: ResponsiveManager;
 
-    // Desktop rozmístění (pouze zde je scale!)
-    private odpadkyDataDesktop: Odpadek[] = [
-        { typ: "Banan", pozice: { x: 985, y: 555 }, scale: 1.4, status: 'default', sprite: null },
-        { typ: "Baterie", pozice: { x: 880, y: 485 }, scale: 0.75, status: 'default', sprite: null },
-        { typ: "Lahev", pozice: { x: 535, y: 550 }, scale: 1.5, status: 'default', sprite: null },
-        { typ: "Ohryzek", pozice: { x: 600, y: 720 }, scale: 0.65, angle: 70, status: 'default', sprite: null },
-        { typ: "Kapesnik", pozice: { x: 490, y: 650 }, status: 'default', sprite: null },
-        { typ: "Vajgl", pozice: { x: 725, y: 610 }, status: 'default', sprite: null },
-        { typ: "Karton", pozice: { x: 670, y: 505 }, status: 'default', sprite: null },
-        { typ: "Zvykacka", pozice: { x: 666, y: 566 }, status: 'default', sprite: null },
-        { typ: "Plechovka", pozice: { x: 845, y: 565 }, angle: 14, status: 'default', sprite: null },
-        { typ: "PET", pozice: { x: 310, y: 630 }, scale: 1.5, angle: -44, status: 'default', sprite: null }
+    private odpadkyData: Odpadek[] = [
+        { typ: "Karton", x: 359, y: 243, scale: 0.6 },
+        { typ: "Plechovka", x: 475, y: 278, scale: 0.6 },
+        { typ: "Lahev", x: 427, y: 253, scale: 0.6 },
+        { typ: "Baterie", x: 372, y: 304, scale: 0.6 },
+        { typ: "Zvykacka", x: 539, y: 254, scale: 0.5 },
+        { typ: "Kapesnik", x: 305, y: 329, scale: 0.6 },
+        { typ: "Ohryzek", x: 188, y: 344, scale: 0.6, angle: 82 },
+        { typ: "Banan", x: 285, y: 268, scale: 0.6 },
+        { typ: "Vajgl", x: 436, y: 326, scale: 0.5 },
+        { typ: "PET", x: 213, y: 307, scale: 0.6, angle: -63 }
     ];
 
-    // Mobilní rozmístění (scale zde NEUVÁDĚJ!)
-    private odpadkyDataMobile: Odpadek[] = [
-        { typ: "Banan", pozice: { x: 296, y: 273 }, status: 'default', sprite: null },
-        { typ: "Baterie", pozice: { x: 368, y: 319 }, status: 'default', sprite: null },
-        { typ: "Lahev", pozice: { x: 406, y: 257 }, status: 'default', sprite: null },
-        { typ: "Ohryzek", pozice: { x: 188, y: 344 }, angle: 82, status: 'default', sprite: null },
-        { typ: "Kapesnik", pozice: { x: 265, y: 327 }, status: 'default', sprite: null },
-        { typ: "Vajgl", pozice: { x: 436, y: 326 }, status: 'default', sprite: null },
-        { typ: "Karton", pozice: { x: 346, y: 245 }, status: 'default', sprite: null },
-        { typ: "Zvykacka", pozice: { x: 539, y: 274 }, status: 'default', sprite: null },
-        { typ: "Plechovka", pozice: { x: 471, y: 282 }, status: 'default', sprite: null },
-        { typ: "PET", pozice: { x: 209, y: 282 }, status: 'default', sprite: null }
-    ];
-
-    // Data odpadků na scéně (bude nastaveno v create)
-    odpadkyData: Odpadek[] = [];
-
-    // Další property
-    pytel!: Phaser.GameObjects.Sprite;
-    citoLogo!: Phaser.GameObjects.Image;
-    background!: Phaser.GameObjects.Image;
-    motyl!: Phaser.GameObjects.Sprite;
-    duch!: Phaser.GameObjects.Sprite;
-    prevX!: number;
-    guides?: any;
-    lang: any;
-    texts!: DialogTexts;
+    private background!: Phaser.GameObjects.Image;
+    private motyl!: Phaser.GameObjects.Sprite;
+    private duch!: Phaser.GameObjects.Sprite;
+    private pytel!: Phaser.GameObjects.Sprite;
+    private citoLogo!: Phaser.GameObjects.Image;
+    private prevX: number = 0;
+    private lang: any;
+    private texts!: DialogTexts;
 
     constructor() {
         super("Intro");
@@ -75,189 +55,137 @@ export default class Intro extends Phaser.Scene {
         this.responsive = new ResponsiveManager(this);
         this.responsive.checkAndForceOrientation();
 
+        // Opravená inicializace dialog manageru
+        this.dialog = new DialogManager(this, this.texts);
+
         if ((window as any).DEBUG_MODE) {
             this.responsive.addDebugOverlay();
         }
 
-        const DESKTOP_WIDTH = 1366;
-        const MOBILE_WIDTH = 667;
-        const scaleRatio = MOBILE_WIDTH / DESKTOP_WIDTH;
+        // Designové rozměry pro mobile-first
+        const DESIGN_WIDTH = 667;
+        const DESIGN_HEIGHT = 375;
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
+        const scaleFactor = this.responsive.getScaleFactor(DESIGN_WIDTH, DESIGN_HEIGHT);
 
-        if (this.responsive.isMobile()) {
-            // Vezmi mobilní pozice, scale dopočítej z desktop dat
-            this.odpadkyData = this.odpadkyDataMobile.map(mobObj => {
-                const deskObj = this.odpadkyDataDesktop.find(d => d.typ === mobObj.typ);
-                return {
-                    ...mobObj,
-                    scale: deskObj?.scale ? deskObj.scale * scaleRatio : scaleRatio,
-                    sprite: null
-                };
-            });
-            this.createMobileLayout();
-        } else {
-            this.odpadkyData = this.odpadkyDataDesktop.map(o => ({ ...o, sprite: null }));
-            this.createDesktopLayout();
-        }
+        // Přepočet souřadnic
+        const px = (x: number) => x * (gameWidth / DESIGN_WIDTH);
+        const py = (y: number) => y * (gameHeight / DESIGN_HEIGHT);
 
-        this.createOdpadky();
-        this.createMotylAndAnimate();
+        // Pozadí
+        this.background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
+        const scaleX = gameWidth / this.background.width;
+        const scaleY = gameHeight / this.background.height;
+        this.background.setScale(Math.max(scaleX, scaleY));
 
-        this.responsive.on('layoutchange', (layout: LayoutType) => {
-            this.cleanExistingLayout();
-
-            if (layout === LayoutType.MOBILE) {
-                this.odpadkyData = this.odpadkyDataMobile.map(mobObj => {
-                    const deskObj = this.odpadkyDataDesktop.find(d => d.typ === mobObj.typ);
-                    return {
-                        ...mobObj,
-                        scale: deskObj?.scale ? deskObj.scale * scaleRatio : scaleRatio,
-                        sprite: null
-                    };
-                });
-                this.createMobileLayout();
-            } else {
-                this.odpadkyData = this.odpadkyDataDesktop.map(o => ({ ...o, sprite: null }));
-                this.createDesktopLayout();
-            }
-
-            this.createOdpadky();
-            this.createMotylAndAnimate();
+        // Odpadky
+        this.odpadkyData.forEach(odpadek => {
+            odpadek.sprite = this.add.sprite(
+                px(odpadek.x),
+                py(odpadek.y),
+                odpadek.typ
+            );
+            if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale * scaleFactor);
+            if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
+            odpadek.sprite.setInteractive();
         });
+
+        // Motýl – startovní pozice podle editoru (např. 506, 233)
+        const startX = px(506);
+        const startY = py(233);
+        this.motyl = this.add.sprite(startX, startY, 'motyl')
+            .setScale(0.22 * scaleFactor) // uprav podle potřeby
+            .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
+
+        // Duch (počáteční stav)
+        this.duch = this.add.sprite(gameWidth * 0.24, gameHeight * 0.27, "Duch", 0)
+            .setScale(0.28 * scaleFactor) // uprav podle potřeby
+            .setAlpha(0)
+            .setVisible(false);
+
+        // Pytel (počáteční stav)
+        this.pytel = this.add.sprite(gameWidth * 0.87, gameHeight * 0.88, "prazdnyPytel");
+        this.pytel.setScale(Math.min(0.25, gameWidth * 0.0005));
+        this.pytel.setVisible(false);
+
+        // Logo
+        this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
+        this.citoLogo.setScale(Math.min(0.2, gameWidth * 0.0005));
+        this.citoLogo.setAlpha(0.9);
+
+        // Motýlí animace a dialogy
+        this.createMotylAndAnimate(px, py);
 
         this.input.once('pointerdown', () => {
             this.skipIntro();
         });
     }
 
-    private createMobileLayout(): void {
-        this.createBackground();
-        this.createDuch(true);
-        this.createPytel(true);
-        this.createCitoLogo(true);
-    }
+    private createMotylAndAnimate(px: (x: number) => number, py: (y: number) => number): void {
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
+        const scaleFactor = this.responsive.getScaleFactor(667, 375);
 
-    private createDesktopLayout(): void {
-        this.createBackground();
-        this.createDuch(false);
-        this.createPytel(false);
-        this.createCitoLogo(false);
-    }
-
-    private createBackground(): void {
-        const { width, height } = this.responsive.getGameSize();
-        this.background = this.add.image(width / 2, height / 2, "freepik_forest_01");
-        const scaleX = width / this.background.width;
-        const scaleY = height / this.background.height;
-        const scale = Math.max(scaleX, scaleY);
-        this.background.setScale(scale);
-    }
-
-    private createDuch(isMobile: boolean): void {
-        const { width, height } = this.responsive.getGameSize();
-        if (isMobile) {
-            this.duch = this.add.sprite(width * 0.24, height * 0.27, "Duch", 0).setAlpha(0).setVisible(false);
-        } else {
-            this.duch = this.add.sprite(width * 0.19, height * 0.36, "Duch", 0).setAlpha(0).setVisible(false);
-        }
-    }
-
-    private createPytel(isMobile: boolean): void {
-        const { width, height } = this.responsive.getGameSize();
-        if (isMobile) {
-            this.pytel = this.add.sprite(width * 0.87, height * 0.88, "prazdnyPytel");
-            this.pytel.setScale(Math.min(0.25, width * 0.0005));
-        } else {
-            this.pytel = this.add.sprite(width * 0.79, height * 0.9, "prazdnyPytel");
-            this.pytel.setScale(Math.min(0.5, width * 0.0008));
-        }
-        this.pytel.setVisible(false);
-    }
-
-    private createCitoLogo(isMobile: boolean): void {
-        const { width, height } = this.responsive.getGameSize();
-        if (isMobile) {
-            this.citoLogo = this.add.image(width * 0.93, height * 0.14, "Cito_logo");
-        } else {
-            this.citoLogo = this.add.image(width * 0.89, height * 0.14, "Cito_logo");
-        }
-        this.citoLogo.setScale(Math.min(0.2, width * 0.0005));
-        this.citoLogo.setAlpha(0.9);
-    }
-
-    private skipIntro(): void {
-        this.input.enabled = false;
-        this.cameras.main.fadeOut(500, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-            this.startGameScene();
-        });
-    }
-
-    private createOdpadky(): void {
-        this.odpadkyData.forEach(odpadek => {
-            odpadek.sprite = this.add.sprite(
-                odpadek.pozice.x,
-                odpadek.pozice.y,
-                odpadek.typ
-            );
-            if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale);
-            if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
-            odpadek.sprite.setInteractive();
-        });
-    }
-
-    private createMotylAndAnimate(): void {
+        // Pokud už motýl existuje, znič ho
         if (this.motyl) {
             this.tweens.killTweensOf(this.motyl);
             this.motyl.destroy();
         }
 
-        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const startX = gameWidth * 0.65;
-        const startY = gameHeight * 0.62;
+        // Vytvoř nového motýla na startovní pozici
+        const startX = px(506);
+        const startY = py(233);
+        this.motyl = this.add.sprite(startX, startY, 'motyl')
+            .setScale(0.22 * scaleFactor) // uprav podle potřeby
+            .setDepth(100);
 
-        this.motyl = this.add.sprite(startX, startY, 'Motyl').setScale(.2);
+        // Úvodní monolog motýla
+        this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl).then(() => {
+            // Cesta motýla přes odpadky a k duchovi
+            const path = this.odpadkyData.map((o, i) => ({
+                x: px(o.x),
+                y: py(o.y) + (i % 2 === 0 ? 20 : -20)
+            }));
 
-        const path = this.odpadkyData.map((o, i) => ({
-            x: o.pozice.x,
-            y: o.pozice.y + (i % 2 === 0 ? 20 : -20)
-        }));
-        path.push({ x: this.duch.x + 150, y: this.duch.y });
+            // Bezpečný bod u ducha (ne mimo scénu)
+            const safeX = Math.max(50, Math.min(this.duch.x + 50, gameWidth - 50));
+            const safeY = Math.max(50, Math.min(this.duch.y, gameHeight - 50));
+            path.push({ x: safeX, y: safeY });
 
-        const pathWithoutFinal = path.slice(0, -1);
-        for (let i = pathWithoutFinal.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [pathWithoutFinal[i], pathWithoutFinal[j]] = [pathWithoutFinal[j], pathWithoutFinal[i]];
-        }
-        const randomPath = pathWithoutFinal.slice(0, 4);
-        randomPath.push(path[path.length - 1]);
+            const pathWithoutFinal = path.slice(0, -1);
+            for (let i = pathWithoutFinal.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pathWithoutFinal[i], pathWithoutFinal[j]] = [pathWithoutFinal[j], pathWithoutFinal[i]];
+            }
+            const randomPath = pathWithoutFinal.slice(0, 4);
+            randomPath.push(path[path.length - 1]);
 
-        this.tweens.chain({
-            targets: this.motyl,
-            ease: 'Quad.easeInOut',
-            onComplete: () => this.volejDucha(),
-            tweens: [
-                {
-                    scale: 1,
-                    duration: 3000,
-                    onComplete: () => {
-                        //this.dialog.showDialogAbove('motyl-00', this.motyl);
-                    }
-                },
-                ...randomPath.map(pt => ({
-                    x: pt.x,
-                    y: pt.y,
-                    duration: 3000,
-                    ease: 'Quad.easeInOut',
-                    onComplete: () => {
-                        if (Math.random() <= 0.33) {
-                            this.doFlip(this.motyl);
+            console.log('Motýlí dráha:', randomPath);
+
+            this.tweens.chain({
+                targets: this.motyl,
+                ease: 'Quad.easeInOut',
+                onComplete: () => this.volejDucha(),
+                tweens: [
+                    {
+                        scale: 1,
+                        duration: 3000
+                    },
+                    ...randomPath.map(pt => ({
+                        x: pt.x,
+                        y: pt.y,
+                        duration: 3000,
+                        ease: 'Quad.easeInOut',
+                        onComplete: () => {
+                            if (Math.random() <= 0.33) {
+                                this.doFlip(this.motyl);
+                            }
+                            if (this.dialog && typeof this.dialog.showDialogAbove === 'function') {
+                                this.dialog.showDialogAbove('motyl-00', this.motyl);
+                            }
                         }
-                        if (this.dialog && typeof this.dialog.showDialogAbove === 'function') {
-                            this.dialog.showDialogAbove('motyl-00', this.motyl);
-                        }
-                    }
-                }))
-            ]
+                    }))
+                ]
+            });
         });
     }
 
@@ -333,6 +261,14 @@ export default class Intro extends Phaser.Scene {
         });
     }
 
+    private skipIntro(): void {
+        this.input.enabled = false;
+        this.cameras.main.fadeOut(500, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.startGameScene();
+        });
+    }
+
     private startGameScene(): void {
         this.scene.start('Game', {
             odpadkyData: this.odpadkyData,
@@ -341,30 +277,8 @@ export default class Intro extends Phaser.Scene {
         });
     }
 
-    private processDialogSequence(sequence: { key: string, obj: Phaser.GameObjects.Sprite }[], index: number): void {
-        if (index >= sequence.length) {
-            this.dialog.hideDialog();
-            console.log('Sekvence dialogů dokončena.');
-            return;
-        }
-
-        const currentDialog = sequence[index];
-        const displayDuration = this.dialog.getDisplayDurationForKey(currentDialog.key);
-
-        this.dialog.showDialogAbove(currentDialog.key, currentDialog.obj);
-        console.log(`Zobrazuji dialog "${currentDialog.key}" na ${displayDuration}ms.`);
-
-        this.time.delayedCall(displayDuration, () => {
-            this.dialog.hideDialog();
-            console.log(`Skrývám dialog "${currentDialog.key}".`);
-
-            this.time.delayedCall(500, () => {
-                this.processDialogSequence(sequence, index + 1);
-            });
-        });
-    }
-
     update(): void {
+        if (!this.motyl) return;
         const curX = this.motyl.x;
 
         if (this.dialog && typeof this.dialog.updateBubblePosition === 'function') {
@@ -380,17 +294,17 @@ export default class Intro extends Phaser.Scene {
         this.prevX = curX;
     }
 
-    private cleanExistingLayout(): void {
-        if (this.background) this.background.destroy();
-        if (this.duch) this.duch.destroy();
-        if (this.pytel) this.pytel.destroy();
-        if (this.citoLogo) this.citoLogo.destroy();
-        if (this.motyl) {
-            this.tweens.killTweensOf(this.motyl);
-            this.motyl.destroy();
-        }
-        this.odpadkyData.forEach(odpadek => {
-            if (odpadek.sprite) odpadek.sprite.destroy();
-        });
-    }
+    // private cleanExistingLayout(): void {
+    //     if (this.background) this.background.destroy();
+    //     if (this.duch) this.duch.destroy();
+    //     if (this.pytel) this.pytel.destroy();
+    //     if (this.citoLogo) this.citoLogo.destroy();
+    //     if (this.motyl) {
+    //         this.tweens.killTweensOf(this.motyl);
+    //         this.motyl.destroy();
+    //     }
+    //     this.odpadkyData.forEach(odpadek => {
+    //         if (odpadek.sprite) odpadek.sprite.destroy();
+    //     });
+    // }
 }

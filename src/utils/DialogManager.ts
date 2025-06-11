@@ -7,8 +7,8 @@ export default class DialogManager {
   private bubbleContainer: Phaser.GameObjects.Container | null; // kontejner, ve kterém držím pozadí + text bubliny
   private isVisible: boolean;                            // příznak, jestli je bublina právě zobrazená
   private followTarget?: Phaser.GameObjects.Sprite;      // Sprite, který bublina (bubbleContainer) „sleduje“
-  private readonly BASE_DISPLAY_TIME_PER_CHAR = 40; // ms na znak
-  private readonly MIN_DISPLAY_TIME = 2000;         // Minimální doba zobrazení (2 sekundy)
+  private readonly BASE_DISPLAY_TIME_PER_CHAR = 40;      // ms na znak
+  private readonly MIN_DISPLAY_TIME = 2000;              // Minimální doba zobrazení (2 sekundy)
 
   constructor(scene: Phaser.Scene, texts: any) {
     this.scene = scene;
@@ -132,13 +132,23 @@ export default class DialogManager {
         console.warn(`DialogManager: Text pro klíč "${key}" nenalezen.`);
         return Promise.resolve();
     }
+    // Ověření existence scény a objektu
+    if (!obj || !obj.scene || !obj.scene.sys || !obj.scene.sys.isActive()) {
+        this.hide();
+        return Promise.resolve();
+    }
     this.show(txt, obj, offsetY);
 
     // Vrátí Promise, která se vyřeší po určitém čase (např. 2,2 s)
     return new Promise(resolve => {
-        obj.scene.time.delayedCall(2200, () => {
+        if (obj.scene && obj.scene.time) {
+            obj.scene.time.delayedCall(2200, () => {
+                resolve();
+            });
+        } else {
+            // Pokud není scéna platná, resolve hned
             resolve();
-        });
+        }
     });
 }
 
@@ -149,124 +159,76 @@ export default class DialogManager {
 
   // Soukromá metoda: vykreslí bublinu s textem; pokud je target, začne ji sledovat
   private show(text: string, target?: Phaser.GameObjects.Sprite, offsetY: number = 0): void {
-    // 1) Skryjeme existující bublinu, pokud nějaká je
     this.hide();
 
-    // 2) Vytvoříme Text objekt (levý horní roh v lokálním prostoru containeru)
+    // Získání scale faktoru (mobile-first, fallback 1)
+    const scaleFactor = (this.scene as any).responsive?.getScaleFactor?.(667, 375) ?? 1;
+
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
       fontFamily: 'Arial',
-      fontSize: '16px',
+      fontSize: `${18 * scaleFactor}px`, // větší písmo pro lepší čitelnost
       color: '#000000',
-      wordWrap: { width: 200 }
+      wordWrap: { width: 220 * scaleFactor }
     };
+    const padding = 10 * scaleFactor;
+    const arrowHeight = 12 * scaleFactor;
+    const arrowWidth = 24 * scaleFactor;
+
     const content = this.scene.add.text(0, 0, text, style);
 
-    // 3) Parametry bubliny a šipky
-    const padding = 5;       // odsazení textu od okrajů bubliny
-    const arrowHeight = 10;  // výška dolů směřující šipky
-    const arrowWidth = 20;   // šířka základny šipky
-
-    // 4) Vypočítáme rozměr obdélníku bubliny (bez šipky), včetně paddingu
     const bubbleWidth = content.width + padding * 2;
     const bubbleHeight = content.height + padding * 2;
 
-    // 5) Vytvoříme Graphics a nakreslíme do něj:
-    //    – Zaoblený obdélník od (0,0) do (bubbleWidth, bubbleHeight)
-    //    – Dolů směřující šipku s bodem na (bubbleWidth/2, bubbleHeight + arrowHeight)
     const bg = this.scene.add.graphics();
     bg.fillStyle(0xffffff, 1);
+    bg.fillRoundedRect(0, 0, bubbleWidth, bubbleHeight, 5 * scaleFactor);
 
-    // 5A) Obdélník (roundedRect) – základ bubliny:
-    bg.fillRoundedRect(
-      0,                 // X-ová lokální pozice levého horního rohu obdélníku
-      0,                 // Y-ová lokální pozice levého horního rohu obdélníku
-      bubbleWidth,
-      bubbleHeight,
-      5                  // poloměr zaoblení rohů
-    );
-
-    // 5B) Trojúhelník – dolů směřující šipka:
-    //     Základna trojúhelníku = (bubbleWidth/2 - arrowWidth/2, bubbleHeight) až (bubbleWidth/2 + arrowWidth/2, bubbleHeight)
-    //     Špička trojúhelníku = (bubbleWidth/2, bubbleHeight + arrowHeight)
     bg.fillTriangle(
-      bubbleWidth / 2 - arrowWidth / 2, bubbleHeight,            // levý bod základny
-      bubbleWidth / 2 + arrowWidth / 2, bubbleHeight,            // pravý bod základny
-      bubbleWidth / 2, bubbleHeight + arrowHeight                // špička dolů
+      bubbleWidth / 2 - arrowWidth / 2, bubbleHeight,
+      bubbleWidth / 2 + arrowWidth / 2, bubbleHeight,
+      bubbleWidth / 2, bubbleHeight + arrowHeight
     );
 
-    // 6) Vytvoříme container a vložíme do něj oba GameObjecty: Graphics i Text
     this.bubbleContainer = this.scene.add.container(0, 0, [bg, content]);
     this.isVisible = true;
-    console.log(this.isVisible);
-    
 
     if (target) {
       this.followTarget = target;
-
-      // 7) Získáme přesné světové souřadnice vrcholu sprite:
-      //    – Použijeme getBounds(), aby to bralo v potaz aktuální scale/origin.
       const spriteBounds = target.getBounds();
-      const centerX = spriteBounds.centerX; // střed sprite v ose X
-      const topY = spriteBounds.top;        // horní hrana sprite v ose Y
+      const centerX = spriteBounds.centerX;
+      const topY = spriteBounds.top;
 
-      // 8) Vypočítáme pozici containeru tak, aby špička šipky (lokálně [bubbleWidth/2, bubbleHeight + arrowHeight])
-      //    ležela přesně na (centerX, topY). Tedy:
-      //      container.x = centerX - (bubbleWidth/2)
-      //      container.y = topY - (bubbleHeight + arrowHeight)
       this.bubbleContainer.setPosition(
         centerX - bubbleWidth / 2,
-        topY + offsetY // <-- zde použij offsetY
+        topY + offsetY
       );
-
-      // 9) Text uvnitř bubliny posuneme s odsazením padding od levého a horního okraje obdélníku:
-      //    – Obdélník začíná v lokálním (0,0) containeru.
-      //    – Text tedy na (padding, padding).
-      content.setPosition(
-        padding,
-        padding
-      );
-
+      content.setPosition(padding, padding);
     } else {
-      // 10) Bez cílového sprite – klasická bublina dole uprostřed obrazovky, ale bez šipky
       const cam = this.scene.cameras.main;
-
-      // Vytvoříme nový styl pro větší text
       const bigStyle: Phaser.Types.GameObjects.Text.TextStyle = {
         fontFamily: 'Arial',
-        fontSize: '28px', // větší text
+        fontSize: `${28 * scaleFactor}px`,
         color: '#000000',
-        wordWrap: { width: cam.width - 120 } // širší bublina
+        wordWrap: { width: cam.width - 120 * scaleFactor }
       };
-
-      // Odstraníme původní textový objekt a vytvoříme nový s větším stylem
       content.destroy();
       const bigContent = this.scene.add.text(0, 0, text, bigStyle);
 
-      const padding = 16;
-      const bubbleWidth = bigContent.width + padding * 2;
-      const bubbleHeight = bigContent.height + padding * 2;
+      const bigPadding = 16 * scaleFactor;
+      const bubbleWidth = bigContent.width + bigPadding * 2;
+      const bubbleHeight = bigContent.height + bigPadding * 2;
 
-      // Vytvoř nový Graphics objekt pro pozadí bubliny
       const bigBg = this.scene.add.graphics();
       bigBg.fillStyle(0xffffff, 1);
-      bigBg.fillRoundedRect(
-        0, 0,
-        bubbleWidth,
-        bubbleHeight,
-        12 // větší zaoblení
-      );
+      bigBg.fillRoundedRect(0, 0, bubbleWidth, bubbleHeight, 12 * scaleFactor);
 
-      bigContent.setPosition(
-        padding,
-        padding
-      );
+      bigContent.setPosition(bigPadding, bigPadding);
 
-      // Odeber starý obsah a přidej nový text a nové pozadí
       this.bubbleContainer.removeAll(true);
       this.bubbleContainer.add([bigBg, bigContent]);
 
       this.bubbleContainer.x = cam.width / 2 - bubbleWidth / 2;
-      this.bubbleContainer.y = cam.height - bubbleHeight - 32;
+      this.bubbleContainer.y = cam.height - bubbleHeight - 32 * scaleFactor;
       this.followTarget = undefined;
     }
   }
@@ -297,8 +259,7 @@ export default class DialogManager {
 
 
   public updateBubblePosition(): void {
-    // Kontrolujeme, zda bublina existuje a zda má nějaký sledovaný cíl.
-    if (this.bubbleContainer && this.followTarget) {
+    if (this.bubbleContainer && this.followTarget && this.followTarget.active) {
       // Získáme aktuální globální ohraničující rámeček cílového spritu.
       // Toto je klíčové, protože getBounds() zohledňuje scale a origin spritu.
       const spriteBounds = this.followTarget.getBounds();
@@ -333,6 +294,8 @@ export default class DialogManager {
         centerX - actualBubbleWidth / 2, // Posun X tak, aby střed bubliny byl pod centerX
         topY - (actualBubbleHeight + arrowHeight) // Posun Y tak, aby špička šipky byla na topY
       );
+    } else if (this.bubbleContainer) {
+        this.hide();
     }
   }
 

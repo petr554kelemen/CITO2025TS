@@ -21,8 +21,8 @@
             },
             "x": 334,
             "y": 188,
-            "scaleX": 0.5555212936806945,
-            "scaleY": 0.47314471077609577
+            "scaleX": 0.57,
+            "scaleY": 0.47
         },
         {
             "type": "Image",
@@ -31,8 +31,10 @@
             "texture": {
                 "key": "Karton"
             },
-            "x": 346,
-            "y": 245
+            "x": 359,
+            "y": 243,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -41,8 +43,10 @@
             "texture": {
                 "key": "Plechovka"
             },
-            "x": 471,
-            "y": 282
+            "x": 475,
+            "y": 278,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -51,18 +55,22 @@
             "texture": {
                 "key": "Lahev"
             },
-            "x": 406,
-            "y": 257
+            "x": 427,
+            "y": 253,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
             "id": "96086d7d-c626-43f2-a009-8d552e8bd253",
-            "label": "baterka",
+            "label": "baterie",
             "texture": {
                 "key": "Baterie"
             },
-            "x": 368,
-            "y": 319
+            "x": 372,
+            "y": 304,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -72,9 +80,9 @@
                 "key": "Zvykacka"
             },
             "x": 539,
-            "y": 274,
-            "scaleX": 0.7,
-            "scaleY": 0.7
+            "y": 254,
+            "scaleX": 0.5,
+            "scaleY": 0.5
         },
         {
             "type": "Image",
@@ -83,8 +91,10 @@
             "texture": {
                 "key": "Kapesnik"
             },
-            "x": 265,
-            "y": 327
+            "x": 305,
+            "y": 329,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -95,8 +105,8 @@
             },
             "x": 188,
             "y": 344,
-            "scaleX": 0.85,
-            "scaleY": 0.85,
+            "scaleX": 0.6,
+            "scaleY": 0.6,
             "angle": 82
         },
         {
@@ -106,8 +116,10 @@
             "texture": {
                 "key": "Banan"
             },
-            "x": 296,
-            "y": 273
+            "x": 285,
+            "y": 268,
+            "scaleX": 0.6,
+            "scaleY": 0.6
         },
         {
             "type": "Image",
@@ -118,18 +130,21 @@
             },
             "x": 436,
             "y": 326,
-            "scaleX": 0.8,
-            "scaleY": 0.8
+            "scaleX": 0.5,
+            "scaleY": 0.5
         },
         {
             "type": "Image",
             "id": "393f41c2-eb93-4780-9234-5947fba815d5",
-            "label": "petka",
+            "label": "PET",
             "texture": {
                 "key": "PET"
             },
-            "x": 209,
-            "y": 282
+            "x": 213,
+            "y": 307,
+            "scaleX": 0.6,
+            "scaleY": 0.6,
+            "angle": -62.99999999999994
         },
         {
             "type": "Image",
@@ -138,10 +153,10 @@
             "texture": {
                 "key": "Motyl"
             },
-            "x": 248,
-            "y": 94,
-            "scaleX": 0.55,
-            "scaleY": 0.55
+            "x": 240,
+            "y": 129,
+            "scaleX": 0.5,
+            "scaleY": 0.5
         },
         {
             "type": "Image",
@@ -150,34 +165,27 @@
             "texture": {
                 "key": "Duch"
             },
-            "x": 161,
-            "y": 101,
+            "x": 153,
+            "y": 132,
             "scaleX": 0.6,
-            "scaleY": 0.6
+            "scaleY": 0.6,
+            "alpha": 0.1,
+            "alphaTopLeft": 0.1,
+            "alphaTopRight": 0.1,
+            "alphaBottomLeft": 0.1,
+            "alphaBottomRight": 0.1
         },
         {
-            "type": "Image",
-            "id": "184f1f2b-67d6-4044-b3fd-1da7b3455c94",
-            "label": "divkaStoji",
-            "texture": {
-                "key": "DivkaStoji"
-            },
-            "x": 65,
-            "y": 236,
-            "scaleX": 0.6,
-            "scaleY": 0.6
-        },
-        {
-            "type": "Image",
-            "id": "f3ddb461-07eb-4bea-8ab1-b304810e277b",
-            "label": "prazdnyPytel",
-            "texture": {
-                "key": "prazdnyPytel"
-            },
-            "x": 579,
-            "y": 333,
-            "scaleX": 0.25,
-            "scaleY": 0.25
+            "type": "Ellipse",
+            "id": "d19b8b6f-898e-494c-aeb9-aa6a1c801362",
+            "label": "startMotyla",
+            "x": 506,
+            "y": 233,
+            "scaleX": 0.1,
+            "scaleY": 0.1,
+            "isFilled": true,
+            "width": 128,
+            "height": 128
         }
     ],
     "plainObjects": [],
