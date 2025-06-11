@@ -93,7 +93,7 @@ export default class ResponsiveManager {
         return width > height ? Orientation.LANDSCAPE : Orientation.PORTRAIT;
     }
 
-    private handleResize(gameSize: Phaser.Structs.Size): void {
+    private handleResize(_gameSize: Phaser.Structs.Size): void {
         if (!this.isInitialized) return;
         
         const oldLayout = this.currentLayout;
@@ -218,5 +218,26 @@ export default class ResponsiveManager {
         return window.innerWidth < this.mobileBreakpoint
             ? DeviceType.MOBILE
             : DeviceType.DESKTOP;
+    }
+
+    public getGameSize() {
+        return {
+            width: this.scene.scale.width,
+            height: this.scene.scale.height
+        };
+    }
+
+    /**
+     * Vrací scale faktor podle návrhových rozměrů (designWidth, designHeight)
+     * @param designWidth Návrhová šířka (např. 667 pro mobile-first)
+     * @param designHeight Návrhová výška (např. 375 pro mobile-first)
+     * @param mode 'min' (výchozí) nebo 'max' – podle toho, zda chceš zachovat celý obsah nebo pokrýt plochu
+     */
+    public getScaleFactor(designWidth: number, designHeight: number, mode: 'min' | 'max' = 'min'): number {
+        const { width, height } = this.getGameSize();
+        if (mode === 'max') {
+            return Math.max(width / designWidth, height / designHeight);
+        }
+        return Math.min(width / designWidth, height / designHeight);
     }
 }

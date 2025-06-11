@@ -18,8 +18,7 @@ export default class GameOver extends Phaser.Scene {
     }
 
     private createMobileLayout(): void {
-        const gameWidth = this.scale.width;
-        const gameHeight = this.scale.height;
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
         const centerX = gameWidth / 2;
         const centerY = gameHeight / 2;
 
@@ -95,8 +94,7 @@ export default class GameOver extends Phaser.Scene {
     }
 
     private createDesktopLayout(): void {
-        const gameWidth = this.scale.width;
-        const gameHeight = this.scale.height;
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
         const centerX = gameWidth / 2;
         const centerY = gameHeight / 2;
 

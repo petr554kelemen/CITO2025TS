@@ -111,8 +111,7 @@ export default class Game extends Phaser.Scene {
 
     // --- NOVÁ METODA: Nastaví layout podle zařízení ---
     private setupLayout(): void {
-        const gameWidth = this.scale.width;
-        const gameHeight = this.scale.height;
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
         const centerX = gameWidth / 2;
         const centerY = gameHeight / 2;
 

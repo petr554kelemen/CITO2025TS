@@ -9,10 +9,10 @@ export default class Scoreboard {
     constructor(scene: Phaser.Scene, odpadkyCount: number, timeLeft: number) {
         this.timeLeft = timeLeft;
 
-        // Rozměry a pozice boxu
-        const boxWidth = odpadkyCount * 36 + 80;
+        const gameWidth = scene.scale.width;
+        const boxWidth = Math.min(odpadkyCount * 36 + 80, gameWidth - 40);
         const boxHeight = 60;
-        const boxX = 60 + boxWidth / 2; // více od kraje
+        const boxX = gameWidth / 2; // více od kraje
         const boxY = 48;
 
         // Tmavý box pod scoreboard

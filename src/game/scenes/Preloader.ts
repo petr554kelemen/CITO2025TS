@@ -4,7 +4,7 @@
 
 import Phaser from "phaser";
 /* START-USER-IMPORTS */
-import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
+import ResponsiveManager from '../../utils/ResponsiveManager';
 /* END-USER-IMPORTS */
 
 declare global {
@@ -26,6 +26,10 @@ export default class Preloader extends Phaser.Scene {
 
         // progressBar
         const progressBar = this.add.rectangle(512, 384, 468, 32);
+        const gameWidth = this.scale.width;
+        const gameHeight = this.scale.height;
+        progressBar.setPosition(gameWidth / 2, gameHeight * 0.6);
+        progressBar.displayWidth = Math.min(468, gameWidth * 0.7);
         progressBar.isFilled = true;
         progressBar.fillColor = 14737632;
         progressBar.isStroked = true;
@@ -82,18 +86,22 @@ export default class Preloader extends Phaser.Scene {
 
         // Inicializace ResponsiveManager
         this.responsive = new ResponsiveManager(this);
-        
+
         // Debug info pro ladění
         if ((window as any).DEBUG_MODE) {
             this.responsive.addDebugOverlay();
         }
-        
+
         // Přizpůsobit pozice loading baru podle zařízení
         if (this.responsive.isMobile()) {
             // Mobilní layout - menší a více nahoru
             this.progressBar.setPosition(334, 200);
             this.progressBar.displayWidth = 300;
         }
+
+        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
+        this.progressBar.setPosition(gameWidth / 2, gameHeight * 0.6);
+        this.progressBar.displayWidth = Math.min(468, gameWidth * 0.7);
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         window.WebFont.load({
