@@ -98,8 +98,8 @@ export default class Intro extends Phaser.Scene {
             .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
 
         // Duch (počáteční stav)
-        this.duch = this.add.sprite(gameWidth * 0.24, gameHeight * 0.27, "Duch", 0)
-            .setScale(0.28 * scaleFactor) // uprav podle potřeby
+        this.duch = this.add.sprite(gameWidth * 0.22, gameHeight * 0.27, "Duch", 0)
+            .setScale(0.5 * scaleFactor) // uprav podle potřeby
             .setAlpha(0)
             .setVisible(false);
 
@@ -147,7 +147,7 @@ export default class Intro extends Phaser.Scene {
             }));
 
             // Bezpečný bod u ducha (ne mimo scénu)
-            const safeX = Math.max(50, Math.min(this.duch.x + 50, gameWidth - 50));
+            const safeX = Math.max(30, Math.min(this.duch.x + 50, gameWidth - 30));
             const safeY = Math.max(50, Math.min(this.duch.y, gameHeight - 50));
             path.push({ x: safeX, y: safeY });
 
@@ -167,7 +167,7 @@ export default class Intro extends Phaser.Scene {
                 onComplete: () => this.volejDucha(),
                 tweens: [
                     {
-                        scale: 1,
+                        scale: 0.5 * scaleFactor, // stejná hodnota jako při vytvoření motýla,
                         duration: 3000
                     },
                     ...randomPath.map(pt => ({
@@ -192,7 +192,7 @@ export default class Intro extends Phaser.Scene {
     private volejDucha(): void {
         this.duch.setVisible(true);
         this.tweens.add({
-            x: this.duch.x,
+            x: this.duch.x - 25,
             y: this.duch.y,
             targets: this.duch,
             alpha: .65,

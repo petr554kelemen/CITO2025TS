@@ -21,7 +21,7 @@ export default class Preloader extends Phaser.Scene {
 
     editorCreate(): void {
 
-        // image_56ba42f5-7d7b-4134-a21e-85c51411440a
+        // image
         this.add.image(512, 384, "background");
 
         // progressBar
@@ -31,7 +31,8 @@ export default class Preloader extends Phaser.Scene {
         progressBar.setPosition(gameWidth / 2, gameHeight * 0.6);
         progressBar.displayWidth = Math.min(468, gameWidth * 0.7);
         progressBar.isFilled = true;
-        progressBar.fillColor = 14737632;
+        progressBar.fillColor = 0xFF851B; // barva výplně
+        progressBar.fillAlpha = 1; // plná neprůhlednost
         progressBar.isStroked = true;
 
         this.progressBar = progressBar;
@@ -99,27 +100,46 @@ export default class Preloader extends Phaser.Scene {
             this.progressBar.displayWidth = 300;
         }
 
+        // Progress bar doběhl, teď čekáme na fonty
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        this.progressBar.setPosition(gameWidth / 2, gameHeight * 0.6);
-        this.progressBar.displayWidth = Math.min(468, gameWidth * 0.7);
+        const loadingText = this.add.text(gameWidth / 2, gameHeight * 0.55, "Načítám fonty...", {
+            fontFamily: 'sans-serif',
+            fontSize: Math.round(gameHeight * 0.04) + 'px',
+            color: '#fff'
+        }).setOrigin(0.5);
 
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        window.WebFont.load({
-            google: { families: ['Roboto:700'] },
-            active: () => {
-                // (volitelně) barva pozadí během čekání
-                this.cameras.main.setBackgroundColor('#000000');
-                // start next scene až fonty jsou načtené
-                //this.scene.start('MainMenu');
-
-                this.scene.transition({
-                    target: 'MainMenu',
-                    duration: 2000,      // délka přechodu v ms
-                    moveBelow: true     // nová scéna se vykreslí pod tou starou, která pak mizí
+        // Progress bar na 90 %
+        this.tweens.add({
+            targets: this.progressBar,
+            displayWidth: this.progressBar.displayWidth * 0.9,
+            duration: 300,
+            onComplete: () => {
+                window.WebFont.load({
+                    google: {
+                        families: [
+                            'DynaPuff:wdth,wght@95,600',
+                            'Barrio',
+                            'WDXL Lubrifont TC',
+                            'Kings',
+                            'Merienda:300,400,700,900'
+                        ]
+                    },
+                    active: () => {
+                        // Progress bar na 100 %
+                        this.tweens.add({
+                            targets: this.progressBar,
+                            displayWidth: this.progressBar.displayWidth / 0.9, // zpět na 100 %
+                            duration: 200,
+                            onComplete: () => {
+                                loadingText.destroy();
+                                this.cameras.main.setBackgroundColor('#000000');
+                                this.scene.start('MainMenu');
+                            }
+                        });
+                    }
                 });
             }
         });
-        //this.scene.start('MainMenu');
     }
 }
 

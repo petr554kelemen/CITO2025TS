@@ -165,8 +165,8 @@ export default class DialogManager {
     const scaleFactor = (this.scene as any).responsive?.getScaleFactor?.(667, 375) ?? 1;
 
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: 'Arial',
-      fontSize: `${18 * scaleFactor}px`, // větší písmo pro lepší čitelnost
+      fontFamily: 'Arial', // nebo zkus 'Merienda', 'Roboto', ...
+      fontSize: `${14 * scaleFactor}px`, // menší základní velikost
       color: '#000000',
       wordWrap: { width: 220 * scaleFactor }
     };
@@ -198,9 +198,11 @@ export default class DialogManager {
       const centerX = spriteBounds.centerX;
       const topY = spriteBounds.top;
 
+      const yOffset = -18 * scaleFactor; // posun bubliny výš nad objekt
+
       this.bubbleContainer.setPosition(
         centerX - bubbleWidth / 2,
-        topY + offsetY
+        topY + offsetY + yOffset
       );
       content.setPosition(padding, padding);
     } else {
@@ -276,6 +278,8 @@ export default class DialogManager {
       // Pro jednoduchost a přesnost v tomto kontextu použijeme:
       //const padding = 5;       // Tyto by měly být stejné jako při tvorbě bubliny
       const arrowHeight = 10;
+      // Získání scale faktoru stejně jako v show()
+      const scaleFactor = (this.scene as any).responsive?.getScaleFactor?.(667, 375) ?? 1;
       // Šířka a výška *obsahu* bubliny, jak byly použity pro výpočet `bubbleWidth` a `bubbleHeight` v `show()`
       // Tady by bylo ideální mít tyto hodnoty uložené z `show()` metody.
       // Protože je nemáme, musíme je buď znovu vypočítat, nebo odhadnout.
@@ -289,10 +293,11 @@ export default class DialogManager {
       const actualBubbleWidth = containerBounds.width;
       const actualBubbleHeight = containerBounds.height - arrowHeight; // Výška obdélníku bubliny
 
+      const yOffset = -18 * scaleFactor;
       // Nastavení pozice containeru tak, aby špička šipky lícovala s (centerX, topY)
       this.bubbleContainer.setPosition(
         centerX - actualBubbleWidth / 2, // Posun X tak, aby střed bubliny byl pod centerX
-        topY - (actualBubbleHeight + arrowHeight) // Posun Y tak, aby špička šipky byla na topY
+        topY - (actualBubbleHeight + arrowHeight) + yOffset // Posun Y tak, aby špička šipky byla na topY
       );
     } else if (this.bubbleContainer) {
         this.hide();
