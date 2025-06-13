@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { UI } from "../config/constants";
 
 export default class Scoreboard {
     private readonly bagIcons: Phaser.GameObjects.Image[] = [];
@@ -10,9 +11,9 @@ export default class Scoreboard {
         this.timeLeft = timeLeft;
 
         const gameWidth = scene.scale.width;
-        const boxWidth = Math.min(odpadkyCount * 36 + 80, gameWidth - 40);
+        const boxWidth = Math.min(odpadkyCount * UI.SCOREBOARD.ICON_SIZE + 80, gameWidth - 40);
         const boxHeight = 60;
-        const boxX = gameWidth / 2; // více od kraje
+        const boxX = UI.SCOREBOARD.LEFT_MARGIN + boxWidth / 2;
         const boxY = 48;
 
         // Tmavý box pod scoreboard
@@ -21,39 +22,39 @@ export default class Scoreboard {
             boxY,
             boxWidth,
             boxHeight,
-            0x222222,
-            0.8
+            UI.SCOREBOARD.BOX_BG_COLOR,
+            UI.SCOREBOARD.BOX_BG_ALPHA
         ).setOrigin(0.5).setScrollFactor(0).setDepth(0);
 
         // Ikony pytlů – zarovnáno vlevo v boxu
-        const iconsStartX = boxX - boxWidth / 2 + 36;
+        const iconsStartX = boxX - boxWidth / 2 + UI.SCOREBOARD.ICON_SIZE;
         for (let i = 0; i < odpadkyCount; i++) {
-            const icon = scene.add.image(iconsStartX + i * 36, boxY, 'miniBag')
-                .setScale(0.32)
+            const icon = scene.add.image(iconsStartX + i * UI.SCOREBOARD.ICON_SIZE, boxY, 'miniBag')
+                .setScale(UI.SCOREBOARD.ICON_SCALE)
                 .setAlpha(0.15)
                 .setScrollFactor(0)
                 .setDepth(1);
             this.bagIcons.push(icon);
         }
 
-        // Timer na střed boxu, o 15px níž
+        // Timer zarovnaný vpravo v boxu
         this.timerText = scene.add.text(
-            boxX,
-            boxY + 15,
+            boxX + boxWidth / 2 - 10,
+            boxY,
             `Čas: ${this.timeLeft}`,
             {
-                fontSize: '28px',
-                color: '#f8f8f8',
+                fontSize: `${UI.SCOREBOARD.TIMER_FONT_SIZE}px`,
+                color: UI.SCOREBOARD.TIMER_COLOR,
                 fontFamily: 'Arial'
             }
-        ).setOrigin(0.5).setScrollFactor(0).setDepth(1);
+        ).setOrigin(1, 0.5).setScrollFactor(0).setDepth(1);
     }
 
     public markCorrect(): void {
         if (this.bagIcons[this.correctAnswers]) {
             this.bagIcons[this.correctAnswers]
                 .setAlpha(1)
-                .setScale(0.5);
+                .setScale(UI.SCOREBOARD.ICON_SCALE_CORRECT);
         }
         this.correctAnswers++;
     }

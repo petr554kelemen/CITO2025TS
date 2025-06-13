@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import DialogManager from '../../utils/DialogManager';
 import ResponsiveManager from '../../utils/ResponsiveManager';
+import { UI } from '../../config/constants';
 
 type Odpadek = {
     typ: string;
@@ -78,6 +79,29 @@ export default class Intro extends Phaser.Scene {
         const scaleY = gameHeight / this.background.height;
         this.background.setScale(Math.max(scaleX, scaleY));
 
+        // Motýl
+        const startX = px(506);
+        const startY = py(233);
+        this.motyl = this.add.sprite(startX, startY, 'motyl')
+            .setScale(UI.MONINA.SCALE * scaleFactor) // sjednoceno podle configu
+            .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
+
+        // Duch (počáteční stav)
+        this.duch = this.add.sprite(gameWidth * 0.24, gameHeight * 0.27, "Duch", 0)
+            .setScale(0.28 * scaleFactor) // můžeš přidat do UI.DUCH.SCALE pokud chceš
+            .setAlpha(0)
+            .setVisible(false);
+
+        // Pytel (počáteční stav)
+        this.pytel = this.add.sprite(gameWidth * 0.87, gameHeight * 0.88, "prazdnyPytel");
+        this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0005));
+        this.pytel.setVisible(false);
+
+        // Logo
+        this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
+        this.citoLogo.setScale(Math.min(0.2, gameWidth * UI.LOGO.SCALE));
+        this.citoLogo.setAlpha(0.9);
+
         // Odpadky
         this.odpadkyData.forEach(odpadek => {
             odpadek.sprite = this.add.sprite(
@@ -89,29 +113,6 @@ export default class Intro extends Phaser.Scene {
             if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
             odpadek.sprite.setInteractive();
         });
-
-        // Motýl – startovní pozice podle editoru (např. 506, 233)
-        const startX = px(506);
-        const startY = py(233);
-        this.motyl = this.add.sprite(startX, startY, 'motyl')
-            .setScale(0.22 * scaleFactor) // uprav podle potřeby
-            .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
-
-        // Duch (počáteční stav)
-        this.duch = this.add.sprite(gameWidth * 0.24, gameHeight * 0.27, "Duch", 0)
-            .setScale(0.28 * scaleFactor) // uprav podle potřeby
-            .setAlpha(0)
-            .setVisible(false);
-
-        // Pytel (počáteční stav)
-        this.pytel = this.add.sprite(gameWidth * 0.87, gameHeight * 0.88, "prazdnyPytel");
-        this.pytel.setScale(Math.min(0.25, gameWidth * 0.0005));
-        this.pytel.setVisible(false);
-
-        // Logo
-        this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
-        this.citoLogo.setScale(Math.min(0.2, gameWidth * 0.0005));
-        this.citoLogo.setAlpha(0.9);
 
         // Motýlí animace a dialogy
         this.createMotylAndAnimate(px, py);
@@ -135,7 +136,7 @@ export default class Intro extends Phaser.Scene {
         const startX = px(506);
         const startY = py(233);
         this.motyl = this.add.sprite(startX, startY, 'motyl')
-            .setScale(0.22 * scaleFactor) // uprav podle potřeby
+            .setScale(UI.MONINA.SCALE * scaleFactor) // sjednoceno podle configu
             .setDepth(100);
 
         // Úvodní monolog motýla
@@ -167,7 +168,7 @@ export default class Intro extends Phaser.Scene {
                 onComplete: () => this.volejDucha(),
                 tweens: [
                     {
-                        scale: 1,
+                        scale: .6,
                         duration: 3000
                     },
                     ...randomPath.map(pt => ({
@@ -191,6 +192,7 @@ export default class Intro extends Phaser.Scene {
 
     private volejDucha(): void {
         this.duch.setVisible(true);
+        this.duch.setScale(.6 * this.responsive.getScaleFactor(667, 375));
         this.tweens.add({
             x: this.duch.x,
             y: this.duch.y,

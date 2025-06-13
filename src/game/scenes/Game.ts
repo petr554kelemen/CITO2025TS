@@ -3,6 +3,7 @@ import DialogManager from "../../utils/DialogManager";
 import { Quiz } from "../../utils/quiz";
 import Scoreboard from "../../utils/scoreboard";
 import ResponsiveManager, { LayoutType } from '../../utils/ResponsiveManager';
+import { UI } from "../../config/constants";
 
 type DialogTexts = {
     dialogSequence: Record<string, string>;
@@ -129,7 +130,7 @@ export default class Game extends Phaser.Scene {
 
         // Pytel
         this.pytel = this.add.image(gameWidth * 0.85, gameHeight * 0.88, 'prazdnyPytel').setInteractive();
-        this.pytel.setScale(Math.min(0.45, gameWidth * 0.0007));
+        this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0007));
         this.pytel.setOrigin(0.5);
 
         // Scoreboard
@@ -211,7 +212,7 @@ export default class Game extends Phaser.Scene {
     private setupMoninaResponsive(gameWidth: number, gameHeight: number): void {
         this.monina = this.add.sprite(gameWidth * 0.18, gameHeight * 0.73, "Monina", 0);
         this.monina.setOrigin(0.5);
-        this.monina.setScale(Math.min(0.6, gameHeight * 0.0012));
+        this.monina.setScale(Math.min(UI.MONINA.SCALE, gameHeight * UI.LOGO.SCALE));
         this.monina.visible = false;
 
         this.moninaSequence = [
@@ -693,13 +694,13 @@ export default class Game extends Phaser.Scene {
         // Pytel
         if (this.pytel) {
             this.pytel.setPosition(gameWidth * 0.85, gameHeight * 0.88);
-            this.pytel.setScale(Math.min(0.45, gameWidth * 0.0007));
+            this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0007));
         }
 
         // Monina
         if (this.monina && this.monina.visible) {
             this.monina.setPosition(gameWidth * 0.18, gameHeight * 0.73);
-            this.monina.setScale(Math.min(0.6, gameHeight * 0.0012));
+            this.monina.setScale(Math.min(UI.MONINA.SCALE, gameHeight * UI.LOGO.SCALE));
         }
 
         // Odpadky
