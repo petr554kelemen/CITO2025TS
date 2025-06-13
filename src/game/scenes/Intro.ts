@@ -79,18 +79,52 @@ export default class Intro extends Phaser.Scene {
         const scaleY = gameHeight / this.background.height;
         this.background.setScale(Math.max(scaleX, scaleY));
 
-        // Motýl
-        const startX = px(506);
-        const startY = py(233);
-        this.motyl = this.add.sprite(startX, startY, 'motyl')
-            .setScale(UI.MONINA.SCALE * scaleFactor) // sjednoceno podle configu
+        // Duch – pevná pozice vlevo nahoře, začíná neviditelný
+        const duchX = 153;
+        const duchY = 132;
+        this.duch = this.add.sprite(duchX, duchY, "Duch")
+            .setAlpha(0);
+
+        // Motýl – startovní pozice podle kontrolního bodu
+        const motylStartX = 506;
+        const motylStartY = 233;
+        this.motyl = this.add.sprite(motylStartX, motylStartY, 'motyl')
+            .setScale(0.15)
             .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
 
-        // Duch (počáteční stav)
-        this.duch = this.add.sprite(gameWidth * 0.24, gameHeight * 0.27, "Duch", 0)
-            .setScale(0.28 * scaleFactor) // můžeš přidat do UI.DUCH.SCALE pokud chceš
-            .setAlpha(0)
-            .setVisible(false);
+        // Cílová pozice motýla – těsně vedle ducha
+        const motylCilX = duchX + 40;
+        const motylCilY = duchY;
+
+        // Animace motýla do cíle
+        this.tweens.add({
+            targets: this.motyl,
+            x: motylCilX,
+            y: motylCilY,
+            duration: 2000,
+            ease: 'Power2',
+            onComplete: () => {
+                // Duch se zjeví (fade in)
+                this.tweens.add({
+                    targets: this.duch,
+                    alpha: 0.85,
+                    duration: 600,
+                    onComplete: () => {
+                        // Motýl se "poleká" (např. odskočí doprava)
+                        this.tweens.add({
+                            targets: this.motyl,
+                            x: motylCilX + 60,
+                            duration: 400,
+                            ease: 'Power2',
+                            onComplete: () => {
+                                // Spustí se dialog mezi duchem a motýlem
+                                this.startDialogDuchMotyl();
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
         // Pytel (počáteční stav)
         this.pytel = this.add.sprite(gameWidth * 0.87, gameHeight * 0.88, "prazdnyPytel");
