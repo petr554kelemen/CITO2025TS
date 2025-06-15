@@ -118,7 +118,7 @@ export default class Intro extends Phaser.Scene {
                             ease: 'Power2',
                             onComplete: () => {
                                 // Spustí se dialog mezi duchem a motýlem
-                                this.startDialogDuchMotyl();
+                                this.dialogMotylDuch();
                             }
                         });
                     }
@@ -127,9 +127,9 @@ export default class Intro extends Phaser.Scene {
         });
 
         // Pytel (počáteční stav)
-        this.pytel = this.add.sprite(gameWidth * 0.87, gameHeight * 0.88, "prazdnyPytel");
-        this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0005));
-        this.pytel.setVisible(false);
+        this.pytel = this.add.sprite(gameWidth * 0.85, gameHeight * 0.88, 'prazdnyPytel').setInteractive();
+        this.pytel.setScale(UI.PYTEL.SCALE * scaleFactor);
+        this.pytel.setOrigin(0.5);
 
         // Logo
         this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");

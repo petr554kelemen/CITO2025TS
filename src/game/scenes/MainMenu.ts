@@ -86,7 +86,7 @@ export default class MainMenu extends Phaser.Scene {
 
         // Vlajky
         const flags: { lang: Lang, x: number, y: number }[] = [
-            { lang: 'cs', x: 270, y: 296 },
+            { lang: 'cs', x: 270, y: 300 },
             { lang: 'en', x: 370, y: 300 },
             { lang: 'pl', x: 470, y: 300 }
         ];
@@ -113,7 +113,7 @@ export default class MainMenu extends Phaser.Scene {
         // Plný pytel
         this.add.image(px(604), py(264), "plnyPytel")
             .setOrigin(0.5)
-            .setScale(UI.PYTEL.SCALE * scaleFactor, 0.35 * scaleFactor);
+            .setScale(0.35 * scaleFactor, 0.35 * scaleFactor);
     }
 
     private createDesktopLayout(): void {
@@ -188,7 +188,7 @@ export default class MainMenu extends Phaser.Scene {
         // Plný pytel
         this.add.image(px(604), py(264), "plnyPytel")
             .setOrigin(0.5)
-            .setScale(UI.PYTEL.SCALE * scaleFactor, 0.35 * scaleFactor);
+            .setScale(UI.PYTEL.SCALE * scaleFactor)
     }
 
     private selectLang(lang: string): void {
