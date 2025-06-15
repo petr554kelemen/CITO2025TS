@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import ResponsiveManager, { LayoutType, DeviceType } from '../../utils/ResponsiveManager';
-import { UI } from '../../config/constants';
+import { UI, DESIGN } from '../../config/constants'; // <-- přidán DESIGN
 
 type Lang = 'cs' | 'en' | 'pl';
 
@@ -42,13 +42,11 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     private createMobileLayout(): void {
-        const DESIGN_WIDTH = 667;
-        const DESIGN_HEIGHT = 375;
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const scaleFactor = this.responsive.getScaleFactor(DESIGN_WIDTH, DESIGN_HEIGHT);
+        const scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
 
-        const px = (x: number) => x * (gameWidth / DESIGN_WIDTH);
-        const py = (y: number) => y * (gameHeight / DESIGN_HEIGHT);
+        const px = (x: number) => x * (gameWidth / DESIGN.WIDTH);
+        const py = (y: number) => y * (gameHeight / DESIGN.HEIGHT);
 
         // Pozadí
         this.add.image(px(337), py(187), "freepik_forest_02")
@@ -113,17 +111,15 @@ export default class MainMenu extends Phaser.Scene {
         // Plný pytel
         this.add.image(px(604), py(264), "plnyPytel")
             .setOrigin(0.5)
-            .setScale(0.35 * scaleFactor, 0.35 * scaleFactor);
-    }
+            .setScale(UI.PYTEL.SCALE * scaleFactor, UI.PYTEL.SCALE * scaleFactor); // sjednoceno
+}
 
     private createDesktopLayout(): void {
-        const DESIGN_WIDTH = 667;
-        const DESIGN_HEIGHT = 375;
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const scaleFactor = this.responsive.getScaleFactor(DESIGN_WIDTH, DESIGN_HEIGHT);
+        const scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
 
-        const px = (x: number) => x * (gameWidth / DESIGN_WIDTH);
-        const py = (y: number) => y * (gameHeight / DESIGN_HEIGHT);
+        const px = (x: number) => x * (gameWidth / DESIGN.WIDTH);
+        const py = (y: number) => y * (gameHeight / DESIGN.HEIGHT);
 
         // Pozadí
         this.add.image(px(337), py(187), "freepik_forest_02")
@@ -188,7 +184,7 @@ export default class MainMenu extends Phaser.Scene {
         // Plný pytel
         this.add.image(px(604), py(264), "plnyPytel")
             .setOrigin(0.5)
-            .setScale(UI.PYTEL.SCALE * scaleFactor)
+            .setScale(UI.PYTEL.SCALE * scaleFactor, UI.PYTEL.SCALE * scaleFactor); // sjednoceno
     }
 
     private selectLang(lang: string): void {

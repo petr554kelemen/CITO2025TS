@@ -16,7 +16,7 @@ export const UI = {
         SCALE: 0.6 // Výchozí scale pro postavu Moniny
     },
     PYTEL: {
-        SCALE: 0.45 // jednotná velikost pytle pro všechny scény
+        SCALE: 0.22 // jednotná velikost pytle pro všechny scény
     },
     LOGO: {
         SCALE: 0.0012 // Násobek min(gameWidth, gameHeight) pro logo CITO
@@ -37,4 +37,9 @@ export const UI = {
         HINT: '#1565c0', // Barva textu nápovědy
         HINT_BG: '#e3f2fd' // Barva pozadí nápovědy
     }
+};
+
+export const DESIGN = {
+    WIDTH: 667,
+    HEIGHT: 375
 };

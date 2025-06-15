@@ -66,12 +66,20 @@ export default class Intro extends Phaser.Scene {
         // Designové rozměry pro mobile-first
         const DESIGN_WIDTH = 667;
         const DESIGN_HEIGHT = 375;
-        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const scaleFactor = this.responsive.getScaleFactor(DESIGN_WIDTH, DESIGN_HEIGHT);
+        // Výpočet scaleFactor a rozměrů
+        const { width: gameWidth, height: gameHeight } = this.scale;
+        const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
 
-        // Přepočet souřadnic
-        const px = (x: number) => x * (gameWidth / DESIGN_WIDTH);
-        const py = (y: number) => y * (gameHeight / DESIGN_HEIGHT);
+        // Definice pozic (vše na jednom místě, responzivně)
+        const duchX = Math.round(gameWidth * 0.23); // vlevo nahoře, univerzální pro různá rozlišení
+        const duchY = Math.round(gameHeight * 0.18);
+
+        const motylStartX = Math.round(gameWidth * 0.76); // pravá část scény
+        const motylStartY = Math.round(gameHeight * 0.62);
+
+        // Cílový bod motýla – vedle ducha, s rozestupem (např. 60 px * scaleFactor)
+        const motylCilX = duchX + Math.round(60 * scaleFactor);
+        const motylCilY = duchY;
 
         // Pozadí
         this.background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
@@ -80,21 +88,14 @@ export default class Intro extends Phaser.Scene {
         this.background.setScale(Math.max(scaleX, scaleY));
 
         // Duch – pevná pozice vlevo nahoře, začíná neviditelný
-        const duchX = 153;
-        const duchY = 132;
         this.duch = this.add.sprite(duchX, duchY, "Duch")
+            .setScale(0.12 * scaleFactor) // nebo použij UI.DUCH.SCALE * scaleFactor
             .setAlpha(0);
 
         // Motýl – startovní pozice podle kontrolního bodu
-        const motylStartX = 506;
-        const motylStartY = 233;
         this.motyl = this.add.sprite(motylStartX, motylStartY, 'motyl')
-            .setScale(0.15)
+            .setScale(0.12 * scaleFactor) // nebo použij UI.MOTYL.SCALE * scaleFactor
             .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
-
-        // Cílová pozice motýla – těsně vedle ducha
-        const motylCilX = duchX + 40;
-        const motylCilY = duchY;
 
         // Animace motýla do cíle
         this.tweens.add({
@@ -110,10 +111,10 @@ export default class Intro extends Phaser.Scene {
                     alpha: 0.85,
                     duration: 600,
                     onComplete: () => {
-                        // Motýl se "poleká" (např. odskočí doprava)
+                        // Motýl se "poleká" (odskočí doprava)
                         this.tweens.add({
                             targets: this.motyl,
-                            x: motylCilX + 60,
+                            x: motylCilX + Math.round(60 * scaleFactor),
                             duration: 400,
                             ease: 'Power2',
                             onComplete: () => {
@@ -139,8 +140,8 @@ export default class Intro extends Phaser.Scene {
         // Odpadky
         this.odpadkyData.forEach(odpadek => {
             odpadek.sprite = this.add.sprite(
-                px(odpadek.x),
-                py(odpadek.y),
+                this.px(odpadek.x),
+                this.py(odpadek.y),
                 odpadek.typ
             );
             if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale * scaleFactor);
@@ -149,7 +150,7 @@ export default class Intro extends Phaser.Scene {
         });
 
         // Motýlí animace a dialogy
-        this.createMotylAndAnimate(px, py);
+        this.createMotylAndAnimate(this.px.bind(this), this.py.bind(this));
 
         this.input.once('pointerdown', () => {
             this.skipIntro();
@@ -167,6 +168,8 @@ export default class Intro extends Phaser.Scene {
         }
 
         // Vytvoř nového motýla na startovní pozici
+        // const px = (x: number) => Math.round(gameWidth * (x / 667));
+        // const py = (y: number) => Math.round(gameHeight * (y / 375));
         const startX = px(506);
         const startY = py(233);
         this.motyl = this.add.sprite(startX, startY, 'motyl')
@@ -330,17 +333,11 @@ export default class Intro extends Phaser.Scene {
         this.prevX = curX;
     }
 
-    // private cleanExistingLayout(): void {
-    //     if (this.background) this.background.destroy();
-    //     if (this.duch) this.duch.destroy();
-    //     if (this.pytel) this.pytel.destroy();
-    //     if (this.citoLogo) this.citoLogo.destroy();
-    //     if (this.motyl) {
-    //         this.tweens.killTweensOf(this.motyl);
-    //         this.motyl.destroy();
-    //     }
-    //     this.odpadkyData.forEach(odpadek => {
-    //         if (odpadek.sprite) odpadek.sprite.destroy();
-    //     });
-    // }
+    private px(x: number): number {
+        return Math.round(this.scale.width * (x / 667));
+    }
+    private py(y: number): number {
+        return Math.round(this.scale.height * (y / 375));
+    }
+
 }
