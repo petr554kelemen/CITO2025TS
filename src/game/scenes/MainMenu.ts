@@ -165,6 +165,7 @@ export default class MainMenu extends Phaser.Scene {
             this.add.image(px(flag.x), py(flag.y), `flag_${flag.lang}`)
                 .setInteractive()
                 .setOrigin(0.5)
+                .setScale(.85* scaleFactor)
                 .on('pointerup', () => this.selectLang(flag.lang));
         });
 

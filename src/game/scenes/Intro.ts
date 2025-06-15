@@ -38,7 +38,7 @@ export default class Intro extends Phaser.Scene {
     private motyl!: Phaser.GameObjects.Sprite;
     private duch!: Phaser.GameObjects.Sprite;
     private pytel!: Phaser.GameObjects.Sprite;
-    private citoLogo!: Phaser.GameObjects.Image;
+    //private citoLogo!: Phaser.GameObjects.Image;
     private prevX: number = 0;
     private lang: any;
     private texts!: DialogTexts;
@@ -70,16 +70,7 @@ export default class Intro extends Phaser.Scene {
         const { width: gameWidth, height: gameHeight } = this.scale;
         const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
 
-        // Definice pozic (vše na jednom místě, responzivně)
-        const duchX = Math.round(gameWidth * 0.23); // vlevo nahoře, univerzální pro různá rozlišení
-        const duchY = Math.round(gameHeight * 0.18);
-
-        const motylStartX = Math.round(gameWidth * 0.76); // pravá část scény
-        const motylStartY = Math.round(gameHeight * 0.62);
-
-        // Cílový bod motýla – vedle ducha, s rozestupem (např. 60 px * scaleFactor)
-        const motylCilX = duchX + Math.round(60 * scaleFactor);
-        const motylCilY = duchY;
+        const yOffset = 40; // nebo 30/50 podle potřeby
 
         // Pozadí
         this.background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
@@ -87,12 +78,19 @@ export default class Intro extends Phaser.Scene {
         const scaleY = gameHeight / this.background.height;
         this.background.setScale(Math.max(scaleX, scaleY));
 
-        // Duch – pevná pozice vlevo nahoře, začíná neviditelný
+        // Duch
+        const duchX = Math.round(gameWidth * 0.23);
+        const duchY = Math.round(gameHeight * 0.18) + yOffset;
         this.duch = this.add.sprite(duchX, duchY, "Duch")
             .setScale(0.12 * scaleFactor) // nebo použij UI.DUCH.SCALE * scaleFactor
             .setAlpha(0);
 
-        // Motýl – startovní pozice podle kontrolního bodu
+        // Motýl
+        const motylStartX = Math.round(gameWidth * 0.76);
+        const motylStartY = Math.round(gameHeight * 0.62) + yOffset;
+        // Definuj cílové souřadnice motýla
+        const motylCilX = Math.round(gameWidth * 0.68);
+        const motylCilY = Math.round(gameHeight * 0.45) + yOffset;
         this.motyl = this.add.sprite(motylStartX, motylStartY, 'motyl')
             .setScale(0.12 * scaleFactor) // nebo použij UI.MOTYL.SCALE * scaleFactor
             .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
@@ -114,7 +112,7 @@ export default class Intro extends Phaser.Scene {
                         // Motýl se "poleká" (odskočí doprava)
                         this.tweens.add({
                             targets: this.motyl,
-                            x: motylCilX + Math.round(60 * scaleFactor),
+                            x: motylCilX + Math.round(80 * scaleFactor),
                             duration: 400,
                             ease: 'Power2',
                             onComplete: () => {
@@ -132,10 +130,10 @@ export default class Intro extends Phaser.Scene {
         this.pytel.setScale(UI.PYTEL.SCALE * scaleFactor);
         this.pytel.setOrigin(0.5);
 
-        // Logo
-        this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
-        this.citoLogo.setScale(Math.min(0.2, gameWidth * UI.LOGO.SCALE));
-        this.citoLogo.setAlpha(0.9);
+        // // Logo
+        // this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
+        // this.citoLogo.setScale(Math.min(0.2, gameWidth * UI.LOGO.SCALE));
+        // this.citoLogo.setAlpha(0.9);
 
         // Odpadky
         this.odpadkyData.forEach(odpadek => {
@@ -185,8 +183,8 @@ export default class Intro extends Phaser.Scene {
             }));
 
             // Bezpečný bod u ducha (ne mimo scénu)
-            const safeX = Math.max(50, Math.min(this.duch.x + 50, gameWidth - 50));
-            const safeY = Math.max(50, Math.min(this.duch.y, gameHeight - 50));
+            const safeX = Math.max(50, Math.min(this.duch.x + Math.round(80 * scaleFactor), gameWidth - 50));
+            const safeY = Math.max(50, Math.min(duchY + Math.round(40 * scaleFactor), gameHeight - 50));
             path.push({ x: safeX, y: safeY });
 
             const pathWithoutFinal = path.slice(0, -1);
