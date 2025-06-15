@@ -122,7 +122,7 @@ export default class Intro extends Phaser.Scene {
             x: points[0].x,
             y: points[0].y,
             scale: 0.6 * scaleFactor,
-            duration: 3000, // <-- STEJNÁ DÉLKA JAKO ODLET
+            duration: 3200, // <-- STEJNÁ DÉLKA JAKO ODLET
             ease: 'Power2',
             onComplete: () => {
                 this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl).then(() => {
@@ -131,7 +131,7 @@ export default class Intro extends Phaser.Scene {
                             targets: this.motyl,
                             x: p.x,
                             y: p.y,
-                            duration: 1200,
+                            duration: 1600,
                             ease: 'Power2',
                             onStart: () => {
                                 this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl);

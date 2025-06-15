@@ -166,7 +166,7 @@ export default class DialogManager {
 
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
       fontFamily: 'Arial',
-      fontSize: `${18 * scaleFactor}px`, // větší písmo pro lepší čitelnost
+      fontSize: `${14 * scaleFactor}px`, // větší písmo pro lepší čitelnost
       color: '#000000',
       wordWrap: { width: 220 * scaleFactor }
     };
