@@ -56,90 +56,44 @@ export default class Intro extends Phaser.Scene {
         this.responsive = new ResponsiveManager(this);
         this.responsive.checkAndForceOrientation();
 
-        // Opravená inicializace dialog manageru
         this.dialog = new DialogManager(this, this.texts);
 
         if ((window as any).DEBUG_MODE) {
             this.responsive.addDebugOverlay();
         }
 
-        // Designové rozměry pro mobile-first
-        const DESIGN_WIDTH = 667;
-        const DESIGN_HEIGHT = 375;
-        // Výpočet scaleFactor a rozměrů
+        // Výpočet scaleFactor a převodních funkcí
         const { width: gameWidth, height: gameHeight } = this.scale;
         const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
-
-        const yOffset = 40; // nebo 30/50 podle potřeby
+        const px = (x: number) => Math.round(gameWidth * (x / 667));
+        const py = (y: number) => Math.round(gameHeight * (y / 375));
 
         // Pozadí
         this.background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
         const scaleX = gameWidth / this.background.width;
         const scaleY = gameHeight / this.background.height;
         this.background.setScale(Math.max(scaleX, scaleY));
+        this.background.setDepth(-1);
 
-        // Duch
-        const duchX = Math.round(gameWidth * 0.23);
-        const duchY = Math.round(gameHeight * 0.18) + yOffset;
+        // --- Duch ---
+        const duchX = px(153);
+        const duchY = py(132);
         this.duch = this.add.sprite(duchX, duchY, "Duch")
-            .setScale(0.12 * scaleFactor) // nebo použij UI.DUCH.SCALE * scaleFactor
+            .setScale(0.6 * scaleFactor) // zvětšeno, aby duch byl výrazný
             .setAlpha(0);
 
-        // Motýl
-        const motylStartX = Math.round(gameWidth * 0.76);
-        const motylStartY = Math.round(gameHeight * 0.62) + yOffset;
-        // Definuj cílové souřadnice motýla
-        const motylCilX = Math.round(gameWidth * 0.68);
-        const motylCilY = Math.round(gameHeight * 0.45) + yOffset;
+        // --- Motýl startuje v dálce, malý scale ---
+        const motylStartX = px(506);
+        const motylStartY = py(233);
         this.motyl = this.add.sprite(motylStartX, motylStartY, 'motyl')
-            .setScale(0.12 * scaleFactor) // nebo použij UI.MOTYL.SCALE * scaleFactor
-            .setDepth(100); // Motýl bude vždy nad pozadím i odpadky
-
-        // Animace motýla do cíle
-        this.tweens.add({
-            targets: this.motyl,
-            x: motylCilX,
-            y: motylCilY,
-            duration: 2000,
-            ease: 'Power2',
-            onComplete: () => {
-                // Duch se zjeví (fade in)
-                this.tweens.add({
-                    targets: this.duch,
-                    alpha: 0.85,
-                    duration: 600,
-                    onComplete: () => {
-                        // Motýl se "poleká" (odskočí doprava)
-                        this.tweens.add({
-                            targets: this.motyl,
-                            x: motylCilX + Math.round(80 * scaleFactor),
-                            duration: 400,
-                            ease: 'Power2',
-                            onComplete: () => {
-                                // Spustí se dialog mezi duchem a motýlem
-                                this.dialogMotylDuch();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        // Pytel (počáteční stav)
-        this.pytel = this.add.sprite(gameWidth * 0.85, gameHeight * 0.88, 'prazdnyPytel').setInteractive();
-        this.pytel.setScale(UI.PYTEL.SCALE * scaleFactor);
-        this.pytel.setOrigin(0.5);
-
-        // // Logo
-        // this.citoLogo = this.add.image(gameWidth * 0.93, gameHeight * 0.14, "Cito_logo");
-        // this.citoLogo.setScale(Math.min(0.2, gameWidth * UI.LOGO.SCALE));
-        // this.citoLogo.setAlpha(0.9);
+            .setScale(0.1)
+            .setDepth(100);
 
         // Odpadky
         this.odpadkyData.forEach(odpadek => {
             odpadek.sprite = this.add.sprite(
-                this.px(odpadek.x),
-                this.py(odpadek.y),
+                px(odpadek.x),
+                py(odpadek.y),
                 odpadek.typ
             );
             if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale * scaleFactor);
@@ -147,8 +101,64 @@ export default class Intro extends Phaser.Scene {
             odpadek.sprite.setInteractive();
         });
 
-        // Motýlí animace a dialogy
-        this.createMotylAndAnimate(this.px.bind(this), this.py.bind(this));
+        // Pytel (počáteční stav)
+        this.pytel = this.add.sprite(gameWidth * 0.85, gameHeight * 0.88, 'prazdnyPytel').setInteractive();
+        this.pytel.setScale(UI.PYTEL.SCALE * scaleFactor);
+        this.pytel.setOrigin(0.5);
+
+        // --- Výběr 4 náhodných odpadků ---
+        const shuffled = Phaser.Utils.Array.Shuffle(this.odpadkyData.slice());
+        const points = shuffled.slice(0, 4).map(o => ({ x: px(o.x), y: py(o.y) }));
+
+        // --- Přidej cílový bod u ducha s rozestupem ---
+        const offsetX = Math.round(120 * scaleFactor);
+        const offsetY = Math.round(40 * scaleFactor);
+        const duchCilX = duchX + offsetX;
+        const duchCilY = duchY + offsetY;
+
+        // --- První tween: motýl se přiblíží k prvnímu odpadku a zvětší se ---
+        this.tweens.add({
+            targets: this.motyl,
+            x: points[0].x,
+            y: points[0].y,
+            scale: 0.6 * scaleFactor,
+            duration: 3000, // <-- STEJNÁ DÉLKA JAKO ODLET
+            ease: 'Power2',
+            onComplete: () => {
+                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl).then(() => {
+                    const tweens = [
+                        ...points.slice(1).map(p => ({
+                            targets: this.motyl,
+                            x: p.x,
+                            y: p.y,
+                            duration: 1200, // rychlejší mezi odpadky
+                            ease: 'Power2'
+                        })),
+                        {
+                            targets: this.motyl,
+                            x: duchCilX,
+                            y: duchCilY,
+                            duration: 2000, // zpomaleno cesta k duchovi
+                            ease: 'Power2'
+                        }
+                    ];
+
+                    this.tweens.chain({
+                        tweens,
+                        onComplete: () => {
+                            this.tweens.add({
+                                targets: this.duch,
+                                alpha: 0.9,
+                                duration: 1000,
+                                onComplete: () => {
+                                    this.dialogMotylDuch();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        });
 
         this.input.once('pointerdown', () => {
             this.skipIntro();
@@ -184,7 +194,7 @@ export default class Intro extends Phaser.Scene {
 
             // Bezpečný bod u ducha (ne mimo scénu)
             const safeX = Math.max(50, Math.min(this.duch.x + Math.round(80 * scaleFactor), gameWidth - 50));
-            const safeY = Math.max(50, Math.min(duchY + Math.round(40 * scaleFactor), gameHeight - 50));
+            const safeY = Math.max(50, Math.min(this.duch.y + Math.round(40 * scaleFactor), gameHeight - 50));
             path.push({ x: safeX, y: safeY });
 
             const pathWithoutFinal = path.slice(0, -1);
