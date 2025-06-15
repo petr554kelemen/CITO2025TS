@@ -131,14 +131,17 @@ export default class Intro extends Phaser.Scene {
                             targets: this.motyl,
                             x: p.x,
                             y: p.y,
-                            duration: 1200, // rychlejší mezi odpadky
-                            ease: 'Power2'
+                            duration: 1200,
+                            ease: 'Power2',
+                            onStart: () => {
+                                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl);
+                            }
                         })),
                         {
                             targets: this.motyl,
                             x: duchCilX,
                             y: duchCilY,
-                            duration: 2000, // zpomaleno cesta k duchovi
+                            duration: 2800,
                             ease: 'Power2'
                         }
                     ];
