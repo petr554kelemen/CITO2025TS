@@ -24,52 +24,101 @@ export default class Game extends Phaser.Scene {
     language: 'cs' | 'en' | 'pl';
     texts!: DialogTexts;
 
-    //TODO: Přidat pole odpadků
     private odpadky: Odpadek[] = [];
 
-    //TODO: Přidat proměnné pro pytel, Moninu, časovač, kvíz, skóre atd.
     private pytel!: Phaser.GameObjects.Image;
     private monina!: Phaser.GameObjects.Sprite;
+
+    /**
+     * Instance třídy Quiz pro správu logiky kvízu v této scéně.
+     * 
+     * @remarks
+     * Tato vlastnost je inicializována později a stará se o všechny operace s kvízem, jako je správa otázek a skóre.
+     */
     private quiz!: Quiz;
+
+    /**
+     * Volitelný odkaz na Phaser časovač, který slouží pro plánování časových akcí ve scéně.
+     * Pokud není aktivní žádný časovač, je undefined.
+     */
     private timerEvent?: Phaser.Time.TimerEvent;
+
     private timerStarted = false;
+
+    /**
+     * Počet zbývajících sekund v herním časovači.
+     * 
+     * @default 120 // např. 2 minuty
+     */
     private timeLeft: number = 120; // např. 2 minuty
 
+    /**
+     * Pole objektů, z nichž každý obsahuje unikátní klíč a odkaz na Phaser obrázek.
+     * 
+     * @remarks
+     * - `key`: Identifikátor sekvence.
+     * - `obj`: Odpovídající instance Phaser.GameObjects.Image.
+     */
     private moninaSequence: { key: string; obj: Phaser.GameObjects.Image }[] = [];
+
+    /**
+     * Spravuje dialogy ve scéně.
+     * 
+     * @remarks
+     * Tato vlastnost obsahuje instanci {@link DialogManager}, která zajišťuje zobrazování a ovládání dialogových oken nebo zpráv během hry.
+     */
     private dialog!: DialogManager;
 
     private quizActive: boolean = false;
     private canPlay: boolean = false;
     private currentOdpadek: Odpadek | null = null;
+
+    /**
+     * Uchovává aktuálně aktivní otázku ve scéně.
+     * 
+     * @remarks
+     * Tato vlastnost je nastavena na `null`, pokud není žádná aktivní otázka.
+     * Typ je `any` a doporučuje se jej nahradit konkrétnějším typem.
+     */
     private currentQuestion: any = null;
 
     private hintBtn?: Phaser.GameObjects.Image;
-
     private quizContainer?: Phaser.GameObjects.Container;
 
+    /**
+     * Uchovává funkci pro úklid po kvízu, nebo `null`, pokud není potřeba žádný úklid.
+     * 
+     * Tato funkce by měla být nastavena při inicializaci kvízu a volána při ukončení kvízu (např. odstranění listenerů nebo časovačů).
+     * Po úklidu nastav na `null`.
+     */
     private quizCleanup: (() => void) | null = null;
 
-    //private odpadyIcons: Phaser.GameObjects.Sprite[] = [];
     private odpadkyGroup!: Phaser.GameObjects.Group;
-
-    //private bagIcons: Phaser.GameObjects.Image[] = [];
-
     private scoreboard!: Scoreboard;
-
-    //score: number = 0;
 
     private totalHintsLeft: number = 2;
     private lastGameSuccess: boolean = false;
-
     private originalOdpadky: Odpadek[] = [];
 
+    /**
+     * Spravuje responzivní chování scény, např. přizpůsobení rozložení nebo škálování podle velikosti obrazovky nebo orientace zařízení.
+     * 
+     * @remarks
+     * Tato vlastnost je inicializována scénou a poskytuje přístup k responzivním utilitám.
+     */
     private responsive!: ResponsiveManager;
 
     constructor() {
         super("Game");
-        // Přidáno: Povolení hraní po skončení úvodního dialogu
     }
 
+    /**
+     * Enables gameplay by allowing player interactions.
+     * 
+     * Sets the `canPlay` flag to `true` and enables drag-and-drop functionality
+     * for all items in the `odpadky` collection that have an associated sprite.
+     * This allows the player to interact with and move these items within the game scene.
+     */
     private enableGamePlay(): void {
         this.canPlay = true;
         // Nastav drag & drop pro odpadky
@@ -203,7 +252,7 @@ export default class Game extends Phaser.Scene {
 
         this.input.on(
             'dragend',
-            (pointer: DragEndPointer, gameObject: DragEndGameObject) => {
+            (_pointer: DragEndPointer, gameObject: DragEndGameObject) => {
                 const odpadek: Odpadek | undefined = this.odpadky.find((o: Odpadek) => o.sprite === gameObject);
                 if (!odpadek) return;
 
