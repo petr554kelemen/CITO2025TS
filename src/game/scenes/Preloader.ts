@@ -105,18 +105,24 @@ export default class Preloader extends Phaser.Scene {
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         window.WebFont.load({
-            google: { families: ['Roboto:700'] },
+            google: {
+                families: [
+                    'Roboto:700',
+                    'Single Day:400',
+                    'DynaPuff:600',
+                    'Barrio',
+                    'WDXL Lubrifont TC',
+                    'Kings',
+                    'Merienda:wght@300..900'
+                ]
+            },
             active: () => {
                 // (volitelně) barva pozadí během čekání
                 this.cameras.main.setBackgroundColor('#000000');
                 // start next scene až fonty jsou načtené
                 //this.scene.start('MainMenu');
 
-                this.scene.transition({
-                    target: 'MainMenu',
-                    duration: 2000,      // délka přechodu v ms
-                    moveBelow: true     // nová scéna se vykreslí pod tou starou, která pak mizí
-                });
+                this.scene.start('MainMenu');
             }
         });
         //this.scene.start('MainMenu');

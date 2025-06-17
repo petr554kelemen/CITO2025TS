@@ -31,8 +31,9 @@ export default class Game extends Phaser.Scene {
     private pytel!: Phaser.GameObjects.Image;
     private monina!: Phaser.GameObjects.Sprite;
     private quiz!: Quiz;
+    private timerEvent?: Phaser.Time.TimerEvent;
+    private timerStarted = false;
     private timeLeft: number = 120; // např. 2 minuty
-    private timerEvent!: Phaser.Time.TimerEvent;
 
     private moninaSequence: { key: string; obj: Phaser.GameObjects.Image }[] = [];
     private dialog!: DialogManager;
@@ -77,10 +78,10 @@ export default class Game extends Phaser.Scene {
 
     async create(): Promise<void> {
         // LADICÍ REŽIM: Přeskoč intro a hned zobraz GameOver
-        if ((window as any).DEBUG_MODE) {
+        /* if ((window as any).DEBUG_MODE) {
             this.scene.start('GameOver', { texts: this.texts });
             return;
-        }
+        } */
 
         // Pokud už hráč úspěšně dokončil, rovnou GameOver
         if (localStorage.getItem('cito2025_success') === '1') {
@@ -92,10 +93,10 @@ export default class Game extends Phaser.Scene {
         this.responsive = new ResponsiveManager(this);
         this.responsive.checkAndForceOrientation();
 
-        // Debug info pro ladění
+        /* // Debug info pro ladění
         if ((window as any).DEBUG_MODE) {
             this.responsive.addDebugOverlay();
-        }
+        } */
 
         // --- NOVĚ: Rozpoznání layoutu a volání správné metody ---
         this.setupLayout();
@@ -133,8 +134,8 @@ export default class Game extends Phaser.Scene {
         this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0007));
         this.pytel.setOrigin(0.5);
 
-        // Scoreboard
-        this.scoreboard = new Scoreboard(this, this.odpadky.length, 0);
+        // Scoreboard vlevo nahoře
+        this.scoreboard = new Scoreboard(this, this.odpadky.length, this.timeLeft, this.texts);
 
         // Odpadky
         this.createOdpadkyResponsive(gameWidth, gameHeight);
@@ -552,15 +553,16 @@ export default class Game extends Phaser.Scene {
         };
     }
 
+    // Spuštění timeru při prvním drag startu
     private startTimer(): void {
         if (this.timerEvent) return;
         this.timerEvent = this.time.addEvent({
             delay: 1000,
             callback: () => {
                 this.timeLeft--;
-                this.scoreboard.updateTime(this.timeLeft);
+                this.scoreboard.setTime(this.timeLeft);
                 if (this.timeLeft <= 0) {
-                    this.timerEvent.remove();
+                    this.timerEvent?.remove();
                     // --- NOVÉ: Ukonči probíhající kvíz ---
                     if (this.quizCleanup) {
                         this.quizCleanup();

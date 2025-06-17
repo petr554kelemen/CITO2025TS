@@ -79,15 +79,8 @@ export default class Intro extends Phaser.Scene {
         const duchX = px(153);
         const duchY = py(132);
         this.duch = this.add.sprite(duchX, duchY, "Duch")
-            .setScale(0.6 * scaleFactor) // zvětšeno, aby duch byl výrazný
+            .setScale(0.6 * scaleFactor)
             .setAlpha(0);
-
-        // --- Motýl startuje v dálce, malý scale ---
-        const motylStartX = px(506);
-        const motylStartY = py(233);
-        this.motyl = this.add.sprite(motylStartX, motylStartY, 'motyl')
-            .setScale(0.1)
-            .setDepth(100);
 
         // Odpadky
         this.odpadkyData.forEach(odpadek => {
@@ -106,35 +99,58 @@ export default class Intro extends Phaser.Scene {
         this.pytel.setScale(UI.PYTEL.SCALE * scaleFactor);
         this.pytel.setOrigin(0.5);
 
-        // --- Výběr 4 náhodných odpadků ---
+        // --- Motýlí animace ---
+        this.createMotylAndAnimate(px, py, scaleFactor, duchX, duchY);
+
+        this.input.once('pointerdown', () => {
+            this.skipIntro();
+        });
+    }
+
+    // Refaktorovaná metoda pro motýla a jeho animaci
+    private createMotylAndAnimate(
+        px: (x: number) => number,
+        py: (y: number) => number,
+        scaleFactor: number,
+        duchX: number,
+        duchY: number
+    ): void {
+        // Motýl startuje v dálce, malý scale
+        const motylStartX = px(506);
+        const motylStartY = py(233);
+        this.motyl = this.add.sprite(motylStartX, motylStartY, 'motyl')
+            .setScale(0.1)
+            .setDepth(100);
+
+        // Výběr 4 náhodných odpadků
         const shuffled = Phaser.Utils.Array.Shuffle(this.odpadkyData.slice());
         const points = shuffled.slice(0, 4).map(o => ({ x: px(o.x), y: py(o.y) }));
 
-        // --- Přidej cílový bod u ducha s rozestupem ---
+        // Přidej cílový bod u ducha s rozestupem
         const offsetX = Math.round(120 * scaleFactor);
         const offsetY = Math.round(40 * scaleFactor);
         const duchCilX = duchX + offsetX;
         const duchCilY = duchY + offsetY;
 
-        // --- První tween: motýl se přiblíží k prvnímu odpadku a zvětší se ---
+        // První tween: motýl se přiblíží k prvnímu odpadku a zvětší se
         this.tweens.add({
             targets: this.motyl,
             x: points[0].x,
             y: points[0].y,
             scale: 0.6 * scaleFactor,
-            duration: 3200, // <-- STEJNÁ DÉLKA JAKO ODLET
+            duration: 2800,
             ease: 'Power2',
             onComplete: () => {
-                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl).then(() => {
+                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl, -60).then(() => {
                     const tweens = [
                         ...points.slice(1).map(p => ({
                             targets: this.motyl,
                             x: p.x,
                             y: p.y,
-                            duration: 1600,
+                            duration: 1200,
                             ease: 'Power2',
                             onStart: () => {
-                                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl);
+                                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl, -60);
                             }
                         })),
                         {
@@ -149,14 +165,7 @@ export default class Intro extends Phaser.Scene {
                     this.tweens.chain({
                         tweens,
                         onComplete: () => {
-                            this.tweens.add({
-                                targets: this.duch,
-                                alpha: 0.9,
-                                duration: 1000,
-                                onComplete: () => {
-                                    this.dialogMotylDuch();
-                                }
-                            });
+                            this.volejDucha();
                         }
                     });
                 });
@@ -168,85 +177,14 @@ export default class Intro extends Phaser.Scene {
         });
     }
 
-    private createMotylAndAnimate(px: (x: number) => number, py: (y: number) => number): void {
-        const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const scaleFactor = this.responsive.getScaleFactor(667, 375);
-
-        // Pokud už motýl existuje, znič ho
-        if (this.motyl) {
-            this.tweens.killTweensOf(this.motyl);
-            this.motyl.destroy();
-        }
-
-        // Vytvoř nového motýla na startovní pozici
-        // const px = (x: number) => Math.round(gameWidth * (x / 667));
-        // const py = (y: number) => Math.round(gameHeight * (y / 375));
-        const startX = px(506);
-        const startY = py(233);
-        this.motyl = this.add.sprite(startX, startY, 'motyl')
-            .setScale(UI.MONINA.SCALE * scaleFactor) // sjednoceno podle configu
-            .setDepth(100);
-
-        // Úvodní monolog motýla
-        this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl).then(() => {
-            // Cesta motýla přes odpadky a k duchovi
-            const path = this.odpadkyData.map((o, i) => ({
-                x: px(o.x),
-                y: py(o.y) + (i % 2 === 0 ? 20 : -20)
-            }));
-
-            // Bezpečný bod u ducha (ne mimo scénu)
-            const safeX = Math.max(50, Math.min(this.duch.x + Math.round(80 * scaleFactor), gameWidth - 50));
-            const safeY = Math.max(50, Math.min(this.duch.y + Math.round(40 * scaleFactor), gameHeight - 50));
-            path.push({ x: safeX, y: safeY });
-
-            const pathWithoutFinal = path.slice(0, -1);
-            for (let i = pathWithoutFinal.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pathWithoutFinal[i], pathWithoutFinal[j]] = [pathWithoutFinal[j], pathWithoutFinal[i]];
-            }
-            const randomPath = pathWithoutFinal.slice(0, 4);
-            randomPath.push(path[path.length - 1]);
-
-            console.log('Motýlí dráha:', randomPath);
-
-            this.tweens.chain({
-                targets: this.motyl,
-                ease: 'Quad.easeInOut',
-                onComplete: () => this.volejDucha(),
-                tweens: [
-                    {
-                        scale: .6,
-                        duration: 3000
-                    },
-                    ...randomPath.map(pt => ({
-                        x: pt.x,
-                        y: pt.y,
-                        duration: 3000,
-                        ease: 'Quad.easeInOut',
-                        onComplete: () => {
-                            if (Math.random() <= 0.33) {
-                                this.doFlip(this.motyl);
-                            }
-                            if (this.dialog && typeof this.dialog.showDialogAbove === 'function') {
-                                this.dialog.showDialogAbove('motyl-00', this.motyl);
-                            }
-                        }
-                    }))
-                ]
-            });
-        });
-    }
-
+    // Metoda pro zjevení ducha a spuštění dialogu
     private volejDucha(): void {
         this.duch.setVisible(true);
-        this.duch.setScale(.6 * this.responsive.getScaleFactor(667, 375));
+        this.duch.setScale(0.6 * this.responsive.getScaleFactor(667, 375));
         this.tweens.add({
-            x: this.duch.x,
-            y: this.duch.y,
             targets: this.duch,
-            alpha: .65,
-            duration: 2500,
+            alpha: 0.9,
+            duration: 1200,
             onStart: () => {
                 if (this.dialog && typeof this.dialog.hideDialog === 'function') {
                     this.dialog.hideDialog();
@@ -280,7 +218,7 @@ export default class Intro extends Phaser.Scene {
         ];
 
         for (const item of sequence) {
-            await this.dialog.showDialogAboveAndDelay(item.key, item.obj);
+            await this.dialog.showDialogAboveAndDelay(item.key, item.obj, -60);
         }
 
         this.endIntroScene();

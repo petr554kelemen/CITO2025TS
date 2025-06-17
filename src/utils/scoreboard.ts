@@ -3,34 +3,54 @@ import { UI } from "../config/constants";
 
 export default class Scoreboard {
     private readonly bagIcons: Phaser.GameObjects.Image[] = [];
-    private timerText!: Phaser.GameObjects.Text;
+    private timerText: Phaser.GameObjects.Text;
     private correctAnswers: number = 0;
     private timeLeft: number;
+    private bg: Phaser.GameObjects.Rectangle;
+    private timerLabelTemplate: string;
 
-    constructor(scene: Phaser.Scene, odpadkyCount: number, timeLeft: number) {
+    constructor(
+        scene: Phaser.Scene,
+        odpadkyCount: number,
+        timeLeft: number,
+        texts?: { dialogSequence?: Record<string, string> }
+    ) {
         this.timeLeft = timeLeft;
 
-        const gameWidth = scene.scale.width;
-        const boxWidth = Math.min(odpadkyCount * UI.SCOREBOARD.ICON_SIZE + 80, gameWidth - 40);
-        const boxHeight = 60;
-        const boxX = UI.SCOREBOARD.LEFT_MARGIN + boxWidth / 2;
-        const boxY = 48;
+        // Lokalizovaná šablona pro časovač
+        this.timerLabelTemplate =
+            texts?.dialogSequence?.timerLabel || "Čas: {time}";
 
-        // Tmavý box pod scoreboard
-        scene.add.rectangle(
+        // Zmenšené hodnoty pro menší scoreboard
+        const ICON_SIZE = 32;
+        const ICON_SCALE = 0.7;
+        const ICON_SCALE_CORRECT = 0.9;
+        const TIMER_FONT_SIZE = 16;
+        const BOX_HEIGHT = 36;
+        const LEFT_MARGIN = 12;
+        const BOX_BG_COLOR = 0x222222;
+        const BOX_BG_ALPHA = 0.7;
+
+        const gameWidth = scene.scale.width;
+        const boxWidth = Math.min(odpadkyCount * ICON_SIZE + 60, gameWidth - 20);
+        const boxX = LEFT_MARGIN + boxWidth / 2;
+        const boxY = 28;
+
+        // Tmavý průhledný box pod scoreboard
+        this.bg = scene.add.rectangle(
             boxX,
             boxY,
             boxWidth,
-            boxHeight,
-            UI.SCOREBOARD.BOX_BG_COLOR,
-            UI.SCOREBOARD.BOX_BG_ALPHA
+            BOX_HEIGHT,
+            BOX_BG_COLOR,
+            BOX_BG_ALPHA
         ).setOrigin(0.5).setScrollFactor(0).setDepth(0);
 
         // Ikony pytlů – zarovnáno vlevo v boxu
-        const iconsStartX = boxX - boxWidth / 2 + UI.SCOREBOARD.ICON_SIZE;
+        const iconsStartX = boxX - boxWidth / 2 + ICON_SIZE / 2 + 4;
         for (let i = 0; i < odpadkyCount; i++) {
-            const icon = scene.add.image(iconsStartX + i * UI.SCOREBOARD.ICON_SIZE, boxY, 'miniBag')
-                .setScale(UI.SCOREBOARD.ICON_SCALE)
+            const icon = scene.add.image(iconsStartX + i * ICON_SIZE, boxY, 'miniBag')
+                .setScale(ICON_SCALE)
                 .setAlpha(0.15)
                 .setScrollFactor(0)
                 .setDepth(1);
@@ -39,35 +59,54 @@ export default class Scoreboard {
 
         // Timer zarovnaný vpravo v boxu
         this.timerText = scene.add.text(
-            boxX + boxWidth / 2 - 10,
+            boxX + boxWidth / 2 - 6,
             boxY,
-            `Čas: ${this.timeLeft}`,
+            this.formatTime(this.timeLeft),
             {
-                fontSize: `${UI.SCOREBOARD.TIMER_FONT_SIZE}px`,
-                color: UI.SCOREBOARD.TIMER_COLOR,
+                fontSize: `${TIMER_FONT_SIZE}px`,
+                color: '#7CFC00',
                 fontFamily: 'Arial'
             }
         ).setOrigin(1, 0.5).setScrollFactor(0).setDepth(1);
+
+        // Ulož hodnoty pro další použití
+        (this as any).ICON_SCALE_CORRECT = ICON_SCALE_CORRECT;
     }
 
     public markCorrect(): void {
+        const ICON_SCALE_CORRECT = (this as any).ICON_SCALE_CORRECT ?? 0.9;
         if (this.bagIcons[this.correctAnswers]) {
             this.bagIcons[this.correctAnswers]
                 .setAlpha(1)
-                .setScale(UI.SCOREBOARD.ICON_SCALE_CORRECT);
+                .setScale(ICON_SCALE_CORRECT);
         }
         this.correctAnswers++;
     }
 
-    public updateTime(timeLeft: number): void {
+    public setTime(timeLeft: number): void {
         this.timeLeft = timeLeft;
-        this.timerText.setText(`Čas: ${this.timeLeft}`);
+        let color = '#7CFC00'; // světle zelená
+        if (this.timeLeft <= 10) {
+            color = '#FF3333'; // červená
+        }
+        const timeStr = this.formatTime(this.timeLeft);
+        // Lokalizovaný zápis
+        this.timerText.setText(
+            this.timerLabelTemplate.replace("{time}", timeStr)
+        );
+        this.timerText.setColor(color);
+    }
+
+    private formatTime(seconds: number): string {
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
     }
 
     public reset(): void {
         this.correctAnswers = 0;
         this.bagIcons.forEach(icon => icon.setAlpha(0.15).clearTint());
-        this.updateTime(this.timeLeft);
+        this.setTime(this.timeLeft);
     }
 
     public isFull(): boolean {

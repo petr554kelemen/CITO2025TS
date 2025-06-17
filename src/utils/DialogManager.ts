@@ -9,6 +9,7 @@ export default class DialogManager {
   private followTarget?: Phaser.GameObjects.Sprite;      // Sprite, který bublina (bubbleContainer) „sleduje“
   private readonly BASE_DISPLAY_TIME_PER_CHAR = 40;      // ms na znak
   private readonly MIN_DISPLAY_TIME = 2000;              // Minimální doba zobrazení (2 sekundy)
+  private lastOffsetY: number = 0;                       // Poslední použitý offsetY pro pozicování bubliny
 
   constructor(scene: Phaser.Scene, texts: any) {
     this.scene = scene;
@@ -160,13 +161,14 @@ export default class DialogManager {
   // Soukromá metoda: vykreslí bublinu s textem; pokud je target, začne ji sledovat
   private show(text: string, target?: Phaser.GameObjects.Sprite, offsetY: number = 0): void {
     this.hide();
+    this.lastOffsetY = offsetY; // <-- přidej tento řádek
 
     // Získání scale faktoru (mobile-first, fallback 1)
     const scaleFactor = (this.scene as any).responsive?.getScaleFactor?.(667, 375) ?? 1;
 
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: 'Arial',
-      fontSize: `${14 * scaleFactor}px`, // větší písmo pro lepší čitelnost
+      fontFamily: 'Single Day', // Použijeme font Single Day
+      fontSize: `${16 * scaleFactor}px`, // větší písmo pro lepší čitelnost
       color: '#000000',
       wordWrap: { width: 220 * scaleFactor }
     };
@@ -260,40 +262,19 @@ export default class DialogManager {
 
   public updateBubblePosition(): void {
     if (this.bubbleContainer && this.followTarget && this.followTarget.active) {
-      // Získáme aktuální globální ohraničující rámeček cílového spritu.
-      // Toto je klíčové, protože getBounds() zohledňuje scale a origin spritu.
-      const spriteBounds = this.followTarget.getBounds();
-      const centerX = spriteBounds.centerX; // Střed X cílového spritu
-      const topY = spriteBounds.top;       // Horní hrana cílového spritu
+        const spriteBounds = this.followTarget.getBounds();
+        const centerX = spriteBounds.centerX;
+        const topY = spriteBounds.top;
+        const arrowHeight = 10;
+        const containerBounds = this.bubbleContainer.getBounds();
+        const actualBubbleWidth = containerBounds.width;
+        const actualBubbleHeight = containerBounds.height - arrowHeight;
 
-      // Získáme rozměry samotné bubliny (žlutý obdélník + šipka),
-      // aby se zachovalo správné odsazení.
-      // Použijeme getBounds() celého containeru, ale musíme zvážit,
-      // že celková výška containeru zahrnuje i šipku.
-      // Pokud jsi si uložil `bubbleWidth`, `bubbleHeight` a `arrowHeight`
-      // jako privátní proměnné v `show()`, použij je pro maximální přesnost.
-      // Jinak je musíme odhadnout z container.getBounds().
-      // Pro jednoduchost a přesnost v tomto kontextu použijeme:
-      //const padding = 5;       // Tyto by měly být stejné jako při tvorbě bubliny
-      const arrowHeight = 10;
-      // Šířka a výška *obsahu* bubliny, jak byly použity pro výpočet `bubbleWidth` a `bubbleHeight` v `show()`
-      // Tady by bylo ideální mít tyto hodnoty uložené z `show()` metody.
-      // Protože je nemáme, musíme je buď znovu vypočítat, nebo odhadnout.
-      // Pro nejlepší výsledky si uložte `bubbleWidth` a `bubbleHeight` (bez šipky)
-      // jako privátní proměnné při vytváření bubliny a použijte je zde.
-
-      // Pokud nemáme uložené bubbleWidth/Height, můžeme je získat z bounds containeru.
-      // Nicméně, getBounds() containeru zahrnuje i šipku.
-      // Proto musíme od celkové výšky odečíst arrowHeight, abychom dostali výšku samotného obdélníku.
-      const containerBounds = this.bubbleContainer.getBounds();
-      const actualBubbleWidth = containerBounds.width;
-      const actualBubbleHeight = containerBounds.height - arrowHeight; // Výška obdélníku bubliny
-
-      // Nastavení pozice containeru tak, aby špička šipky lícovala s (centerX, topY)
-      this.bubbleContainer.setPosition(
-        centerX - actualBubbleWidth / 2, // Posun X tak, aby střed bubliny byl pod centerX
-        topY - (actualBubbleHeight + arrowHeight) // Posun Y tak, aby špička šipky byla na topY
-      );
+        const offsetY = this.lastOffsetY ?? 0; // <-- použij uložený offset
+        this.bubbleContainer.setPosition(
+            centerX - actualBubbleWidth / 2,
+            topY + offsetY // <-- offsetY se nyní použije vždy
+        );
     } else if (this.bubbleContainer) {
         this.hide();
     }
@@ -314,7 +295,7 @@ export default class DialogManager {
   }
 
 
-  // Nová pomocná metoda pro odhad doby zobrazení dialogu
+  // OPRAVENO: pouze jedna verze této metody!
   public getDialogDisplayDuration(key: string): number {
     const text = this.getText(key);
     // Odhad doby zobrazení: počet znaků * čas na znak, s minimální dobou
@@ -322,13 +303,26 @@ export default class DialogManager {
   }
 
 
-  // Nová asynchronní metoda, která zobrazí dialog a počká
-  public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.Sprite): Promise<void> {
-    this.showDialogAbove(key, obj); // Zobrazí bublinu
-    const duration = this.getDialogDisplayDuration(key); // Získá délku zobrazení
-    await this.delay(duration); // Počká po určenou dobu
-    this.hideDialog(); // Skryje bublinu
-    await this.delay(800); // Malá pauza mezi dialogy (např. 0.5 sekundy)
+  // OPRAVENO: pouze jedna verze této metody!
+  public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.GameObject, offsetY: number = 0): Promise<void> {
+    if ((obj as Phaser.GameObjects.Sprite).getBounds) {
+      this.showDialogAbove(key, obj as Phaser.GameObjects.Sprite, offsetY);
+    } else {
+      // fallback: zobraz nad středem objektu
+      const txt = this.texts[key];
+      if (txt) {
+        const centerX = (obj as any).x ?? 0;
+        const topY = (obj as any).y ?? 0;
+        this.show(txt, undefined, offsetY);
+        if (this.bubbleContainer) {
+          this.bubbleContainer.setPosition(centerX, topY + offsetY);
+        }
+      }
+    }
+    const duration = this.getDialogDisplayDuration(key);
+    await this.delay(duration);
+    this.hideDialog();
+    await this.delay(800);
   }
 
   // Pomocná asynchronní metoda pro zpoždění
