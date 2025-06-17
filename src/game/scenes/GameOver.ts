@@ -10,16 +10,24 @@ export default class GameOver extends Phaser.Scene {
 
     create(data: any) {
         const { width: gameWidth, height: gameHeight } = this.scale;
-        const centerX = gameWidth / 2;
-        const centerY = gameHeight / 2;
+        const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
+        const px = (x: number) => Math.round(gameWidth * (x / 667));
+        const py = (y: number) => Math.round(gameHeight * (y / 375));
 
         // Pozadí
-        this.add.rectangle(centerX, centerY, gameWidth, gameHeight, 0x222222, 0.7);
+        const background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
+        const scaleX = gameWidth / background.width;
+        const scaleY = gameHeight / background.height;
+        background.setScale(Math.max(scaleX, scaleY));
+        background.setDepth(-1);
 
-        // Pergamen (výhra)
-        const pergamen = this.add.image(centerX, centerY - 60, "Pergamen")
+        // Tmavý overlay (volitelně)
+        this.add.rectangle(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 0x222222, 0.7);
+
+        // Pergamen
+        const pergamen = this.add.image(gameWidth / 2, gameHeight / 2 - 60, "Pergamen")
             .setOrigin(0.5)
-            .setScale(0.7); // Pokud chceš, přidej do UI např. UI.PERGAMEN.SCALE
+            .setScale(0.7 * scaleFactor);
 
         // Text výhra/prohra
         const isSuccess = data?.texts?.gameOverSuccess ?? false;
@@ -28,7 +36,7 @@ export default class GameOver extends Phaser.Scene {
             ? "Splnil jsi CITO výzvu!"
             : "Zkus to znovu a nasbírej víc správných odpovědí.";
 
-        this.add.text(centerX, centerY + 60, mainText, {
+        this.add.text(px(333), py(160), mainText, {
             fontFamily: "Barrio",
             fontSize: `${UI.QUIZ.QUESTION_FONT * 2}px`,
             color: UI.COLORS.QUESTION,
@@ -37,7 +45,7 @@ export default class GameOver extends Phaser.Scene {
             strokeThickness: 4
         }).setOrigin(0.5);
 
-        this.add.text(centerX, centerY + 120, subText, {
+        this.add.text(px(333), py(220), subText, {
             fontFamily: "Arial",
             fontSize: `${UI.QUIZ.OPTION_FONT + 4}px`,
             color: "#fff",
@@ -45,7 +53,7 @@ export default class GameOver extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Tlačítko zpět na menu
-        const btn = this.add.text(centerX, centerY + 200, "Zpět na hlavní menu", {
+        const btn = this.add.text(px(333), py(300), "Zpět na hlavní menu", {
             fontFamily: "Arial",
             fontSize: `${UI.QUIZ.OPTION_FONT + 2}px`,
             color: "#fff",

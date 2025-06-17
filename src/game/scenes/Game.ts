@@ -114,107 +114,163 @@ export default class Game extends Phaser.Scene {
     // --- NOVÁ METODA: Nastaví layout podle zařízení ---
     private setupLayout(): void {
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const centerX = gameWidth / 2;
-        const centerY = gameHeight / 2;
+        const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
+        const px = (x: number) => Math.round(gameWidth * (x / 667));
+        const py = (y: number) => Math.round(gameHeight * (y / 375));
 
         // Pozadí
-        const backgroundGame = this.add.image(centerX, centerY, "freepik_forest_01");
+        const backgroundGame = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
         const scaleX = gameWidth / backgroundGame.width;
         const scaleY = gameHeight / backgroundGame.height;
         backgroundGame.setScale(Math.max(scaleX, scaleY));
         backgroundGame.setOrigin(0.5);
-
-        this.cam = this.cameras.main;
-        this.cameras.main.fadeIn(1000, 0, 0, 0);
-        this.cam.setBounds(0, 0, gameWidth, gameHeight);
-        this.cam.setZoom(1);
+        backgroundGame.setDepth(-1);
 
         // Pytel
         this.pytel = this.add.image(gameWidth * 0.85, gameHeight * 0.88, 'prazdnyPytel').setInteractive();
-        this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0007));
+        this.pytel.setScale(UI.PYTEL.SCALE * scaleFactor);
         this.pytel.setOrigin(0.5);
 
         // Scoreboard vlevo nahoře
         this.scoreboard = new Scoreboard(this, this.odpadky.length, this.timeLeft, this.texts);
 
-        // Odpadky
+        // --- 1. Odpadky v kruhu ---
         this.createOdpadkyResponsive(gameWidth, gameHeight);
 
-        // Monina
-        this.setupMoninaResponsive(gameWidth, gameHeight);
+        // --- 2. CITO logo doprostřed ---
+        const citoLogo = this.add.image(gameWidth / 2, gameHeight / 2, "Cito_logo")
+            .setOrigin(0.5)
+            .setScale(0.15 * scaleFactor)
+            .setDepth(10)
+            .setAlpha(1);
 
-        // Monina dialog a animace
-        if (this.monina) {
-            this.monina.alpha = 0.5;
-            this.monina.visible = true;
-
+        // --- 3. Po chvíli fade out loga a rozházení odpadků ---
+        this.time.delayedCall(1200, () => {
             this.tweens.add({
-                targets: this.monina,
-                alpha: 1,
+                targets: citoLogo,
+                alpha: 0,
                 duration: 1000,
-                ease: 'Power2',
                 onComplete: () => {
-                    this.dialog = new DialogManager(this, this.texts);
+                    citoLogo.destroy();
 
-                    const showMoninaDialogs = async () => {
-                        for (const item of this.moninaSequence) {
-                            if (!this.monina.visible) {
-                                this.dialog.hideDialog?.();
-                                break;
-                            }
-                            await this.dialog.showDialogAbove(item.key, this.monina, -60);
-                            await new Promise(resolve => this.time.delayedCall(2200, resolve));
-                            this.dialog.hideDialog?.();
+                    // --- Rozházej odpadky na pozice jako v intro scéně ---
+                    // Použij stejné návrhové souřadnice jako v Intro.ts
+                    const introOdpadky = [
+                        { x: 359, y: 243 },
+                        { x: 475, y: 278 },
+                        { x: 427, y: 253 },
+                        { x: 372, y: 304 },
+                        { x: 539, y: 254 },
+                        { x: 305, y: 329 },
+                        { x: 188, y: 344 },
+                        { x: 285, y: 268 },
+                        { x: 436, y: 326 },
+                        { x: 213, y: 307 }
+                    ];
+
+                    // Zamíchej pole pro náhodné rozmístění
+                    const shuffled = Phaser.Utils.Array.Shuffle(introOdpadky.slice());
+
+                    this.odpadky.forEach((odpadek, i) => {
+                        const pos = shuffled[i % shuffled.length];
+                        if (odpadek.sprite) {
+                            this.tweens.add({
+                                targets: odpadek.sprite,
+                                x: px(pos.x),
+                                y: py(pos.y),
+                                duration: 700,
+                                ease: 'Power2'
+                            });
                         }
-                        if (this.monina.visible) {
+                    });
+
+                    // --- 4. Po rozházení odpadků zobraz Moninu a spusť její monolog ---
+                    this.time.delayedCall(800, () => {
+                        this.setupMoninaResponsive(gameWidth, gameHeight);
+
+                        if (this.monina) {
+                            this.monina.alpha = 0.5;
+                            this.monina.visible = true;
+
                             this.tweens.add({
                                 targets: this.monina,
-                                alpha: 0,
-                                duration: 800,
+                                alpha: 1,
+                                duration: 1000,
                                 ease: 'Power2',
                                 onComplete: () => {
-                                    this.monina.visible = false;
-                                    this.dialog.hideDialog?.();
-                                    this.time.delayedCall(200, () => {
-                                        this.enableGamePlay();
-                                    });
+                                    this.dialog = new DialogManager(this, this.texts);
+
+                                    const showMoninaDialogs = async () => {
+                                        for (const item of this.moninaSequence) {
+                                            if (!this.monina.visible) {
+                                                this.dialog.hideDialog?.();
+                                                break;
+                                            }
+                                            await this.dialog.showDialogAbove(item.key, this.monina, -60);
+                                            await new Promise(resolve => this.time.delayedCall(2200, resolve));
+                                            this.dialog.hideDialog?.();
+                                        }
+                                        if (this.monina.visible) {
+                                            this.tweens.add({
+                                                targets: this.monina,
+                                                alpha: 0,
+                                                duration: 800,
+                                                ease: 'Power2',
+                                                onComplete: () => {
+                                                    this.monina.visible = false;
+                                                    this.dialog.hideDialog?.();
+                                                    this.time.delayedCall(200, () => {
+                                                        this.enableGamePlay();
+                                                    });
+                                                }
+                                            });
+                                        } else {
+                                            this.enableGamePlay();
+                                        }
+                                    };
+                                    showMoninaDialogs();
                                 }
                             });
-                        } else {
-                            this.enableGamePlay();
-                        }
-                    };
-                    showMoninaDialogs();
-                }
-            });
 
-            const skipMonina = () => {
-                if (this.monina && this.monina.visible) {
-                    this.dialog.showDialogAbove('monina-09', this.monina, -60).then(() => {
-                        this.tweens.add({
-                            targets: this.monina,
-                            alpha: 0,
-                            duration: 600,
-                            onComplete: () => {
-                                this.monina.visible = false;
-                                this.dialog.hideDialog?.();
-                                this.canPlay = true;
-                                this.input.off('pointerdown', skipMonina);
-                            }
-                        });
+                            const skipMonina = () => {
+                                if (this.monina && this.monina.visible) {
+                                    this.dialog.showDialogAbove('monina-09', this.monina, -60).then(() => {
+                                        this.tweens.add({
+                                            targets: this.monina,
+                                            alpha: 0,
+                                            duration: 600,
+                                            onComplete: () => {
+                                                this.monina.visible = false;
+                                                this.dialog.hideDialog?.();
+                                                this.canPlay = true;
+                                                this.input.off('pointerdown', skipMonina);
+                                            }
+                                        });
+                                    });
+                                }
+                            };
+                            this.input.on('pointerdown', skipMonina);
+                        }
                     });
                 }
-            };
-            this.input.on('pointerdown', skipMonina);
-        }
+            });
+        });
     }
 
     // --- NOVÁ METODA: Responzivní Monina ---
     private setupMoninaResponsive(gameWidth: number, gameHeight: number): void {
-        this.monina = this.add.sprite(gameWidth * 0.18, gameHeight * 0.73, "Monina", 0);
-        this.monina.setOrigin(0.5);
-        this.monina.setScale(Math.min(UI.MONINA.SCALE, gameHeight * UI.LOGO.SCALE));
-        this.monina.visible = false;
+        const { width, height } = this.responsive.getGameSize();
+        const scaleFactor = Math.min(width / 667, height / 375);
+        const px = (x: number) => Math.round(width * (x / 667));
+        const py = (y: number) => Math.round(height * (y / 375));
+
+        const moninaX = px(130); // nebo jiná vhodná pozice
+        const moninaY = py(370); // nebo jiná vhodná pozice
+        this.monina = this.add.sprite(moninaX, moninaY, "DivkaStoji")
+            .setOrigin(0.5, 1)
+            .setScale(0.6 * scaleFactor)
+            .setAlpha(0)
+            .setVisible(false);
 
         this.moninaSequence = [
             { key: 'monina-01', obj: this.monina },
