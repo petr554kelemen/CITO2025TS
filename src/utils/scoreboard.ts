@@ -61,7 +61,7 @@ export default class Scoreboard {
         this.timerText = scene.add.text(
             boxX + boxWidth / 2 - 6,
             boxY,
-            this.formatTime(this.timeLeft),
+            this.timerLabelTemplate.replace("{time}", this.formatTime(this.timeLeft)),
             {
                 fontSize: `${TIMER_FONT_SIZE}px`,
                 color: '#7CFC00',
