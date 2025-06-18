@@ -1,4 +1,4 @@
-type QuizQuestion = {
+export type QuizQuestion = {
     type: string;
     question: string;
     options: string[];
