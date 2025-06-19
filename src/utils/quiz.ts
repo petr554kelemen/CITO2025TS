@@ -44,6 +44,7 @@ export class Quiz {
     }
 
     getQuestionForType(type: string): QuizQuestion | null {
+        
         return this.questions.find(q => q.type === type) || null;
     }
 

@@ -154,11 +154,29 @@ export default class DialogManager {
 }
 
   // Veřejná metoda: skryje aktuální bublinu (pokud nějaká je)
+  /**
+   * Hides the currently displayed dialog by invoking the internal `hide` method.
+   *
+   * @remarks
+   * This method should be called to programmatically close or hide the dialog managed by this instance.
+   */
   public hideDialog(): void {
     this.hide();
   }
 
   // Soukromá metoda: vykreslí bublinu s textem; pokud je target, začne ji sledovat
+  /**
+   * Displays a dialog bubble with the specified text, optionally anchored to a target sprite.
+   * 
+   * If a target sprite is provided, the dialog bubble will appear above the sprite, offset by the specified Y value.
+   * If no target is provided, the dialog bubble will be displayed centered at the bottom of the screen with a larger style.
+   * 
+   * The dialog bubble automatically adjusts its size and font based on the current scale factor for responsive design.
+   * 
+   * @param text - The text content to display inside the dialog bubble.
+   * @param target - (Optional) The Phaser sprite to anchor the dialog bubble to. If omitted, the bubble is shown at the bottom of the screen.
+   * @param offsetY - (Optional) Vertical offset in pixels to apply when positioning the bubble relative to the target. Defaults to 0.
+   */
   private show(text: string, target?: Phaser.GameObjects.Sprite, offsetY: number = 0): void {
     this.hide();
     this.lastOffsetY = offsetY; // <-- přidej tento řádek
@@ -304,6 +322,16 @@ export default class DialogManager {
 
 
   // OPRAVENO: pouze jedna verze této metody!
+  /**
+   * Displays a dialog above the specified Phaser game object and waits for a calculated duration before hiding it.
+   * If the object is a Sprite, positions the dialog above it using its bounds; otherwise, positions it above the object's center.
+   * After displaying the dialog for the appropriate duration, hides the dialog and waits an additional 800ms.
+   *
+   * @param key - The key identifying the dialog text to display.
+   * @param obj - The Phaser game object above which the dialog should be shown.
+   * @param offsetY - Optional vertical offset to apply when positioning the dialog. Defaults to 0.
+   * @returns A Promise that resolves after the dialog has been shown and hidden with the appropriate delays.
+   */
   public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.GameObject, offsetY: number = 0): Promise<void> {
     if ((obj as Phaser.GameObjects.Sprite).getBounds) {
       this.showDialogAbove(key, obj as Phaser.GameObjects.Sprite, offsetY);
@@ -326,6 +354,12 @@ export default class DialogManager {
   }
 
   // Pomocná asynchronní metoda pro zpoždění
+  /**
+   * Delays execution for a specified number of milliseconds.
+   *
+   * @param ms - The number of milliseconds to wait before resolving the promise.
+   * @returns A promise that resolves after the specified delay.
+   */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => {
       this.scene.time.delayedCall(ms, resolve);

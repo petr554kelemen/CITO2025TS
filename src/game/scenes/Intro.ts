@@ -258,8 +258,18 @@ export default class Intro extends Phaser.Scene {
     }
 
     private startGameScene(): void {
+        // Převeď odpadky na strukturu s pozice: {x, y}
+        const odpadkyDataForGame = this.odpadkyData.map(o => ({
+            typ: o.typ,
+            pozice: { x: o.x, y: o.y },
+            scale: o.scale,
+            angle: o.angle,
+            sprite: undefined,
+            inPytel: false
+        }));
+
         this.scene.start('Game', {
-            odpadkyData: this.odpadkyData,
+            odpadkyData: odpadkyDataForGame,
             language: this.lang,
             texts: this.texts
         });
