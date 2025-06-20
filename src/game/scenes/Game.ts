@@ -61,8 +61,8 @@ export default class Game extends Phaser.Scene {
         if (data.responsive) this.responsive = data.responsive;
     }
 
-    async create() {
- console.log('🚀 CREATE METHOD STARTED');
+    create() {
+        console.log('🚀 CREATE METHOD STARTED');
 
         const { width: gameWidth, height: gameHeight } = this.scale;
         this.createBackground(gameWidth, gameHeight);
@@ -87,32 +87,11 @@ export default class Game extends Phaser.Scene {
         console.log('Window size:', window.innerWidth, 'x', window.innerHeight);
         console.log('Phaser size:', this.scale.width, 'x', this.scale.height);
 
-        // DŮLEŽITÉ: načti otázky!
-        await this.quiz.loadQuestions();
-
-        // 1. Monina a úvodní dialog - NOVÝ PŘÍSTUP
+        // Monina sprite vytvoř ihned, ale další logiku řeš až po načtení otázek
         this.monina = this.add.sprite(100, 300, 'DivkaStoji');
         this.monina.setScale(0.7);
         this.monina.setOrigin(0.5);
         this.monina.setInteractive();
-
-        // Jednoduchý timer pro automatické zmizení Moniny
-        const MONINA_LIFETIME = 8000; // 8 sekund celkem
-
-        // Spustíme dialogy asynchronně
-        this.startMoninaDialogs();
-
-        // Timer pro vynucené zničení Moniny
-        this.time.delayedCall(MONINA_LIFETIME, () => {
-            this.forceDestroyMonina();
-            this.enableGamePlay();
-        });
-
-        // Kliknutí na Moninu = okamžité zničení
-        this.monina.once('pointerdown', () => {
-            this.forceDestroyMonina();
-            this.enableGamePlay();
-        });
 
         // Drag & drop eventy pouze zde:
         this.input.on(
@@ -186,6 +165,31 @@ export default class Game extends Phaser.Scene {
                 console.log(`Monina instance #${i + 1}:`, obj);
             });
         //}
+
+        // Spusť asynchronní inicializaci (načtení otázek, dialogy, handlery)
+        this.initializeGameAsync();
+    }
+
+    // Nová metoda pro asynchronní inicializaci po synchronním create()
+    private async initializeGameAsync() {
+        // DŮLEŽITÉ: načti otázky!
+        await this.quiz.loadQuestions();
+
+        // Spusť dialogy Moniny asynchronně
+        this.startMoninaDialogs();
+
+        // Timer pro vynucené zničení Moniny
+        const MONINA_LIFETIME = 8000; // 8 sekund celkem
+        this.time.delayedCall(MONINA_LIFETIME, () => {
+            this.forceDestroyMonina();
+            this.enableGamePlay();
+        });
+
+        // Kliknutí na Moninu = okamžité zničení
+        this.monina.once('pointerdown', () => {
+            this.forceDestroyMonina();
+            this.enableGamePlay();
+        });
     }
 
     private onOdpadekDragStart(gameObject: Phaser.GameObjects.Sprite): void {
@@ -299,8 +303,11 @@ export default class Game extends Phaser.Scene {
             );
             if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale);
             if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
-            odpadek.sprite.setInteractive();
-            odpadek.sprite.setAlpha(1); // <-- přidej tuto řádku
+
+            odpadek.sprite.setInteractive({ draggable: true }); // DŮLEŽITÉ!
+            this.input.setDraggable(odpadek.sprite, true);      // DŮLEŽITÉ!
+
+            odpadek.sprite.setAlpha(1);
             this.odpadkyGroup.add(odpadek.sprite);
         });
     }
