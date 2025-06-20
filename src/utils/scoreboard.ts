@@ -97,8 +97,8 @@ export default class Scoreboard {
     }
 
     public setTime(timeLeft: number): void {
-        this.timeLeft = timeLeft;
-        let color = '#7CFC00'; // světle zelená
+        this.timeLeft = Math.max(0, timeLeft); // nikdy pod 0
+        let color = '#7CFC00';
         if (this.timeLeft <= 10) {
             color = '#FF3333'; // červená
         }
@@ -111,8 +111,9 @@ export default class Scoreboard {
     }
 
     private formatTime(seconds: number): string {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
+        const safeSeconds = Math.max(0, seconds);
+        const min = Math.floor(safeSeconds / 60);
+        const sec = safeSeconds % 60;
         return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
     }
 
