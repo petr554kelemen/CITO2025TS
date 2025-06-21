@@ -258,6 +258,8 @@ export default class Game extends Phaser.Scene {
         this.odpadky.forEach(odpadek => {
             if (odpadek.sprite) {
                 odpadek.sprite.setInteractive({ draggable: true });
+                this.input.setDraggable(odpadek.sprite, true);
+                odpadek.sprite.setAlpha(1); // Odpadek je plně viditelný
             }
         });
         if (!this.timerEvent) {
@@ -304,8 +306,8 @@ export default class Game extends Phaser.Scene {
             if (odpadek.scale !== undefined) odpadek.sprite.setScale(odpadek.scale);
             if (odpadek.angle !== undefined) odpadek.sprite.setAngle(odpadek.angle);
 
-            odpadek.sprite.setInteractive({ draggable: true }); // DŮLEŽITÉ!
-            this.input.setDraggable(odpadek.sprite, true);      // DŮLEŽITÉ!
+            odpadek.sprite.setInteractive({ draggable: false }); // NEPOVOLUJ DRAGGABLE HNED!
+            this.input.setDraggable(odpadek.sprite, false);
 
             odpadek.sprite.setAlpha(1);
             this.odpadkyGroup.add(odpadek.sprite);
@@ -322,7 +324,11 @@ export default class Game extends Phaser.Scene {
         if (this.quizActive) return;
 
         this.quizActive = true;
-        this.odpadky.forEach(o => o.sprite?.disableInteractive());
+        this.odpadky.forEach(o => {
+            if (o.sprite && !o.inPytel) {
+                o.sprite.setAlpha(1);
+            }
+        });
 
         // 2: Vypiš všechny typy, které jsou v otázkách
         console.log('Typy v otázkách:', this.quiz ? (this.quiz as any).questions?.map((q: any) => q.type) : 'quiz nenastaven');
@@ -456,16 +462,16 @@ export default class Game extends Phaser.Scene {
                 this.quizActive = false;
                 onComplete();
 
-                const zbyva = this.odpadky.some(o => o.sprite !== null);
+                const zbyva = this.odpadky.some(o => o.sprite && !o.inPytel);
                 if (!zbyva) {
                     this.stopTimer();
                     this.pytel.setTexture('plnyPytel');
 
                     let dialogKey: string;
-                    const total = this.odpadky.length;
+                    const correct = this.scoreboard.getCorrectCount?.() ?? 0;
                     if (this.timeLeft <= 0) {
                         dialogKey = "finalFailTime";
-                    } else if (this.scoreboard.getCorrectCount?.() ?? 0 < Math.ceil(total * 0.8)) {
+                    } else if (correct < 8) { // OPRAVENO: místo procent použij pevnou hranici
                         dialogKey = "finalFailScore";
                     } else {
                         dialogKey = "finalSuccess";
@@ -492,9 +498,12 @@ export default class Game extends Phaser.Scene {
             hintBtn.destroy();
             optionButtons.forEach(b => b.destroy());
             if (hintText) hintText.destroy();
+
+            // DŮLEŽITÉ: Zviditelni všechny odpadky, které nejsou v pytli
             this.odpadky.forEach(o => {
-                if (o.sprite) {
-                    o.sprite.setInteractive();
+                if (o.sprite && !o.inPytel) {
+                    o.sprite.setAlpha(1);
+                    o.sprite.setInteractive({ draggable: true });
                     this.input.setDraggable(o.sprite, true);
                 }
             });
@@ -509,8 +518,8 @@ export default class Game extends Phaser.Scene {
                 this.timeLeft = Math.max(0, this.timeLeft - 1);
                 this.scoreboard.updateTime(this.timeLeft);
                 if (this.timeLeft <= 0) {
-                    this.stopTimer();
-                    this.endGame();
+                    this.endGame(); // Zavolej metodu pro ukončení hry
+                    return;
                 }
             },
             loop: true
@@ -531,14 +540,8 @@ export default class Game extends Phaser.Scene {
         this.gameEnded = true;
 
         const correct = this.scoreboard.getCorrectCount();
-        let success = false;
-        if (this.timeLeft <= 0) {
-            // Pokud vypršel čas
-            success = correct >= 8;
-        } else {
-            // Pokud hráč dokončil všechny odpovědi
-            success = correct >= 8;
-        }
+        const success = correct >= 8; // Jednoduché a jasné vyhodnocení
+
         this.lastGameSuccess = success;
 
         if (success) {
@@ -558,11 +561,11 @@ export default class Game extends Phaser.Scene {
             this.showFinalScene();
         });
         // Můžeš přidat i text "Gratulujeme!" apod.
-        this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, "Gratulujeme!", {
+        /*this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, "Gratulujeme!", {
             fontSize: '36px',
             color: '#2e7d32',
             fontFamily: 'Arial'
-        }).setOrigin(0.5).setDepth(2001);
+        }).setOrigin(0.5).setDepth(2001);*/
     }
 
     // Zobraz neúspěšný konec s tlačítkem pro návrat na Intro
@@ -630,6 +633,33 @@ export default class Game extends Phaser.Scene {
         return this.odpadky.every(o => o.inPytel);
     }
 
+    // --- ZAKOMENTOVÁNÍ NEŽÁDOUCÍCH TESTOVÝCH/HARDCODED TEXTŮ ---
+    // Tyto texty nesplňují požadavek na lokalizaci a musí být nahrazeny načítáním z JSON (viz prompt).
+
+    // V showPergamenAndTransition():
+    // this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, "Gratulujeme!", {
+    //     fontSize: '36px',
+    //     color: '#2e7d32',
+    //     fontFamily: 'Arial'
+    // }).setOrigin(0.5).setDepth(2001);
+
+    // V showFailScreen():
+    // const failText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 40,
+    //     "Bohužel, nesplnil(a) jsi úkol.\nZkus to znovu!", {
+    //     fontSize: '28px',
+    //     color: '#b71c1c',
+    //     fontFamily: 'Arial',
+    //     align: 'center'
+    // }).setOrigin(0.5).setDepth(2001);
+
+    // const btn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 40,
+    //     "↩️ Zpět na začátek", {
+    //     fontSize: '24px',
+    //     color: '#1565c0',
+    //     fontFamily: 'Arial',
+    //     backgroundColor: '#e3f2fd',
+    //     padding: { left: 16, right: 16, top: 8, bottom: 8 }
+    // }).setOrigin(0.5).setDepth(2001).setInteractive();
     // ...další metody a zbytek kódu...
 }
 
