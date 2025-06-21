@@ -5,6 +5,7 @@
 import Phaser from "phaser";
 /* START-USER-IMPORTS */
 import ResponsiveManager from '../../utils/ResponsiveManager';
+import { DEBUG_MODE } from '../../config/constants';
 /* END-USER-IMPORTS */
 
 declare global {
@@ -88,9 +89,9 @@ export default class Preloader extends Phaser.Scene {
         this.responsive = new ResponsiveManager(this);
 
         // Debug info pro ladění
-        if ((window as any).DEBUG_MODE) {
-            this.responsive.addDebugOverlay();
-        }
+        if (DEBUG_MODE) {
+    this.responsive.addDebugOverlay();
+}
 
         // Přizpůsobit pozice loading baru podle zařízení
         if (this.responsive.isMobile()) {

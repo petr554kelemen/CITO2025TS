@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import ResponsiveManager, { LayoutType, DeviceType } from '../../utils/ResponsiveManager';
 import { UI, DESIGN } from '../../config/constants'; // <-- přidán DESIGN
+import { DEBUG_MODE } from '../../config/constants';
+import csTexts from "../../../public/assets/locales/cs.json"; // nebo správná cesta dle build systému
 
 type Lang = 'cs' | 'en' | 'pl';
 
@@ -15,8 +17,11 @@ export default class MainMenu extends Phaser.Scene {
         this.responsive = new ResponsiveManager(this);
         this.responsive.checkAndForceOrientation();
 
-        if ((window as any).DEBUG_MODE) {
-            this.responsive.addDebugOverlay();
+        if (DEBUG_MODE) {
+                   // Zkus načíst jazyk z localStorage, případně fallback na češtinu
+        let texts = this.cache?.json?.get?.("lang-cs") || csTexts;
+        this.scene.start("GameOver", { texts });
+        return;
         }
 
         const deviceType = this.responsive.getDeviceType();
@@ -112,7 +117,7 @@ export default class MainMenu extends Phaser.Scene {
         this.add.image(px(604), py(264), "plnyPytel")
             .setOrigin(0.5)
             .setScale(UI.PYTEL.SCALE * scaleFactor, UI.PYTEL.SCALE * scaleFactor); // sjednoceno
-}
+    }
 
     private createDesktopLayout(): void {
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
@@ -165,7 +170,7 @@ export default class MainMenu extends Phaser.Scene {
             this.add.image(px(flag.x), py(flag.y), `flag_${flag.lang}`)
                 .setInteractive()
                 .setOrigin(0.5)
-                .setScale(.85* scaleFactor)
+                .setScale(.85 * scaleFactor)
                 .on('pointerup', () => this.selectLang(flag.lang));
         });
 

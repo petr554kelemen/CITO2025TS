@@ -1,70 +1,120 @@
 // Scene: Zobrazení konce hry
 
 import Phaser from "phaser";
-import { UI } from "../../config/constants";
+import { COORDINATE } from "../../config/constants";
 
 export default class GameOver extends Phaser.Scene {
+    private coordsText: Phaser.GameObjects.Text | undefined;
+    private texts: any; // <-- přidat
+
     constructor() {
         super("GameOver");
     }
 
-    create(data: any) {
-        const { width: gameWidth, height: gameHeight } = this.scale;
-        const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
-        const px = (x: number) => Math.round(gameWidth * (x / 667));
-        const py = (y: number) => Math.round(gameHeight * (y / 375));
+    // Přidej metodu init pro načtení dat
+    init(data: { texts?: any }) {
+        this.texts = data.texts || {};
+    }
 
-        // Pozadí
-        const background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
-        const scaleX = gameWidth / background.width;
-        const scaleY = gameHeight / background.height;
-        background.setScale(Math.max(scaleX, scaleY));
-        background.setDepth(-1);
+    create() {
+        // Nastavení tmavého pozadí (velmi tmavá šedá)
+        this.cameras.main.setBackgroundColor("#181818");
 
-        // Tmavý overlay (volitelně)
-        this.add.rectangle(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 0x222222, 0.7);
+        // Přidání backgroundu pergamen_bkg přes celou scénu
+        this.add.image(
+            this.scale.width / 2,
+            this.scale.height / 2,
+            "pergamen_bkg"
+        )
+        .setOrigin(0.5)
+        .setDisplaySize(this.scale.width, this.scale.height);
 
-        // Pergamen
-        const pergamen = this.add.image(gameWidth / 2, gameHeight / 2 - 60, "Pergamen")
-            .setOrigin(0.5)
-            .setScale(0.7 * scaleFactor);
+        // Spojení souřadnic do dvou řádků
+        const finalCoords = `${COORDINATE.N}\n${COORDINATE.E}`;
 
-        // Text výhra/prohra
-        const isSuccess = data?.texts?.gameOverSuccess ?? false;
-        const mainText = isSuccess ? "Gratulujeme!" : "Konec hry";
-        const subText = isSuccess
-            ? "Splnil jsi CITO výzvu!"
-            : "Zkus to znovu a nasbírej víc správných odpovědí.";
+        // Vytvoření textového objektu pro souřadnice (začíná prázdný)
+        this.coordsText = this.add.text(
+            this.scale.width / 2,
+            this.scale.height / 2,
+            "",
+            {
+                fontFamily: COORDINATE.FONT_FAMILY,
+                fontSize: `${COORDINATE.FONT_SIZE}px`,
+                fill: "#" + COORDINATE.FILL.toString(16).padStart(6, "0"), // Phaser 3 používá "fill"
+                align: "center"
+            } as any // Přetypování pro TypeScript
+        ).setOrigin(0.5);
 
-        this.add.text(px(333), py(160), mainText, {
-            fontFamily: "Barrio",
-            fontSize: `${UI.QUIZ.QUESTION_FONT * 2}px`,
-            color: UI.COLORS.QUESTION,
-            align: "center",
-            stroke: "#000",
-            strokeThickness: 4
-        }).setOrigin(0.5);
+        // Přidání symbolu "prst" jako nápovědy (bude sledovat pointer)
+        const prst = this.add.image(
+            this.scale.width / 2,
+            this.scale.height - 80,
+            "prst"
+        )
+        .setOrigin(0.5)
+        .setScale(0.35)
+        .setAlpha(0.85);
 
-        this.add.text(px(333), py(220), subText, {
-            fontFamily: "Arial",
-            fontSize: `${UI.QUIZ.OPTION_FONT + 4}px`,
-            color: "#fff",
-            align: "center"
-        }).setOrigin(0.5);
+        // Sledování pozice pointeru
+        this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+            prst.x = pointer.x;
+            prst.y = pointer.y;
+        });
 
-        // Tlačítko zpět na menu
-        const btn = this.add.text(px(333), py(300), "Zpět na hlavní menu", {
-            fontFamily: "Arial",
-            fontSize: `${UI.QUIZ.OPTION_FONT + 2}px`,
-            color: "#fff",
-            backgroundColor: UI.COLORS.HINT_BG,
-            padding: UI.QUIZ.OPTION_PADDING
-        })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
+        // Animace odhalování souřadnic pohybem prstu/myši s efektem inkoustu (alpha)
+        let revealProgress = 0; // 0..1
+        let lastX = 0;
+        let isPointerDown = false;
 
-        btn.on("pointerup", () => {
-            this.scene.start("MainMenu");
+        this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+            isPointerDown = true;
+            lastX = pointer.x;
+        });
+
+        this.input.on("pointerup", () => {
+            isPointerDown = false;
+        });
+
+        this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+            if (isPointerDown && revealProgress < 1) {
+                const dx = Math.abs(pointer.x - lastX);
+                lastX = pointer.x;
+                revealProgress = Math.min(1, revealProgress + dx / (this.scale.width * 0.7));
+                this.coordsText?.setAlpha(revealProgress);
+            }
+            // Po dokončení animace skryj prst
+            if (revealProgress >= 1) {
+                prst.setVisible(false);
+            }
+        });
+
+        // Na začátku je text neviditelný
+        this.coordsText.setText(`${COORDINATE.N}\n${COORDINATE.E}`);
+        this.coordsText.setAlpha(0);
+
+        // Přidání textu pro opakování hry
+        const playAgainLabel = this.texts?.gameOver?.playAgain ?? "[playAgain]";
+        const confirmResetMsg = this.texts?.gameOver?.confirmReset ?? "[confirmReset]";
+
+        const playAgainText = this.add.text(
+            this.scale.width / 2,
+            this.scale.height - 120,
+            playAgainLabel,
+            {
+                fontFamily: COORDINATE.FONT_FAMILY,
+                fontSize: "40px",
+                fill: "#1976d2",
+                align: "center"
+            } as any
+        ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+        playAgainText.on("pointerdown", () => {
+            if (localStorage.getItem("CITO2025_FINISHED")) {
+                const confirmed = window.confirm(confirmResetMsg);
+                if (!confirmed) return;
+                localStorage.removeItem("CITO2025_FINISHED");
+            }
+            this.scene.start("Game");
         });
     }
 }

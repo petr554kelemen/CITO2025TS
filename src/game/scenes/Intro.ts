@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import DialogManager from '../../utils/DialogManager';
 import ResponsiveManager from '../../utils/ResponsiveManager';
 import { UI } from '../../config/constants';
+import { DEBUG_MODE } from '../../config/constants';
 
 type Odpadek = {
     typ: string;
@@ -58,9 +59,9 @@ export default class Intro extends Phaser.Scene {
 
         this.dialog = new DialogManager(this, this.texts);
 
-        if ((window as any).DEBUG_MODE) {
-            this.responsive.addDebugOverlay();
-        }
+        if (DEBUG_MODE) {
+    this.responsive.addDebugOverlay();
+}
 
         // Výpočet scaleFactor a převodních funkcí
         const { width: gameWidth, height: gameHeight } = this.scale;

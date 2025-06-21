@@ -43,3 +43,13 @@ export const DESIGN = {
     WIDTH: 667,
     HEIGHT: 375
 };
+
+export const COORDINATE = {
+    N: "N 50° 00.000",
+    E: "E 014° 00.000",
+    FONT_FAMILY: "monospace",
+    FONT_SIZE: 72, // px
+    FILL: 0x1976d2 // Barva textu souřadnic
+};
+
+export const DEBUG_MODE = true; // nastav na true jen při ladění
