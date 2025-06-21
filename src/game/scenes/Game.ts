@@ -345,17 +345,17 @@ export default class Game extends Phaser.Scene {
             return;
         }
 
-        const questionMaxWidth = 600;
-        const padding = 32;
+        const questionMaxWidth = Math.min(this.scale.width * 0.8, 420); // menší max šířka
+        const padding = 16; // menší padding
 
         const questionText = this.add.text(0, 0, question.question, {
-            fontSize: '22px',
-            color: '#2e7d32',
+            fontSize: `${UI.QUIZ.QUESTION_FONT}px`,
+            color: UI.COLORS.QUESTION,
             fontFamily: 'Arial',
             wordWrap: { width: questionMaxWidth }
         }).setDepth(1002);
 
-        let boxWidth = questionText.width + padding * 2;
+        let boxWidth = Math.min(questionText.width + padding * 2, questionMaxWidth + padding * 2);
         let boxHeight = questionText.height + padding * 2 + 60 + question.options.length * 44;
 
         const centerX = this.scale.width / 2;
