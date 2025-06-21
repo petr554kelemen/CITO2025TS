@@ -345,11 +345,13 @@ export default class Game extends Phaser.Scene {
             return;
         }
 
-        const questionMaxWidth = Math.min(this.scale.width * 0.8, 420); // menší max šířka
-        const padding = 16; // menší padding
+        const scaleFactor = this.responsive?.getScaleFactor?.(667, 375) ?? 1;
+        const fontSize = Math.round(UI.QUIZ.QUESTION_FONT * scaleFactor);
+        const questionMaxWidth = Math.min(this.scale.width * 0.8, 420 * scaleFactor);
+        const padding = Math.round(16 * scaleFactor);
 
         const questionText = this.add.text(0, 0, question.question, {
-            fontSize: `${UI.QUIZ.QUESTION_FONT}px`,
+            fontSize: `${fontSize}px`,
             color: UI.COLORS.QUESTION,
             fontFamily: 'Arial',
             wordWrap: { width: questionMaxWidth }
@@ -467,21 +469,21 @@ export default class Game extends Phaser.Scene {
                     this.stopTimer();
                     this.pytel.setTexture('plnyPytel');
 
-                    let dialogKey: string;
                     const correct = this.scoreboard.getCorrectCount?.() ?? 0;
                     if (this.timeLeft <= 0) {
-                        dialogKey = "finalFailTime";
-                    } else if (correct < 8) { // OPRAVENO: místo procent použij pevnou hranici
-                        dialogKey = "finalFailScore";
+                        this.dialog.showDialog("finalFailTime");
+                        this.lastGameSuccess = false;
+                        this.endGame();
+                    } else if (correct < 8) {
+                        this.dialog.showDialog("finalFailScore");
+                        this.lastGameSuccess = false;
+                        this.endGame();
                     } else {
-                        dialogKey = "finalSuccess";
+                        // ÚSPĚCH: NEZOBRAZUJ dialog, ale pouze klikací pergamen!
+                        this.lastGameSuccess = true;
+                        this.showPergamenAndTransition();
+                        // this.endGame() už není potřeba, protože showPergamenAndTransition volá showFinalScene
                     }
-
-                    this.lastGameSuccess = dialogKey === "finalSuccess";
-                    this.dialog.showDialog(dialogKey);
-
-                    // OPRAVA: vždy proveď vyhodnocení
-                    this.endGame();
                 }
             });
 
@@ -553,30 +555,47 @@ export default class Game extends Phaser.Scene {
 
     // Zobraz pergamen s interakcí po úspěchu
     private showPergamenAndTransition(): void {
-        const pergamen = this.add.image(this.scale.width / 2, this.scale.height / 2, 'pergamen')
+        // Zobraz dialog s úspěšným textem (nad pergamenem)
+        this.dialog.showDialog("finalSuccess");
+
+        // Pergamen začíná mimo obrazovku nahoře
+        const pergamenStartY = -200;
+        const pergamenTargetY = this.scale.height / 2;
+
+        const pergamen = this.add.image(this.scale.width / 2, pergamenStartY, 'Pergamen')
             .setDepth(2000)
-            .setInteractive();
+            .setScale(.8)
+            .setInteractive({ cursor: 'pointer' });
+
+        // Tween: pergamen sjede dolů na cílovou pozici
+        this.tweens.add({
+            targets: pergamen,
+            y: pergamenTargetY,
+            duration: 1800,
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                // Po dokončení tweenu umožni kliknutí na pergamen
+                pergamen.setInteractive();
+            }
+        });
+
+        // Kliknutí na pergamen až po dokončení animace
         pergamen.on('pointerdown', () => {
             pergamen.destroy();
+            this.dialog.hideDialog?.();
             this.showFinalScene();
         });
-        // Můžeš přidat i text "Gratulujeme!" apod.
-        /*this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, "Gratulujeme!", {
-            fontSize: '36px',
-            color: '#2e7d32',
-            fontFamily: 'Arial'
-        }).setOrigin(0.5).setDepth(2001);*/
     }
 
     // Zobraz neúspěšný konec s tlačítkem pro návrat na Intro
     private showFailScreen(): void {
-        const failText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 40,
+        /* const failText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 40,
             "Bohužel, nesplnil(a) jsi úkol.\nZkus to znovu!", {
             fontSize: '28px',
             color: '#b71c1c',
             fontFamily: 'Arial',
             align: 'center'
-        }).setOrigin(0.5).setDepth(2001);
+        }).setOrigin(0.5).setDepth(2001); */
 
         const btn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 40,
             "↩️ Zpět na začátek", {
@@ -588,11 +607,6 @@ export default class Game extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(2001).setInteractive();
 
         btn.on('pointerdown', () => {
-            // Reset časovače a skóre
-            // this.timeLeft = 120;
-            // this.scoreboard.reset?.();
-            // this.quiz?.reset?.();
-            // this.lastGameSuccess = false;
             this.scene.start('Intro');
         });
     }
@@ -603,6 +617,23 @@ export default class Game extends Phaser.Scene {
             this.currentOdpadek.inPytel = true;
             this.scoreboard.markCorrect();
             gameObject.setVisible(false);
+
+            // Zvětši pytel po vhození odpadku
+            const minScaleY = 0.7; // výchozí scaleY
+            const maxScaleY = 1.18; // větší maximální natažení
+            const scaleStep = 0.045; // větší přírůstek
+            const currentScaleY = this.pytel.scaleY;
+            const newScaleY = Math.min(currentScaleY + scaleStep, maxScaleY);
+
+            this.tweens.add({
+                targets: this.pytel,
+                scaleY: newScaleY,
+                duration: 180,
+                ease: 'Cubic.easeOut',
+                yoyo: true,
+                hold: 60,
+                repeat: 0
+            });
 
             // Zviditelni ostatní odpadky
             this.odpadky.forEach(o => {
