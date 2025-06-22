@@ -43,10 +43,10 @@ export const DESIGN = {
     WIDTH: 667,
     HEIGHT: 375
 };
-
+// N 50° 10.391 E 017° 36.226
 export const COORDINATE = {
-    N: "N 50° 00.000",
-    E: "E 014° 00.000",
+    N: "N 50° 10.391",
+    E: "E 017° 36.226",
     FONT_FAMILY: 'Kings, monospace',
     FONT_SIZE: 72, // px
     FILL: 0x1976d2 // Barva textu souřadnic
