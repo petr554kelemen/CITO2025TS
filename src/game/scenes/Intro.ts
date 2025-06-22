@@ -276,8 +276,8 @@ export default class Intro extends Phaser.Scene {
 
         this.scene.start('Game', {
             odpadkyData: odpadkyDataForGame,
-            language: this.lang,
-            texts: this.texts
+            language: this.lang,      // <-- předáváme jazyk samostatně
+            texts: { ...this.texts, language: this.lang } // <-- přidáme language do texts
         });
     }
 

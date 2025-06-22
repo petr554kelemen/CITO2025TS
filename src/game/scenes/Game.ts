@@ -73,7 +73,7 @@ export default class Game extends Phaser.Scene {
         this.createOdpadky();
         this.scoreboard = new Scoreboard(this, this.odpadky.length, this.timeLeft, this.texts);
         this.dialog = new DialogManager(this, this.texts);
-        const language = this.texts.language || 'cs';
+        const language = (this as any).data?.language || this.texts.language || 'cs';
         this.quiz = new Quiz(language);
 
         // Reset časovače a skóre
