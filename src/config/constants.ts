@@ -52,4 +52,4 @@ export const COORDINATE = {
     FILL: 0x1976d2 // Barva textu souřadnic
 };
 
-export const DEBUG_MODE = true; // nastav na true jen při ladění
+export const DEBUG_MODE = false; // nastav na true jen při ladění
