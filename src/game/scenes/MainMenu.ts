@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import ResponsiveManager, { LayoutType, DeviceType } from '../../utils/ResponsiveManager';
 import { UI, DESIGN } from '../../config/constants'; // <-- přidán DESIGN
-import { DEBUG_MODE } from '../../config/constants';
-import csTexts from "../../../public/assets/locales/cs.json"; // nebo správná cesta dle build systému
+//import { DEBUG_MODE } from '../../config/constants';
+//import csTexts from "../../../public/assets/locales/cs.json"; // nebo správná cesta dle build systému
 
 type Lang = 'cs' | 'en' | 'pl';
 
