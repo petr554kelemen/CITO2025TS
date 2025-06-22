@@ -227,7 +227,7 @@ export default class Game extends Phaser.Scene {
 
                 const item = this.moninaSequence[i];
                 await this.dialog.showDialogAbove(item.key, this.monina, -60);
-                await this.delay(1200);
+                await this.delay(2000);
                 this.dialog.hideDialog?.();
             }
         } catch (error) {
@@ -541,12 +541,23 @@ export default class Game extends Phaser.Scene {
         if (this.gameEnded) return;
         this.gameEnded = true;
 
+        // Znepřístupni odpadky a kvíz
+        this.canPlay = false;
+        this.quizActive = false;
+        this.odpadky.forEach(o => {
+            if (o.sprite) {
+                o.sprite.disableInteractive?.();
+                this.input.setDraggable(o.sprite, false);
+            }
+        });
+
         const correct = this.scoreboard.getCorrectCount();
         const success = correct >= 8; // Jednoduché a jasné vyhodnocení
 
         this.lastGameSuccess = success;
 
         if (success) {
+            localStorage.setItem("CITO2025_FINISHED", "1");
             this.showPergamenAndTransition();
         } else {
             this.showFailScreen();
@@ -587,28 +598,56 @@ export default class Game extends Phaser.Scene {
         });
     }
 
+    private failScreenObjects: Phaser.GameObjects.GameObject[] = [];
+
     // Zobraz neúspěšný konec s tlačítkem pro návrat na Intro
     private showFailScreen(): void {
-        /* const failText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 40,
-            "Bohužel, nesplnil(a) jsi úkol.\nZkus to znovu!", {
-            fontSize: '28px',
-            color: '#b71c1c',
-            fontFamily: 'Arial',
-            align: 'center'
-        }).setOrigin(0.5).setDepth(2001); */
+        // Znič předchozí fail screen objekty, pokud existují
+        this.failScreenObjects.forEach(obj => obj.destroy());
+        this.failScreenObjects = [];
 
-        const btn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 40,
-            "↩️ Zpět na začátek", {
-            fontSize: '24px',
-            color: '#1565c0',
-            fontFamily: 'Arial',
-            backgroundColor: '#e3f2fd',
-            padding: { left: 16, right: 16, top: 8, bottom: 8 }
-        }).setOrigin(0.5).setDepth(2001).setInteractive();
+        // Lokalizovaný text pro fail screen
+        const failText = this.texts?.dialogSequence?.finalFail ?? "Bohužel, nesplnil(a) jsi úkol.\nZkus to znovu!";
 
-        btn.on('pointerdown', () => {
-            this.scene.start('Intro');
+        // Zobraz dialogový box s textem
+        const dialogText = this.add.text(
+            this.scale.width / 2,
+            this.scale.height / 2 - 40,
+            failText,
+            {
+                fontSize: '28px',
+                color: '#b71c1c',
+                fontFamily: 'Arial',
+                align: 'center',
+                wordWrap: { width: this.scale.width * 0.8 }
+            } as any
+        ).setOrigin(0.5).setDepth(2001);
+
+        // Lokalizované tlačítko pro restart
+        const playAgainLabel = this.texts?.gameOver?.playAgain ?? "Hraj znovu";
+        const button = this.add.text(
+            this.scale.width / 2,
+            dialogText.y + dialogText.height / 2 + 48,
+            playAgainLabel,
+            {
+                fontFamily: "Arial",
+                fontSize: "28px",
+                fill: "#1976d2",
+                align: "center",
+                backgroundColor: "#e3f2fd",
+                padding: { left: 16, right: 16, top: 8, bottom: 8 }
+            } as any
+        ).setOrigin(0.5).setDepth(2001).setInteractive({ useHandCursor: true });
+
+        button.on('pointerdown', () => {
+            // Při restartu znič všechny fail screen objekty
+            this.failScreenObjects.forEach(obj => obj.destroy());
+            this.failScreenObjects = [];
+            this.scene.restart();
         });
+
+        // Ulož si objekty pro případné další čištění
+        this.failScreenObjects.push(dialogText, button);
     }
 
     // Implement missing onOdpadekDrop method

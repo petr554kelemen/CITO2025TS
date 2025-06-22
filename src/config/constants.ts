@@ -47,7 +47,7 @@ export const DESIGN = {
 export const COORDINATE = {
     N: "N 50° 00.000",
     E: "E 014° 00.000",
-    FONT_FAMILY: "monospace",
+    FONT_FAMILY: 'Kings, monospace',
     FONT_SIZE: 72, // px
     FILL: 0x1976d2 // Barva textu souřadnic
 };

@@ -17,12 +17,12 @@ export default class MainMenu extends Phaser.Scene {
         this.responsive = new ResponsiveManager(this);
         this.responsive.checkAndForceOrientation();
 
-        if (DEBUG_MODE) {
-                   // Zkus načíst jazyk z localStorage, případně fallback na češtinu
-        let texts = this.cache?.json?.get?.("lang-cs") || csTexts;
-        this.scene.start("GameOver", { texts });
-        return;
-        }
+        /*         if (DEBUG_MODE) {
+                           // Zkus načíst jazyk z localStorage, případně fallback na češtinu
+                let texts = this.cache?.json?.get?.("lang-cs") || csTexts;
+                this.scene.start("GameOver", { texts });
+                return;
+                } */
 
         const deviceType = this.responsive.getDeviceType();
 

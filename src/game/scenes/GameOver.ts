@@ -36,7 +36,7 @@ export default class GameOver extends Phaser.Scene {
         this.coordsText = this.add.text(
             this.scale.width / 2,
             this.scale.height / 2,
-            "",
+            "??\n??",
             {
                 fontFamily: COORDINATE.FONT_FAMILY,
                 fontSize: `${COORDINATE.FONT_SIZE}px`,
@@ -59,6 +59,34 @@ export default class GameOver extends Phaser.Scene {
         this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
             prst.x = pointer.x;
             prst.y = pointer.y;
+        });
+
+        // Přidání decentního klikacího textu pro opakování hry (místo tlačítka)
+        const playAgainLabel = this.texts?.gameOver?.playAgain ?? "[playAgain]";
+        const confirmResetMsg = this.texts?.gameOver?.confirmReset ?? "[confirmReset]";
+
+        const playAgainText = this.add.text(
+            this.scale.width / 2,
+            this.scale.height - 60,
+            playAgainLabel,
+            {
+                fontFamily: COORDINATE.FONT_FAMILY,
+                fontSize: "18px",
+                fill: "#1976d2",
+                align: "center",
+                fontStyle: "italic"
+            } as any
+        ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setVisible(false);
+
+        playAgainText.on("pointerdown", () => {
+            if (localStorage.getItem("CITO2025_FINISHED")) {
+                const confirmed = window.confirm(confirmResetMsg);
+                if (!confirmed) return;
+                localStorage.removeItem("CITO2025_FINISHED");
+                localStorage.removeItem("cilSplnen");
+                localStorage.removeItem("hraDokoncena");
+            }
+            this.scene.start("Intro", { texts: this.texts });
         });
 
         // Animace odhalování souřadnic pohybem prstu/myši s efektem inkoustu (alpha)
@@ -84,7 +112,11 @@ export default class GameOver extends Phaser.Scene {
             }
             // Po dokončení animace skryj prst
             if (revealProgress >= 1) {
+                if (this.coordsText) {
+                    this.coordsText.setAlpha(1);
+                }
                 prst.setVisible(false);
+                playAgainText.setVisible(true); // zobraz decentní text až po odhalení souřadnic
             }
         });
 
@@ -92,29 +124,17 @@ export default class GameOver extends Phaser.Scene {
         this.coordsText.setText(`${COORDINATE.N}\n${COORDINATE.E}`);
         this.coordsText.setAlpha(0);
 
-        // Přidání textu pro opakování hry
-        const playAgainLabel = this.texts?.gameOver?.playAgain ?? "[playAgain]";
-        const confirmResetMsg = this.texts?.gameOver?.confirmReset ?? "[confirmReset]";
+        // nebo až po odhalení souřadnic
 
-        const playAgainText = this.add.text(
-            this.scale.width / 2,
-            this.scale.height - 120,
-            playAgainLabel,
-            {
-                fontFamily: COORDINATE.FONT_FAMILY,
-                fontSize: "40px",
-                fill: "#1976d2",
-                align: "center"
-            } as any
-        ).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        // Zajisti, že je text na vrchu
+        this.children.bringToTop(playAgainText);
 
-        playAgainText.on("pointerdown", () => {
-            if (localStorage.getItem("CITO2025_FINISHED")) {
-                const confirmed = window.confirm(confirmResetMsg);
-                if (!confirmed) return;
-                localStorage.removeItem("CITO2025_FINISHED");
-            }
-            this.scene.start("Game");
+        // Volitelně: zvýrazni text při hoveru
+        playAgainText.on("pointerover", () => {
+            playAgainText.setStyle({ fill: "#0d47a1" }); // tmavší modrá
+        });
+        playAgainText.on("pointerout", () => {
+            playAgainText.setStyle({ fill: "#1976d2" }); // původní barva
         });
     }
 }

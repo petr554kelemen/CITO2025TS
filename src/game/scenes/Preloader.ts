@@ -88,11 +88,6 @@ export default class Preloader extends Phaser.Scene {
         // Inicializace ResponsiveManager
         this.responsive = new ResponsiveManager(this);
 
-        // Debug info pro ladění
-        if (DEBUG_MODE) {
-    this.responsive.addDebugOverlay();
-}
-
         // Přizpůsobit pozice loading baru podle zařízení
         if (this.responsive.isMobile()) {
             // Mobilní layout - menší a více nahoru

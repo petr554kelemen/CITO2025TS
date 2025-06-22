@@ -106,6 +106,11 @@ export default class Intro extends Phaser.Scene {
         this.input.once('pointerdown', () => {
             this.skipIntro();
         });
+
+        if (localStorage.getItem("CITO2025_FINISHED")) {
+            this.scene.start("GameOver", { texts: this.texts });
+            return;
+        }
     }
 
     // Refaktorovaná metoda pro motýla a jeho animaci

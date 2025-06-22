@@ -4,10 +4,10 @@
     "motyl-01": "Fuj, to jsem se tě lekl...\nCo tady strašíš?",
     "duch-01": "Sleduji tě, jak tady skotačíš na věcech, které mě zabily...",
     "motyl-02": "Jak se to sem dostalo?",
-    "duch-02": "To ti řeknu úplně přesně\nTak tohle dokážou jen lidé...",
+    "duch-02": "To ti řeknu úplně přesně\n...tohle dokážou jen lidé...",
     "motyl-03": "Kecáš! Vždyť si říkají milovníci přírody.",
     "duch-03": "Hmmm... hele mizíme, někdo se sem blíží.",
-    "monina-01": "Ahoj, jsem Monina... hledám tady kešku...",
+    "monina-01": "Ahoj, jsem Monina...\nhledám tady kešku...",
     "monina-02": "... a tohle má být jako co?",
     "monina-03": "Takže...\nNež půjdu dál, pomůžeš mi to sebrat?",
     "monina-04": "Jsem ráda, že souhlasíš,\npokud chceš ode mě finálky pro kešku.",
@@ -25,7 +25,7 @@
     "gameSavedInfo": "Tvůj postup byl uložen. Můžeš se vrátit později."
   },
   "gameOver": {
-    "playAgain": "Zahrát znovu",
+    "playAgain": "Hrát od začátku",
     "confirmReset": "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!"
   }
 }
