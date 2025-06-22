@@ -30,7 +30,6 @@ export default class GameOver extends Phaser.Scene {
         .setDisplaySize(this.scale.width, this.scale.height);
 
         // Spojení souřadnic do dvou řádků
-        const finalCoords = `${COORDINATE.N}\n${COORDINATE.E}`;
 
         // Vytvoření textového objektu pro souřadnice (začíná prázdný)
         this.coordsText = this.add.text(

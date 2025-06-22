@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import Scoreboard from "../../utils/scoreboard";
 import DialogManager from "../../utils/DialogManager";
-import { Quiz, QuizQuestion } from "../../utils/quiz";
+import { Quiz } from "../../utils/quiz";
 import { UI, DEBUG_MODE } from "../../config/constants";
 
 // Typ pro odpadek
@@ -25,15 +25,12 @@ export default class Game extends Phaser.Scene {
     private dialog!: DialogManager;
     private quiz!: Quiz;
     private timerEvent?: Phaser.Time.TimerEvent;
-    private timerStarted = false;
     private timeLeft: number = 120;
     private responsive!: any; // Pokud máš typ, nahraď 'any'
     private odpadkyGroup!: Phaser.GameObjects.Group;
-    private currentOdpadek?: Odpadek;
     private texts: any; // Pokud máš typ, nahraď 'any'
     private quizActive: boolean = false;
     private canPlay: boolean = false;
-    private currentQuestion: any = null;
     private monina!: Phaser.GameObjects.Sprite;
     private totalHintsLeft: number = 2;
 
@@ -198,29 +195,7 @@ export default class Game extends Phaser.Scene {
         }
     }
 
-    private onOdpadekDragStart(gameObject: Phaser.GameObjects.Sprite): void {
-        // Example implementation: highlight the dragged object
-        gameObject.setAlpha(1);
-        this.odpadkyGroup.getChildren().forEach(obj => {
-            if (obj !== gameObject) {
-                (obj as Phaser.GameObjects.Sprite).setAlpha(0.5);
-            }
-        });
-    }
 
-    private onOdpadekDragEnd(gameObject: Phaser.GameObjects.Sprite): void {
-        // Restore alpha for all sprites
-        this.odpadkyGroup.getChildren().forEach(obj => {
-            (obj as Phaser.GameObjects.Sprite).setAlpha(1);
-        });
-        // Optionally, re-enable interactivity
-        this.odpadky.forEach(o => {
-            if (o.sprite) {
-                o.sprite.setInteractive();
-                this.input.setDraggable(o.sprite, true);
-            }
-        });
-    }
 
     // Nová metoda pro jednoduché spuštění dialogů
     private async startMoninaDialogs(): Promise<void> {
@@ -642,41 +617,6 @@ export default class Game extends Phaser.Scene {
         });
     }
 
-    // Implement missing onOdpadekDrop method
-    private onOdpadekDrop(gameObject: Phaser.GameObjects.Sprite, dropZone: Phaser.GameObjects.Image) {
-        if (dropZone === this.pytel && this.currentOdpadek) {
-            this.currentOdpadek.inPytel = true;
-            this.scoreboard.markCorrect();
-            gameObject.setVisible(false);
-
-            // Zvětši pytel po vhození odpadku
-            const minScaleY = 0.7; // výchozí scaleY
-            const maxScaleY = 1.18; // větší maximální natažení
-            const scaleStep = 0.045; // větší přírůstek
-            const currentScaleY = this.pytel.scaleY;
-            const newScaleY = Math.min(currentScaleY + scaleStep, maxScaleY);
-
-            this.tweens.add({
-                targets: this.pytel,
-                scaleY: newScaleY,
-                duration: 180,
-                ease: 'Cubic.easeOut',
-                yoyo: true,
-                hold: 60,
-                repeat: 0
-            });
-
-            // Zviditelni ostatní odpadky
-            this.odpadky.forEach(o => {
-                if (!o.inPytel && o.sprite) o.sprite.setAlpha(1);
-            });
-
-            if (this.allOdpadkyInPytel()) {
-                this.stopTimer();
-                this.endGame();
-            }
-        }
-    }
 
 
     // Implementace metody showFinalScene
@@ -691,9 +631,5 @@ export default class Game extends Phaser.Scene {
     }
 
 
-    // Přidáno: metoda pro kontrolu, zda jsou všechny odpadky v pytli
-    private allOdpadkyInPytel(): boolean {
-        return this.odpadky.every(o => o.inPytel);
-    }
 }
 
