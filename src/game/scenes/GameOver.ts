@@ -86,7 +86,9 @@ export default class GameOver extends Phaser.Scene {
                 localStorage.removeItem("cilSplnen");
                 localStorage.removeItem("hraDokoncena");
             }
-            this.scene.start("Intro", { texts: this.texts });
+            // Resetuj hru a vrať se na hlavní menu
+            this.scene.stop(this);
+            this.scene.start("MainMenu");
         });
 
         // Animace odhalování souřadnic pohybem prstu/myši s efektem inkoustu (alpha)
