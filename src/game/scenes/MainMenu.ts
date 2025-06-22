@@ -46,9 +46,18 @@ export default class MainMenu extends Phaser.Scene {
         });
     }
 
+    private isIOS(): boolean {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent);
+    }
+
     private createMobileLayout(): void {
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
+        let scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
+
+        // Zmenšení o 5 % pouze pro iOS zařízení
+        if (this.isIOS()) {
+            scaleFactor *= 0.95;
+        }
 
         const px = (x: number) => x * (gameWidth / DESIGN.WIDTH);
         const py = (y: number) => y * (gameHeight / DESIGN.HEIGHT);
@@ -121,7 +130,12 @@ export default class MainMenu extends Phaser.Scene {
 
     private createDesktopLayout(): void {
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
-        const scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
+        let scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
+
+        // Zmenšení o 5 % pouze pro iOS zařízení
+        if (this.isIOS()) {
+            scaleFactor *= 0.95;
+        }
 
         const px = (x: number) => x * (gameWidth / DESIGN.WIDTH);
         const py = (y: number) => y * (gameHeight / DESIGN.HEIGHT);
