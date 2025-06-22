@@ -185,8 +185,8 @@ export default class DialogManager {
     const scaleFactor = (this.scene as any).responsive?.getScaleFactor?.(667, 375) ?? 1;
 
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: 'Single Day', // Použijeme font Single Day
-      fontSize: `${16 * scaleFactor}px`, // větší písmo pro lepší čitelnost
+      fontFamily: 'Merienda, Arial', // Použijeme font Barrio pro bublinu
+      fontSize: `${14 * scaleFactor}px`, // větší písmo pro lepší čitelnost
       color: '#000000',
       wordWrap: { width: 220 * scaleFactor }
     };
@@ -226,8 +226,8 @@ export default class DialogManager {
     } else {
       const cam = this.scene.cameras.main;
       const bigStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-        fontFamily: 'Arial',
-        fontSize: `${28 * scaleFactor}px`,
+        fontFamily: 'Merienda, Arial',
+        fontSize: `${24 * scaleFactor}px`,
         color: '#000000',
         wordWrap: { width: cam.width - 120 * scaleFactor }
       };

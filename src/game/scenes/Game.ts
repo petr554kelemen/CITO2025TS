@@ -589,7 +589,7 @@ export default class Game extends Phaser.Scene {
         this.failScreenObjects = [];
 
         // Použití správného klíče s informací o možnosti opakování hry
-        const failKey = "finalFail_retry"; // Nový klíč, který obsahuje text o opakování
+        const failKey = "finalFail"; // Nový klíč, který obsahuje text o opakování
         this.dialog.showDialog(failKey);
 
         // Vytvoř neviditelné tlačítko přes celou obrazovku pro zachycení kliknutí

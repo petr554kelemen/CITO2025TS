@@ -107,9 +107,9 @@ export default class Preloader extends Phaser.Scene {
                     'Single Day:400',
                     'DynaPuff:600',
                     'Barrio',
-                    'WDXL Lubrifont TC',
-                    'Kings',
-                    'Merienda:wght@300..900'
+                    'WDXL Lubrifont TC:400',
+                    'Kings:400',
+                    'Merienda:400'
                 ]
             },
             active: () => {
