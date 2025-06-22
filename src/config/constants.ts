@@ -13,6 +13,8 @@ export const UI = {
         TIMER_COLOR: '#f8f8f8' // Barva textu časovače
     },
     MONINA: {
+        POS_X: 100, // Výchozí X pozice Moniny
+        POS_Y: 250, // Výchozí Y pozice Moniny
         SCALE: 0.6 // Výchozí scale pro postavu Moniny
     },
     PYTEL: {

@@ -91,8 +91,8 @@ export default class Game extends Phaser.Scene {
         console.log('Phaser size:', this.scale.width, 'x', this.scale.height);
 
         // Monina sprite vytvoř ihned, ale další logiku řeš až po načtení otázek
-        this.monina = this.add.sprite(100, 300, 'DivkaStoji');
-        this.monina.setScale(0.7);
+        this.monina = this.add.sprite(UI.MONINA.POS_X, UI.MONINA.POS_Y, 'DivkaStoji');
+        this.monina.setScale(UI.MONINA.SCALE);
         this.monina.setOrigin(0.5);
         this.monina.setInteractive();
 
@@ -162,11 +162,11 @@ export default class Game extends Phaser.Scene {
         this.scoreboard.reset();
 
         //if (window.DEBUG_MODE) {
-        this.children.list
-            .filter(obj => obj instanceof Phaser.GameObjects.Sprite && (obj as Phaser.GameObjects.Sprite).texture.key === 'DivkaStoji')
-            .forEach((obj, i) => {
-                console.log(`Monina instance #${i + 1}:`, obj);
-            });
+        // this.children.list
+        //     .filter(obj => obj instanceof Phaser.GameObjects.Sprite && (obj as Phaser.GameObjects.Sprite).texture.key === 'DivkaStoji')
+        //     .forEach((obj, i) => {
+        //         console.log(`Monina instance #${i + 1}:`, obj);
+        //     });
         //}
 
         // Spusť asynchronní inicializaci (načtení otázek, dialogy, handlery)
@@ -180,6 +180,7 @@ export default class Game extends Phaser.Scene {
 
         // Handler na kliknutí na Moninu – přeruší dialogy a spustí hru
         this.monina.once('pointerdown', () => {
+            this.time.delayedCall(800, () => {}, [], this);
             this.moninaDestroyed = true;
             this.forceDestroyMonina();
             this.enableGamePlay();

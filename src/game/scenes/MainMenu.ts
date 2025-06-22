@@ -46,6 +46,13 @@ export default class MainMenu extends Phaser.Scene {
         });
     }
 
+    /**
+     * Determines whether the current device is running iOS.
+     *
+     * Checks the user agent string for iPad, iPhone, or iPod identifiers.
+     *
+     * @returns {boolean} True if the device is an iOS device, otherwise false.
+     */
     private isIOS(): boolean {
         return /iPad|iPhone|iPod/.test(navigator.userAgent);
     }
