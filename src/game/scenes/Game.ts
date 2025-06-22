@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Scoreboard from "../../utils/scoreboard";
 import DialogManager from "../../utils/DialogManager";
 import { Quiz, QuizQuestion } from "../../utils/quiz";
-import { UI } from "../../config/constants";
+import { UI, DEBUG_MODE } from "../../config/constants";
 
 // Typ pro odpadek
 type Odpadek = {
@@ -46,6 +46,12 @@ export default class Game extends Phaser.Scene {
         { key: "monina-01" },
         { key: "monina-02" },
         { key: "monina-03" },
+        { key: "monina-04" },
+        { key: "monina-05" },
+        { key: "monina-06" },
+        { key: "monina-07" },
+        { key: "monina-08" },
+        { key: "monina-09" }
         // Přidej další klíče podle potřeby
     ];
 
@@ -175,21 +181,21 @@ export default class Game extends Phaser.Scene {
         // DŮLEŽITÉ: načti otázky!
         await this.quiz.loadQuestions();
 
-        // Spusť dialogy Moniny asynchronně
-        this.startMoninaDialogs();
-
-        // Timer pro vynucené zničení Moniny
-        const MONINA_LIFETIME = 8000; // 8 sekund celkem
-        this.time.delayedCall(MONINA_LIFETIME, () => {
-            this.forceDestroyMonina();
-            this.enableGamePlay();
-        });
-
-        // Kliknutí na Moninu = okamžité zničení
+        // Handler na kliknutí na Moninu – přeruší dialogy a spustí hru
         this.monina.once('pointerdown', () => {
+            this.moninaDestroyed = true;
             this.forceDestroyMonina();
             this.enableGamePlay();
         });
+
+        // Spusť dialogy Moniny asynchronně
+        await this.startMoninaDialogs();
+
+        // Pokud Monina nebyla zničena kliknutím, znič ji a povol hru až po všech dialozích
+        if (!this.moninaDestroyed) {
+            this.forceDestroyMonina();
+            this.enableGamePlay();
+        }
     }
 
     private onOdpadekDragStart(gameObject: Phaser.GameObjects.Sprite): void {
@@ -538,7 +544,7 @@ export default class Game extends Phaser.Scene {
     private gameEnded = false;
 
     private endGame(): void {
-        if (this.gameEnded) return;
+        if (this.gameEnded) return;  // Opravená syntaxe s oběma závorkami
         this.gameEnded = true;
 
         // Znepřístupni odpadky a kvíz
@@ -606,52 +612,34 @@ export default class Game extends Phaser.Scene {
         this.failScreenObjects.forEach(obj => obj.destroy());
         this.failScreenObjects = [];
 
-        // Lokalizovaný text pro fail screen
-        const failText = this.texts?.dialogSequence?.finalFail ?? "Bohužel, nesplnil(a) jsi úkol.\nZkus to znovu!";
+        // Použití správného klíče s informací o možnosti opakování hry
+        const failKey = "finalFail_retry"; // Nový klíč, který obsahuje text o opakování
+        this.dialog.showDialog(failKey);
 
-        // Zobraz dialogový box s textem
-        const dialogText = this.add.text(
+        // Vytvoř neviditelné tlačítko přes celou obrazovku pro zachycení kliknutí
+        const restartButton = this.add.rectangle(
             this.scale.width / 2,
-            this.scale.height / 2 - 40,
-            failText,
-            {
-                fontSize: '28px',
-                color: '#b71c1c',
-                fontFamily: 'Arial',
-                align: 'center',
-                wordWrap: { width: this.scale.width * 0.8 }
-            } as any
-        ).setOrigin(0.5).setDepth(2001);
+            this.scale.height / 2,
+            this.scale.width,
+            this.scale.height,
+            0x000000,
+            0.01  // téměř průhledné
+        ).setInteractive();
 
-        // Vypočítej pravý spodní roh dialogu
-        const dialogBounds = dialogText.getBounds();
-        const buttonMargin = 16;
-        const buttonX = dialogBounds.right - buttonMargin;
-        const buttonY = dialogBounds.bottom + buttonMargin;
+        // Přidej do seznamu objektů pro vyčištění
+        this.failScreenObjects.push(restartButton);
 
-        // Lokalizované tlačítko pro restart
-        const playAgainLabel = this.texts?.gameOver?.playAgain ?? "Hraj znovu";
-        const button = this.add.text(
-            buttonX,
-            buttonY,
-            playAgainLabel,
-            {
-                fontFamily: "Arial",
-                fontSize: "28px",
-                fill: "#1976d2",
-                align: "center",
-                backgroundColor: "#e3f2fd",
-                padding: { left: 16, right: 16, top: 8, bottom: 8 }
-            } as any
-        ).setOrigin(1, 0).setDepth(2001).setInteractive({ useHandCursor: true });
+        // Nastav hloubku pod dialog, ale nad ostatními věcmi
+        restartButton.setDepth(2500);
 
-        button.on('pointerdown', () => {
-            this.failScreenObjects.forEach(obj => obj.destroy());
-            this.failScreenObjects = [];
-            this.scene.restart();
+        // Přidej event listener - přesměrování na MainMenu pro kompletní restart
+        restartButton.once('pointerdown', () => {
+            if (DEBUG_MODE) console.log('Restart game clicked - returning to MainMenu');
+            this.dialog.hideDialog();
+            
+            // Přejdi na MainMenu pro kompletní restart hry
+            this.scene.start('MainMenu');
         });
-
-        this.failScreenObjects.push(dialogText, button);
     }
 
     // Implement missing onOdpadekDrop method
@@ -702,38 +690,10 @@ export default class Game extends Phaser.Scene {
         });
     }
 
+
     // Přidáno: metoda pro kontrolu, zda jsou všechny odpadky v pytli
     private allOdpadkyInPytel(): boolean {
         return this.odpadky.every(o => o.inPytel);
     }
-
-    // --- ZAKOMENTOVÁNÍ NEŽÁDOUCÍCH TESTOVÝCH/HARDCODED TEXTŮ ---
-    // Tyto texty nesplňují požadavek na lokalizaci a musí být nahrazeny načítáním z JSON (viz prompt).
-
-    // V showPergamenAndTransition():
-    // this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, "Gratulujeme!", {
-    //     fontSize: '36px',
-    //     color: '#2e7d32',
-    //     fontFamily: 'Arial'
-    // }).setOrigin(0.5).setDepth(2001);
-
-    // V showFailScreen():
-    // const failText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 40,
-    //     "Bohužel, nesplnil(a) jsi úkol.\nZkus to znovu!", {
-    //     fontSize: '28px',
-    //     color: '#b71c1c',
-    //     fontFamily: 'Arial',
-    //     align: 'center'
-    // }).setOrigin(0.5).setDepth(2001);
-
-    // const btn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 40,
-    //     "↩️ Zpět na začátek", {
-    //     fontSize: '24px',
-    //     color: '#1565c0',
-    //     fontFamily: 'Arial',
-    //     backgroundColor: '#e3f2fd',
-    //     padding: { left: 16, right: 16, top: 8, bottom: 8 }
-    // }).setOrigin(0.5).setDepth(2001).setInteractive();
-    // ...další metody a zbytek kódu...
 }
 

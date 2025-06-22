@@ -36,13 +36,12 @@ importantFiles:
 -->
 # Game Code Review Checklist
 - **úkol:**
-- [] Oprava logiky hry, kde po zobrazení volby opakovat hru lze stále odpadky hybat a spouští se kvíz
-- [] Po posledním dialogu moniny, nechat ji alespoň 1 sekundu na obrazovce, aby si hráč mohl přečíst text 
-- [] Dodržuj čistý kod a strukturu, aby bylo možné snadno rozšířit hru o další funkce
-- [] V game.ts je hlavní herní smyčka, která řídí průběh hry a interakce s uživatelským rozhraním
-- [] Jestliže existuje záznam v local.storage, zobrazí se přímo GameOver scéna
-- [] Po dokončení a vyhodnocení chybně odehrané hry se má použít dialog z dialog manažeru doplněný o text zda opakovat hru použiji příklad struktury (cs.json)
-- [] V dialog boxu implementuj tlačítko pro opakování hry, které spustí znovu hru a resetuje všechny potřebné proměnné
-- [] Dodržuj responzivní design, aby hra fungovala na různých zařízeních
-- [] V případě kladného vyhodnocení se má vytvořit a uložit informace do local.storage
-- [] V případě kladného vyhodnocení se má na scénu přidat klikací obrázek "pergamen" s odkazem na scenu "GameOver"
+- [x] Oprava logiky hry, kde po zobrazení volby opakovat hru lze stále odpadky hybat a spouští se kvíz
+- [x] Po posledním dialogu moniny, nechat ji alespoň 1 sekundu na obrazovce, aby si hráč mohl přečíst text 
+- [x] Jestliže existuje záznam v local.storage, zobrazí se přímo GameOver scéna
+- [] ! Po dokončení a vyhodnocení chybně odehrané hry se má použít dialog z dialog manažeru doplněný o text zda opakovat hru použiji příklad struktury (cs.json)
+- [x] V dialog boxu nebude tlačítko pro opakování hry, hra se spustí znovu kliknutím na dilogový box
+- [x] Kliknutím na moninu se přeruší její dialog a spustí se kvíz
+- [x] Dodržuj responzivní design, aby hra fungovala na různých zařízeních
+- [x] V případě kladného vyhodnocení se má vytvořit a uložit informace do local.storage
+- [x] V případě kladného vyhodnocení se na scénu přidá klikací obrázek "pergamen" s odkazem na scenu "GameOver"
