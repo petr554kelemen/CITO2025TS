@@ -623,11 +623,17 @@ export default class Game extends Phaser.Scene {
             } as any
         ).setOrigin(0.5).setDepth(2001);
 
+        // Vypočítej pravý spodní roh dialogu
+        const dialogBounds = dialogText.getBounds();
+        const buttonMargin = 16;
+        const buttonX = dialogBounds.right - buttonMargin;
+        const buttonY = dialogBounds.bottom + buttonMargin;
+
         // Lokalizované tlačítko pro restart
         const playAgainLabel = this.texts?.gameOver?.playAgain ?? "Hraj znovu";
         const button = this.add.text(
-            this.scale.width / 2,
-            dialogText.y + dialogText.height / 2 + 48,
+            buttonX,
+            buttonY,
             playAgainLabel,
             {
                 fontFamily: "Arial",
@@ -637,16 +643,14 @@ export default class Game extends Phaser.Scene {
                 backgroundColor: "#e3f2fd",
                 padding: { left: 16, right: 16, top: 8, bottom: 8 }
             } as any
-        ).setOrigin(0.5).setDepth(2001).setInteractive({ useHandCursor: true });
+        ).setOrigin(1, 0).setDepth(2001).setInteractive({ useHandCursor: true });
 
         button.on('pointerdown', () => {
-            // Při restartu znič všechny fail screen objekty
             this.failScreenObjects.forEach(obj => obj.destroy());
             this.failScreenObjects = [];
             this.scene.restart();
         });
 
-        // Ulož si objekty pro případné další čištění
         this.failScreenObjects.push(dialogText, button);
     }
 
