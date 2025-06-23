@@ -28,22 +28,25 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
             );
         }
 
+        // TESTOVACÍ TEXT
+        this.add.text(width / 2, height / 2, 'TEST', { fontSize: '32px', backgroundColor: '#0f0', color: '#000' });
+
         // Lupa + (zoom in)
-        this.zoomInBtn = this.add.text(0, 0, '🔍+', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
+        this.zoomInBtn = this.add.text(width / 2, height / 2, '🔍+', { fontSize: '72px', backgroundColor: '#f00', color: '#fff' })
             .setInteractive()
             .on('pointerdown', () => this.setZoom(this.zoomLevel + 0.1));
 
         // Lupa - (zoom out)
-        this.zoomOutBtn = this.add.text(0, 0, '🔍-', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
+        this.zoomOutBtn = this.add.text(width / 2, height / 2 + 40, '🔍-', { fontSize: '72px', backgroundColor: '#fff', color: '#000' })
             .setInteractive()
             .on('pointerdown', () => this.setZoom(this.zoomLevel - 0.1));
 
         // Zobrazení aktuálního zoomu
-        this.zoomText = this.add.text(0, 0, `Zoom: ${this.zoomLevel.toFixed(2)}`, { fontSize: '20px', color: '#000' });
+        this.zoomText = this.add.text(width / 2, height / 2 + 100, `Zoom: ${this.zoomLevel.toFixed(2)}`, { fontSize: '20px', color: '#000' });
 
         // Fullscreen tlačítko vpravo nahoře (pokud je podporováno)
         if (this.scale.fullscreen.available) {
-            this.fsBtn = this.add.text(0, 0, '⛶', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
+            this.fsBtn = this.add.text(width - 60, 20, '⛶', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
                 .setInteractive()
                 .on('pointerdown', () => {
                     if (this.scale.isFullscreen) {
@@ -67,8 +70,6 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
 
         // Přepočítej pozice při změně velikosti
         this.scale.on('resize', () => this.positionUI());
-
-        alert('Fullscreen available: ' + this.scale.fullscreen.available);
     }
 
     private positionUI() {
@@ -76,8 +77,8 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         const { width, height } = this.scale.displaySize;
 
         // Lupa vlevo nahoře
-        this.zoomInBtn.setPosition(width / 2, height / 2);
-        this.zoomOutBtn.setPosition(pad, pad + 50);
+        this.zoomInBtn.setPosition(width / 2, height / 2 - 40);
+        this.zoomOutBtn.setPosition(width / 2, height / 2 + 40);
         this.zoomText.setPosition(pad, pad + 100);
 
         // Fullscreen tlačítko vpravo nahoře

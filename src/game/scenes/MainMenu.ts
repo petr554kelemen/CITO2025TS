@@ -14,7 +14,7 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     create() {
-        this.scene.stop(this); // zastavíme scénu Intro, pokud běží
+        this.scene.stop('MainMenu'); // zastavíme scénu pokud běží
         this.scene.start('FullscreenZoomTestScene'); // spustíme zoom tstovací scénu
         // return; // Removed to allow MainMenu UI setup to run
         
