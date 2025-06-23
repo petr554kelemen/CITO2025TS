@@ -52,7 +52,7 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         // Detekce iOS zařízení
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
-            this.cameras.main.setZoom(0.9);
+            this.cameras.main.setZoom(0.8); // iOS má problémy s fullscreen, nastav zoom na 0.8
         }
 
         if (DEBUG_MODE) {
