@@ -72,10 +72,10 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
             );
         }
 
-        // Text pod posledním pruhem
+        // Text těsně nad spodním okrajem scény
         this.add.text(
             width / 2,
-            sceneHeight + 40,
+            sceneHeight - 40,
             'Toto je text pod posledním pruhem!',
             { fontSize: '28px', color: '#000', backgroundColor: '#fff' }
         ).setOrigin(0.5, 0);
