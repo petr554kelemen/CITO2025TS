@@ -52,7 +52,19 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         // Detekce iOS zařízení
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
-            this.cameras.main.setZoom(0.8); // iOS má problémy s fullscreen, nastav zoom na 0.8
+            this.cameras.main.setZoom(0.8);
+            this.add.text(
+                this.scale.width / 2,
+                24,
+                '⚠️ Pro plnohodnotné hraní použij PC prohlížeč.\nNa iOS nemusí být vše viditelné.',
+                {
+                    fontSize: '18px',
+                    color: '#fff',
+                    backgroundColor: '#d00',
+                    padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                    align: 'center'
+                }
+            ).setOrigin(0.5, 0);
         }
 
         if (DEBUG_MODE) {
