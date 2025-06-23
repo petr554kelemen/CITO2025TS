@@ -5,6 +5,7 @@ import Intro from './scenes/Intro';
 import Phaser from 'phaser';
 import Preloader from './scenes/Preloader';
 import MainMenu from './scenes/MainMenu';
+import FullscreenZoomTestScene from '../utils/ZoomScene';
 
 const StartGame = (parent: string) => {
     // Nastavíme DEBUG_MODE pro ladění
@@ -31,7 +32,8 @@ const StartGame = (parent: string) => {
             MainMenu,
             Intro,
             MainGame,
-            GameOver
+            GameOver,
+            FullscreenZoomTestScene
         ]
     };
     
