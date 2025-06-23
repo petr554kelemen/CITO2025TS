@@ -76,7 +76,7 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         const { width, height } = this.scale.displaySize;
 
         // Lupa vlevo nahoře
-        this.zoomInBtn.setPosition(pad, pad);
+        this.zoomInBtn.setPosition(width / 2, height / 2);
         this.zoomOutBtn.setPosition(pad, pad + 50);
         this.zoomText.setPosition(pad, pad + 100);
 
