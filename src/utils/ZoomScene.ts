@@ -2,22 +2,16 @@ import Phaser from 'phaser';
 import { DEBUG_MODE } from '../config/constants';
 
 /**
- * Testovací scéna pro přepínání mezi fullscreen a zoom režimem.
- * Ovládací prvky jsou v horní části obrazovky.
+ * Testovací scéna pro posun kamery v ose Y a fullscreen režim.
+ * Ovládací prvek fullscreen je vpravo nahoře.
  */
 export default class FullscreenZoomTestScene extends Phaser.Scene {
-    private zoomLevel: number = 1;
-    private zoomText!: Phaser.GameObjects.Text;
-    private zoomInBtn!: Phaser.GameObjects.Text;
-    private zoomOutBtn!: Phaser.GameObjects.Text;
     private fsBtn?: Phaser.GameObjects.Text;
-
-    private readonly MIN_ZOOM = 0.65;
-    private readonly MAX_ZOOM = 1.05;
+    private isDragging = false;
+    private lastPointerY = 0;
 
     constructor() {
         super({ key: 'FullscreenZoomTestScene' });
-        this.zoomLevel = 0.85; // výchozí zoom pro MT
     }
 
     preload() {}
@@ -26,9 +20,32 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         this.createStripes();
         this.createUI();
         this.positionUI();
-        this.cameras.main.setZoom(this.zoomLevel);
 
-        // Přepočítej pozice při změně velikosti
+        // Drag posun kamery v ose Y
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.isDragging = true;
+            this.lastPointerY = pointer.y;
+        });
+
+        this.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
+
+        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            if (this.isDragging) {
+                const deltaY = pointer.y - this.lastPointerY;
+                this.lastPointerY = pointer.y;
+                // Posuň kameru, omez na rozsah scény
+                const maxScroll = Math.max(0, this.scale.height - this.cameras.main.height);
+                this.cameras.main.scrollY = Phaser.Math.Clamp(
+                    this.cameras.main.scrollY - deltaY,
+                    0,
+                    maxScroll
+                );
+            }
+        });
+
+        // Přepočítej pozici fullscreen tlačítka při změně velikosti
         this.scale.on('resize', () => this.positionUI());
 
         if (DEBUG_MODE) {
@@ -37,7 +54,7 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
     }
 
     /**
-     * Vykreslí 3 vodorovné pruhy pro testování zoomu a fullscreen režimu.
+     * Vykreslí 3 vodorovné pruhy pro testování posunu a fullscreen režimu.
      */
     private createStripes() {
         const { width, height } = this.scale;
@@ -54,39 +71,13 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
     }
 
     /**
-     * Vytvoří ovládací prvky pro zoom a fullscreen.
+     * Vytvoří pouze fullscreen ovládací prvek.
      */
     private createUI() {
-        const { width } = this.scale;
-        // Zoom in tlačítko
-        this.zoomInBtn = this.add.text(0, 0, '＋', {
-            fontSize: '28px',
-            backgroundColor: '#f00',
-            color: '#fff',
-            fontFamily: 'Arial, sans-serif'
-        })
-            .setInteractive()
-            .on('pointerdown', () => this.setZoom(this.zoomLevel + 0.1));
+        // Detekce iOS zařízení
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-        // Zoom out tlačítko
-        this.zoomOutBtn = this.add.text(0, 0, '－', {
-            fontSize: '28px',
-            backgroundColor: '#fff',
-            color: '#000',
-            fontFamily: 'Arial, sans-serif'
-        })
-            .setInteractive()
-            .on('pointerdown', () => this.setZoom(this.zoomLevel - 0.1));
-
-        // Zobrazení aktuálního zoomu
-        this.zoomText = this.add.text(0, 0, `Zoom: ${this.zoomLevel.toFixed(2)}`, {
-            fontSize: '20px',
-            color: '#000',
-            fontFamily: 'Arial, sans-serif'
-        });
-
-        // Fullscreen tlačítko vpravo nahoře (pokud je podporováno)
-        if (this.scale.fullscreen.available) {
+        if (this.scale.fullscreen.available && !isIOS) {
             this.fsBtn = this.add.text(0, 0, '⛶', {
                 fontSize: '32px',
                 backgroundColor: '#fff',
@@ -105,34 +96,13 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
     }
 
     /**
-     * Umístí ovládací prvky do horní části obrazovky.
+     * Umístí fullscreen tlačítko do pravého horního rohu.
      */
     private positionUI() {
         const pad = 16;
         const { width } = this.scale.displaySize;
-
-        // Rozmístění tlačítek v horní části
-        this.zoomInBtn.setPosition(width / 2 - 80, pad);
-        this.zoomOutBtn.setPosition(width / 2 + 20, pad);
-        this.zoomText.setPosition(width / 2 - 30, pad + 60);
-
         if (this.fsBtn) {
             this.fsBtn.setPosition(width - this.fsBtn.width - pad, pad);
-        }
-    }
-
-    /**
-     * Nastaví zoom hlavní kamery a aktualizuje text.
-     * @param zoom Nová hodnota zoomu (omezeno na 0.5–2)
-     */
-    setZoom(zoom: number) {
-        this.zoomLevel = Phaser.Math.Clamp(zoom, this.MIN_ZOOM, this.MAX_ZOOM);
-        this.cameras.main.setZoom(this.zoomLevel);
-        this.zoomText.setText(`Zoom: ${this.zoomLevel.toFixed(2)}`);
-        this.positionUI();
-
-        if (DEBUG_MODE) {
-            console.log('Zoom set to', this.zoomLevel);
         }
     }
 }
