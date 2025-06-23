@@ -58,16 +58,25 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
      */
     private createStripes() {
         const { width, height } = this.scale;
-        const COLORS = [0xff5555, 0x55ff55, 0x5555ff];
-        for (let i = 0; i < 3; i++) {
+        const COLORS = [0xff5555, 0x55ff55, 0x5555ff, 0xffff55, 0x55ffff];
+        const stripes = 5; // počet pruhů
+        for (let i = 0; i < stripes; i++) {
             this.add.rectangle(
                 width / 2,
-                height / 6 + (i * height) / 3,
+                height / (stripes * 2) + (i * height) / stripes,
                 width * 0.8,
-                height / 3 - 10,
-                COLORS[i]
+                height / stripes - 10,
+                COLORS[i % COLORS.length]
             );
         }
+
+        // Přidej text POD poslední pruh (níže než je výška scény)
+        this.add.text(
+            width / 2,
+            height + 40, // 40px pod spodní okraj scény
+            'Toto je text pod posledním pruhem!',
+            { fontSize: '28px', color: '#000', backgroundColor: '#fff' }
+        ).setOrigin(0.5, 0);
     }
 
     /**
