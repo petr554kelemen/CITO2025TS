@@ -17,7 +17,13 @@ Testovací verzi vytváříme v oddělené scéně `FullscreenZoomTestScene`, kt
 Po odladění bude kód přenesen do hlavní scény hry. 
 
 ## Instrukce
-- Navrhuj kod pro Phaser 3 nejnovější verzi.
+- **Ladící výpisy** (`console.log`) používej pouze v DEBUG_MODE.
+- **Styl kódování:**
+    - **private proměnné a funkce:** malá písmena
+    - **konstanty:** VELKÁ_PÍSMENA
+    - **třídy:** PascalCase
+    - **proměnné a funkce:** camelCase
+- Navrhuj kod pro Phaser 3 .
 - Navrhovaný kod formou Patche v TS, doplňuj komentáři pro začátečníka
 - Kód by měl být jednoduchý a snadno pochopitelný.
 - Kód by měl být snadno přenositelný do hlavní scény hry

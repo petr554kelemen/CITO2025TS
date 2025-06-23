@@ -1,5 +1,10 @@
 import Phaser from 'phaser';
+import { DEBUG_MODE } from '../config/constants';
 
+/**
+ * Testovací scéna pro přepínání mezi fullscreen a zoom režimem.
+ * Ovládací prvky jsou v horní části obrazovky.
+ */
 export default class FullscreenZoomTestScene extends Phaser.Scene {
     private zoomLevel: number = 1;
     private zoomText!: Phaser.GameObjects.Text;
@@ -7,46 +12,87 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
     private zoomOutBtn!: Phaser.GameObjects.Text;
     private fsBtn?: Phaser.GameObjects.Text;
 
+    private readonly MIN_ZOOM = 0.65;
+    private readonly MAX_ZOOM = 1.05;
+
     constructor() {
         super({ key: 'FullscreenZoomTestScene' });
+        this.zoomLevel = 0.85; // výchozí zoom pro MT
     }
 
-    preload() { }
+    preload() {}
 
     create() {
-        const { width, height } = this.scale;
+        this.createStripes();
+        this.createUI();
+        this.positionUI();
+        this.cameras.main.setZoom(this.zoomLevel);
 
-        // Vykresli obdélník rozdělený na 3 pruhy
-        const colors = [0xff5555, 0x55ff55, 0x5555ff];
+        // Přepočítej pozice při změně velikosti
+        this.scale.on('resize', () => this.positionUI());
+
+        if (DEBUG_MODE) {
+            console.log('FullscreenZoomTestScene created');
+        }
+    }
+
+    /**
+     * Vykreslí 3 vodorovné pruhy pro testování zoomu a fullscreen režimu.
+     */
+    private createStripes() {
+        const { width, height } = this.scale;
+        const COLORS = [0xff5555, 0x55ff55, 0x5555ff];
         for (let i = 0; i < 3; i++) {
             this.add.rectangle(
                 width / 2,
                 height / 6 + (i * height) / 3,
                 width * 0.8,
                 height / 3 - 10,
-                colors[i]
+                COLORS[i]
             );
         }
+    }
 
-        // TESTOVACÍ TEXT
-        this.add.text(width / 2, height / 2, 'TEST', { fontSize: '32px', backgroundColor: '#0f0', color: '#000' });
-
-        // Lupa + (zoom in)
-        this.zoomInBtn = this.add.text(width / 2, height / 2, '🔍+', { fontSize: '72px', backgroundColor: '#f00', color: '#fff' })
+    /**
+     * Vytvoří ovládací prvky pro zoom a fullscreen.
+     */
+    private createUI() {
+        const { width } = this.scale;
+        // Zoom in tlačítko
+        this.zoomInBtn = this.add.text(0, 0, '＋', {
+            fontSize: '28px',
+            backgroundColor: '#f00',
+            color: '#fff',
+            fontFamily: 'Arial, sans-serif'
+        })
             .setInteractive()
             .on('pointerdown', () => this.setZoom(this.zoomLevel + 0.1));
 
-        // Lupa - (zoom out)
-        this.zoomOutBtn = this.add.text(width / 2, height / 2 + 40, '🔍-', { fontSize: '72px', backgroundColor: '#fff', color: '#000' })
+        // Zoom out tlačítko
+        this.zoomOutBtn = this.add.text(0, 0, '－', {
+            fontSize: '28px',
+            backgroundColor: '#fff',
+            color: '#000',
+            fontFamily: 'Arial, sans-serif'
+        })
             .setInteractive()
             .on('pointerdown', () => this.setZoom(this.zoomLevel - 0.1));
 
         // Zobrazení aktuálního zoomu
-        this.zoomText = this.add.text(width / 2, height / 2 + 100, `Zoom: ${this.zoomLevel.toFixed(2)}`, { fontSize: '20px', color: '#000' });
+        this.zoomText = this.add.text(0, 0, `Zoom: ${this.zoomLevel.toFixed(2)}`, {
+            fontSize: '20px',
+            color: '#000',
+            fontFamily: 'Arial, sans-serif'
+        });
 
         // Fullscreen tlačítko vpravo nahoře (pokud je podporováno)
         if (this.scale.fullscreen.available) {
-            this.fsBtn = this.add.text(width - 60, 20, '⛶', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
+            this.fsBtn = this.add.text(0, 0, '⛶', {
+                fontSize: '32px',
+                backgroundColor: '#fff',
+                color: '#000',
+                fontFamily: 'Arial, sans-serif'
+            })
                 .setInteractive()
                 .on('pointerdown', () => {
                     if (this.scale.isFullscreen) {
@@ -55,41 +101,38 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
                         this.scale.startFullscreen();
                     }
                 });
-            this.fsBtn.setScrollFactor(0);
         }
-
-        // Ujisti se, že UI prvky zůstávají na místě při zoomu
-        this.cameras.main.ignore(
-            [this.zoomInBtn, this.zoomOutBtn, this.zoomText, this.fsBtn].filter(
-                (obj): obj is Phaser.GameObjects.Text => obj !== undefined
-            )
-        );
-
-        // Umístění tlačítek podle velikosti okna
-        this.positionUI();
-
-        // Přepočítej pozice při změně velikosti
-        this.scale.on('resize', () => this.positionUI());
     }
 
+    /**
+     * Umístí ovládací prvky do horní části obrazovky.
+     */
     private positionUI() {
-        const pad = 12;
-        const { width, height } = this.scale.displaySize;
+        const pad = 16;
+        const { width } = this.scale.displaySize;
 
-        // Lupa vlevo nahoře
-        this.zoomInBtn.setPosition(width / 2, height / 2 - 40);
-        this.zoomOutBtn.setPosition(width / 2, height / 2 + 40);
-        this.zoomText.setPosition(pad, pad + 100);
+        // Rozmístění tlačítek v horní části
+        this.zoomInBtn.setPosition(width / 2 - 80, pad);
+        this.zoomOutBtn.setPosition(width / 2 + 20, pad);
+        this.zoomText.setPosition(width / 2 - 30, pad + 60);
 
-        // Fullscreen tlačítko vpravo nahoře
         if (this.fsBtn) {
             this.fsBtn.setPosition(width - this.fsBtn.width - pad, pad);
         }
     }
 
+    /**
+     * Nastaví zoom hlavní kamery a aktualizuje text.
+     * @param zoom Nová hodnota zoomu (omezeno na 0.5–2)
+     */
     setZoom(zoom: number) {
-        this.zoomLevel = Phaser.Math.Clamp(zoom, 0.5, 2);
+        this.zoomLevel = Phaser.Math.Clamp(zoom, this.MIN_ZOOM, this.MAX_ZOOM);
         this.cameras.main.setZoom(this.zoomLevel);
         this.zoomText.setText(`Zoom: ${this.zoomLevel.toFixed(2)}`);
+        this.positionUI();
+
+        if (DEBUG_MODE) {
+            console.log('Zoom set to', this.zoomLevel);
+        }
     }
 }
