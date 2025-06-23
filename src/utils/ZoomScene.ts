@@ -39,8 +39,9 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         this.zoomText = this.add.text(20, 120, `Zoom: ${this.zoomLevel.toFixed(2)}`, { fontSize: '20px', color: '#000' });
 
         // Fullscreen tlačítko vpravo nahoře (pokud je podporováno)
+        let fsBtn: Phaser.GameObjects.Text | undefined;
         if (this.scale.fullscreen.available) {
-            const fsBtn = this.add.text(width - 60, 20, '⛶', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
+            fsBtn = this.add.text(width - 60, 20, '⛶', { fontSize: '32px', backgroundColor: '#fff', color: '#000' })
                 .setInteractive()
                 .on('pointerdown', () => {
                     if (this.scale.isFullscreen) {
@@ -53,7 +54,12 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         }
 
         // Ujisti se, že UI prvky zůstávají na místě při zoomu
-        this.cameras.main.ignore([zoomInBtn, zoomOutBtn, this.zoomText]);
+        const uiElements = [zoomInBtn, zoomOutBtn, this.zoomText];
+        if (fsBtn) {
+            uiElements.push(fsBtn);
+        }
+        uiElements.forEach(el => el.setScrollFactor(0));
+        this.cameras.main.ignore(uiElements);
     }
 
     setZoom(zoom: number) {
