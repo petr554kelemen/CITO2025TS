@@ -17,7 +17,14 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
     preload() {}
 
     create() {
-        this.createStripes();
+        // Detekce iOS zařízení
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+        // Nastav sceneHeight podle platformy
+        const baseHeight = this.scale.height;
+        const sceneHeight = isIOS ? baseHeight * 2 : baseHeight * 1.5;
+
+        this.createStripes(sceneHeight);
         this.createUI();
         this.positionUI();
 
@@ -30,8 +37,6 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         this.input.on('pointerup', () => {
             this.isDragging = false;
         });
-
-        const sceneHeight = this.scale.height * 1.5; // stejná hodnota jako v createStripes
 
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
             if (this.isDragging) {
@@ -49,8 +54,6 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         // Přepočítej pozici fullscreen tlačítka při změně velikosti
         this.scale.on('resize', () => this.positionUI());
 
-        // Detekce iOS zařízení
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
             this.cameras.main.setZoom(0.8);
             this.add.text(
@@ -75,9 +78,8 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
     /**
      * Vykreslí 3 vodorovné pruhy pro testování posunu a fullscreen režimu.
      */
-    private createStripes() {
-        const { width, height } = this.scale;
-        const sceneHeight = height * 1.5; // virtuální výška scény
+    private createStripes(sceneHeight: number) {
+        const { width } = this.scale;
         const COLORS = [0xff5555, 0x55ff55, 0x5555ff, 0xffff55, 0x55ffff];
         const stripes = 5;
         for (let i = 0; i < stripes; i++) {
