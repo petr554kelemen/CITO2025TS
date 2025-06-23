@@ -49,6 +49,12 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         // Přepočítej pozici fullscreen tlačítka při změně velikosti
         this.scale.on('resize', () => this.positionUI());
 
+        // Detekce iOS zařízení
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+            this.cameras.main.setZoom(0.9);
+        }
+
         if (DEBUG_MODE) {
             console.log('FullscreenZoomTestScene created');
         }
