@@ -75,7 +75,7 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
      */
     private createUI() {
         // Detekce iOS zařízení
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
         if (this.scale.fullscreen.available && !isIOS) {
             this.fsBtn = this.add.text(0, 0, '⛶', {
