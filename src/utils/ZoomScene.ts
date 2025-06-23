@@ -31,12 +31,13 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
             this.isDragging = false;
         });
 
+        const sceneHeight = this.scale.height * 1.5; // stejná hodnota jako v createStripes
+
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
             if (this.isDragging) {
                 const deltaY = pointer.y - this.lastPointerY;
                 this.lastPointerY = pointer.y;
-                // Posuň kameru, omez na rozsah scény
-                const maxScroll = Math.max(0, this.scale.height - this.cameras.main.height);
+                const maxScroll = Math.max(0, sceneHeight - this.cameras.main.height);
                 this.cameras.main.scrollY = Phaser.Math.Clamp(
                     this.cameras.main.scrollY - deltaY,
                     0,
@@ -58,22 +59,23 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
      */
     private createStripes() {
         const { width, height } = this.scale;
+        const sceneHeight = height * 1.5; // virtuální výška scény
         const COLORS = [0xff5555, 0x55ff55, 0x5555ff, 0xffff55, 0x55ffff];
-        const stripes = 5; // počet pruhů
+        const stripes = 5;
         for (let i = 0; i < stripes; i++) {
             this.add.rectangle(
                 width / 2,
-                height / (stripes * 2) + (i * height) / stripes,
+                sceneHeight / (stripes * 2) + (i * sceneHeight) / stripes,
                 width * 0.8,
-                height / stripes - 10,
+                sceneHeight / stripes - 10,
                 COLORS[i % COLORS.length]
             );
         }
 
-        // Přidej text POD poslední pruh (níže než je výška scény)
+        // Text pod posledním pruhem
         this.add.text(
             width / 2,
-            height + 40, // 40px pod spodní okraj scény
+            sceneHeight + 40,
             'Toto je text pod posledním pruhem!',
             { fontSize: '28px', color: '#000', backgroundColor: '#fff' }
         ).setOrigin(0.5, 0);
