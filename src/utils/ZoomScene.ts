@@ -11,7 +11,7 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
         super({ key: 'FullscreenZoomTestScene' });
     }
 
-    preload() {}
+    preload() { }
 
     create() {
         const { width, height } = this.scale;
@@ -67,6 +67,8 @@ export default class FullscreenZoomTestScene extends Phaser.Scene {
 
         // Přepočítej pozice při změně velikosti
         this.scale.on('resize', () => this.positionUI());
+
+        alert('Fullscreen available: ' + this.scale.fullscreen.available);
     }
 
     private positionUI() {
