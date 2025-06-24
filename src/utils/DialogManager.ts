@@ -10,6 +10,7 @@ export default class DialogManager {
   private readonly BASE_DISPLAY_TIME_PER_CHAR = 40;      // ms na znak
   private readonly MIN_DISPLAY_TIME = 2000;              // Minimální doba zobrazení (2 sekundy)
   private lastOffsetY: number = 0;                       // Poslední použitý offsetY pro pozicování bubliny
+  private dialogText?: Phaser.GameObjects.Text;          // Textový objekt pro zobrazení dialogu
 
   /**
    * Vytvoří nového správce dialogů pro danou scénu a lokalizované texty.
@@ -245,7 +246,9 @@ export default class DialogManager {
         wordWrap: { width: cam.width - 120 * scaleFactor }
       };
       content.destroy();
-      const bigContent = this.scene.add.text(0, 0, text, bigStyle);
+      const bigContent = this.scene.add.text(0, 0, text, bigStyle)
+        .setOrigin(0.5)
+        .setDepth(9999); // zajistí, že dialog je vždy nad vším
 
       const bigPadding = 16 * scaleFactor;
       const bubbleWidth = bigContent.width + bigPadding * 2;
