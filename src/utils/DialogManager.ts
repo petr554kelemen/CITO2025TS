@@ -247,8 +247,8 @@ export default class DialogManager {
       };
       content.destroy();
       const bigContent = this.scene.add.text(0, 0, text, bigStyle)
-        .setOrigin(0.5)
-        .setDepth(9999); // zajistí, že dialog je vždy nad vším
+        .setOrigin(0, 0) // OPRAVA: zarovnat vlevo nahoře
+        .setDepth(9999);
 
       const bigPadding = 16 * scaleFactor;
       const bubbleWidth = bigContent.width + bigPadding * 2;
@@ -265,7 +265,6 @@ export default class DialogManager {
 
       this.bubbleContainer.x = cam.width / 2 - bubbleWidth / 2;
       this.bubbleContainer.y = cam.height - bubbleHeight - 32 * scaleFactor;
-      this.followTarget = undefined;
     }
   }
 
