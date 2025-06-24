@@ -167,18 +167,16 @@ export default class Preloader extends Phaser.Scene {
                 };
 
                 if (device === 'iOS') {
-                    // Postupně zobrazit všechny jazykové varianty po 3s
+                    // Nekonečně střídej jazykové varianty po 3s
                     const langs: Lang[] = ['cs', 'en', 'pl'];
                     let idx = 0;
                     showInfo(infoTexts[langs[idx]].iOS);
                     this.time.addEvent({
                         delay: 3000,
-                        repeat: 1, // zobrazí ještě 2x (celkem 3 jazyky)
+                        loop: true,
                         callback: () => {
-                            idx++;
-                            if (idx < langs.length) {
-                                showInfo(infoTexts[langs[idx]].iOS);
-                            }
+                            idx = (idx + 1) % langs.length;
+                            showInfo(infoTexts[langs[idx]].iOS);
                         }
                     });
                 } else {
