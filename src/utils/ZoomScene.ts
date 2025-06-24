@@ -1,36 +1,62 @@
 import Phaser from 'phaser';
-import CameraControlManager from './CameraControlManager';
 
 export default class FullscreenZoomTestScene extends Phaser.Scene {
-    private cameraControl!: CameraControlManager;
+    private fsBtn?: Phaser.GameObjects.Image;
 
     constructor() {
         super({ key: 'FullscreenZoomTestScene' });
     }
 
-    preload() {}
+    preload() {
+        // Pokud už je obrázek načten v asset packu, není třeba znovu načítat
+        // this.load.image('fullscreen', 'assets/fullscreen.png');
+    }
 
     create() {
-        // Vytvoř 3 obdélníky pro testování posunu
         const { width, height } = this.scale;
-        const stripes = 3;
-        const COLORS = [0xff5555, 0x55ff55, 0x5555ff];
-        for (let i = 0; i < stripes; i++) {
-            this.add.rectangle(
-                width / 2,
-                height / (stripes * 2) + (i * height) / stripes,
-                width * 0.8,
-                height / stripes - 10,
-                COLORS[i % COLORS.length]
-            );
-        }
 
-        // Ovládání kamery, fullscreen, info pro iOS řeší CameraControlManager
-        this.cameraControl = new CameraControlManager(this, {
-            enableFullscreen: true,
-            enableDragY: true,
-            iosZoom: 0.8,
-            infoTextIOS: '⚠️ Pro plnohodnotné hraní použij PC prohlížeč.\nNa iOS nemusí být vše viditelné.'
-        });
+        // Okraj a barvy
+        const border = 8;
+        const fillColor = 0x55aaff;
+        const borderColor = 0x003366;
+
+        // Vyplň celou scénu obdélníkem s okrajem
+        this.add.rectangle(
+            width / 2,
+            height / 2,
+            width - border,
+            height - border,
+            fillColor
+        ).setStrokeStyle(border, borderColor);
+
+        // Ovládací prvek fullscreen (obrázek) – vždy dostupný
+        this.fsBtn = this.add.image(width - 32, 32, 'fullscreen')
+            .setOrigin(1, 0)
+            .setScale(0.7)
+            .setInteractive()
+            .on('pointerdown', () => {
+                if (this.scale.isFullscreen) {
+                    this.scale.stopFullscreen();
+                } else {
+                    this.scale.startFullscreen();
+                }
+            });
+
+        // Přepočítej pozici při změně velikosti
+        this.scale.on('resize', () => this.positionUI());
+
+        // Pro test: info o rozměrech
+        this.add.text(width / 2, height - 24, `Rozměry: ${width} x ${height}`, {
+            fontSize: '18px',
+            color: '#fff',
+            backgroundColor: '#003366'
+        }).setOrigin(0.5, 1);
+    }
+
+    private positionUI() {
+        const { width } = this.scale;
+        if (this.fsBtn) {
+            this.fsBtn.setPosition(width - 32, 32);
+        }
     }
 }

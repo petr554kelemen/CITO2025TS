@@ -10,13 +10,24 @@ export interface CameraControlOptions {
 export default class CameraControlManager {
     private isDragging = false;
     private lastPointerY = 0;
-    private fsBtn?: Phaser.GameObjects.Text;
+    private fsBtn?: Phaser.GameObjects.Image;
+    private static fontLoaded = false;
 
     constructor(
         private scene: Phaser.Scene,
         private options: CameraControlOptions = {}
     ) {
+        CameraControlManager.loadMaterialSymbolsFont();
         this.init();
+    }
+
+    private static loadMaterialSymbolsFont() {
+        if (this.fontLoaded) return;
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0';
+        document.head.appendChild(link);
+        this.fontLoaded = true;
     }
 
     private init() {
@@ -44,12 +55,7 @@ export default class CameraControlManager {
 
         // Fullscreen tlačítko (ne na iOS)
         if (enableFullscreen && this.scene.scale.fullscreen.available && !isIOS) {
-            this.fsBtn = this.scene.add.text(0, 0, '⛶', {
-                fontSize: '32px',
-                backgroundColor: '#fff',
-                color: '#000',
-                fontFamily: 'Arial, sans-serif'
-            })
+            this.fsBtn = this.scene.add.image(0, 0, 'fullscreen')
                 .setInteractive()
                 .on('pointerdown', () => {
                     if (this.scene.scale.isFullscreen) {
@@ -77,10 +83,7 @@ export default class CameraControlManager {
                 if (this.isDragging) {
                     const deltaY = pointer.y - this.lastPointerY;
                     this.lastPointerY = pointer.y;
-                    // Prodloužená scéna (příklad, můžeš upravit)
-                    const sceneHeight = isIOS
-                        ? this.scene.scale.height
-                        : this.scene.scale.height;
+                    const sceneHeight = this.scene.scale.height;
                     const maxScroll = Math.max(0, sceneHeight - this.scene.cameras.main.height);
                     this.scene.cameras.main.scrollY = Phaser.Math.Clamp(
                         this.scene.cameras.main.scrollY - deltaY,
@@ -94,10 +97,9 @@ export default class CameraControlManager {
 
     private positionUI() {
         if (this.fsBtn) {
-            const pad = 16;
+            const pad = 32;
             const { width } = this.scene.scale.displaySize;
-            // Zarovnej tlačítko do pravého horního rohu s odsazením
-            this.fsBtn.setOrigin(1, 0); // pravý horní roh
+            this.fsBtn.setOrigin(1, .5);
             this.fsBtn.setPosition(width - pad, pad);
         }
     }

@@ -52,6 +52,11 @@
                 "key": "freepik_forest_02"
             },
             {
+                "url": "assets/Images/image_arrow_up_24dp.png",
+                "type": "image",
+                "key": "fullscreen"
+            },
+            {
                 "url": "assets/Images/Obr03.png",
                 "type": "image",
                 "key": "Kapesnik"
