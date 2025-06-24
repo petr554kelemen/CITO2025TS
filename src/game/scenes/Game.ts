@@ -26,7 +26,7 @@ export default class Game extends Phaser.Scene {
     private dialog!: DialogManager;
     private quiz!: Quiz;
     private timerEvent?: Phaser.Time.TimerEvent;
-    private timeLeft: number = 120;
+    private timeLeft: number = UI.SCOREBOARD.TIMER_END;
     private responsive!: any; // Pokud máš typ, nahraď 'any'
     private odpadkyGroup!: Phaser.GameObjects.Group;
     private texts: any; // Pokud máš typ, nahraď 'any'
@@ -81,13 +81,23 @@ export default class Game extends Phaser.Scene {
         this.createBackground(gameWidth, gameHeight);
         this.createPytel(gameWidth, gameHeight);
         this.createOdpadky();
+
+        // Nastav maximální povolený čas (např. 1 hodina = 3600 sekund)
+        const MAX_TIME = 3600; // 1 hodina v sekundách
+
+        // Ověř, že časovač není nesmyslně vysoký
+        if (this.timeLeft > MAX_TIME) {
+            console.warn(`Zadaný časovač (${this.timeLeft}s) je příliš vysoký, nastavuji na ${MAX_TIME}s.`);
+            this.timeLeft = MAX_TIME;
+        }
+
         this.scoreboard = new Scoreboard(this, this.odpadky.length, this.timeLeft, this.texts);
         this.dialog = new DialogManager(this, this.texts);
         const language = (this as any).data?.language || this.texts.language || 'cs';
         this.quiz = new Quiz(language);
 
         // Reset časovače a skóre
-        this.timeLeft = 120;
+        this.timeLeft = UI.SCOREBOARD.TIMER_END;
         this.scoreboard.reset?.();
         this.quiz?.reset?.();
         this.lastGameSuccess = false;

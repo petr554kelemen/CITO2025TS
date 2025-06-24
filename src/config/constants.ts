@@ -10,7 +10,8 @@ export const UI = {
         TIMER_FONT_SIZE: 28, // Velikost fontu časovače (px)
         BOX_BG_COLOR: 0x222222, // Barva pozadí scoreboardu (hex)
         BOX_BG_ALPHA: 0.8, // Průhlednost pozadí scoreboardu (0–1)
-        TIMER_COLOR: '#f8f8f8' // Barva textu časovače
+        TIMER_COLOR: '#f8f8f8', // Barva textu časovače
+        TIMER_END: 120
     },
     MONINA: {
         POS_X: 125, // Výchozí X pozice Moniny

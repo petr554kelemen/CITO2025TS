@@ -97,7 +97,11 @@ export default class Scoreboard {
     }
 
     public setTime(timeLeft: number): void {
-        this.timeLeft = Math.max(0, timeLeft); // nikdy pod 0
+        if (timeLeft === 0) {
+            this.timeLeft = UI.SCOREBOARD.TIMER_END;
+        } else {
+            this.timeLeft = Math.max(0, timeLeft);
+        }
         let color = '#7CFC00';
         if (this.timeLeft <= 10) {
             color = '#FF3333'; // červená
