@@ -109,7 +109,7 @@ export default class GameOver extends Phaser.Scene {
             this.scale.height - 60,
             copyLabel,
             {
-                fontFamily: COORDINATE.FONT_FAMILY,
+                fontFamily: "Arial, sans-serif",
                 fontSize: "18px",
                 fill: "#1976d2",
                 align: "center",
