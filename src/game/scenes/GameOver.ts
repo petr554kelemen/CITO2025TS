@@ -19,7 +19,7 @@ export default class GameOver extends Phaser.Scene {
     }
 
     create() {
-        // Přidej CameraControlManager
+        // Přidaj CameraControlManager
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
             enableDragY: false,
@@ -100,6 +100,39 @@ export default class GameOver extends Phaser.Scene {
             this.scene.start("MainMenu");
         });
 
+        // Přidání tlačítka pro zkopírování souřadnic do schránky
+        const copyLabel = this.texts?.gameOver?.copyCoords ?? "Zkopírovat souřadnice";
+        const copySuccess = this.texts?.gameOver?.copySuccess ?? "Souřadnice byly zkopírovány do schránky!";
+
+        const copyBtn = this.add.text(
+            this.scale.width / 2,
+            this.scale.height - 60,
+            copyLabel,
+            {
+                fontFamily: COORDINATE.FONT_FAMILY,
+                fontSize: "18px",
+                fill: "#1976d2",
+                align: "center",
+                fontStyle: "italic"
+            } as any
+        ).setOrigin(0.5).setInteractive({ useHandCursor: true }).setVisible(false);
+
+        copyBtn.on("pointerdown", () => {
+            const coords = `${COORDINATE.N}\n${COORDINATE.E}`;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(coords).then(() => {
+                    copyBtn.setText(copySuccess);
+                    this.time.delayedCall(1800, () => copyBtn.setText(copyLabel));
+                }).catch(() => {
+                    copyBtn.setText("Nepodařilo se zkopírovat.");
+                    this.time.delayedCall(1800, () => copyBtn.setText(copyLabel));
+                });
+            } else {
+                copyBtn.setText("Kopírování není podporováno.");
+                this.time.delayedCall(1800, () => copyBtn.setText(copyLabel));
+            }
+        });
+
         // Animace odhalování souřadnic pohybem prstu/myši s efektem inkoustu (alpha)
         let revealProgress = 0; // 0..1
         let lastX = 0;
@@ -127,7 +160,7 @@ export default class GameOver extends Phaser.Scene {
                     this.coordsText.setAlpha(1);
                 }
                 prst.setVisible(false);
-                playAgainText.setVisible(true); // zobraz decentní text až po odhalení souřadnic
+                copyBtn.setVisible(true); // zobraz tlačítko pro kopírování
             }
         });
 
