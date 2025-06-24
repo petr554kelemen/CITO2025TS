@@ -3,6 +3,7 @@ import Scoreboard from "../../utils/scoreboard";
 import DialogManager from "../../utils/DialogManager";
 import { Quiz } from "../../utils/quiz";
 import { UI, DEBUG_MODE } from "../../config/constants";
+import CameraControlManager from '../../utils/CameraControlManager';
 
 // Typ pro odpadek
 type Odpadek = {
@@ -53,6 +54,8 @@ export default class Game extends Phaser.Scene {
     ];
 
     private moninaDestroyed: boolean = false;
+
+    private cameraControl!: CameraControlManager;
 
     constructor() {
         super({ key: "Game" });
@@ -168,6 +171,14 @@ export default class Game extends Phaser.Scene {
         //         console.log(`Monina instance #${i + 1}:`, obj);
         //     });
         //}
+
+        // Přidej CameraControlManager
+        this.cameraControl = new CameraControlManager(this, {
+            enableFullscreen: true,
+            enableDragY: true, // pokud chceš umožnit posun scény na mobilech
+            iosZoom: 0.95,
+            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+        });
 
         // Spusť asynchronní inicializaci (načtení otázek, dialogy, handlery)
         this.initializeGameAsync();

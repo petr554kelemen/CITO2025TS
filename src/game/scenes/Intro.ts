@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import DialogManager from '../../utils/DialogManager';
 import ResponsiveManager from '../../utils/ResponsiveManager';
+import CameraControlManager from '../../utils/CameraControlManager';
 import { UI } from '../../config/constants';
 import { DEBUG_MODE } from '../../config/constants';
 
@@ -21,6 +22,7 @@ type DialogTexts = {
 export default class Intro extends Phaser.Scene {
     private dialog!: DialogManager;
     private responsive!: ResponsiveManager;
+    private cameraControl!: CameraControlManager;
 
     private odpadkyData: Odpadek[] = [
         { typ: "Karton", x: 359, y: 243, scale: 0.6 },
@@ -58,6 +60,14 @@ export default class Intro extends Phaser.Scene {
         this.responsive.checkAndForceOrientation();
 
         this.dialog = new DialogManager(this, this.texts);
+
+        // Přidej CameraControlManager
+        this.cameraControl = new CameraControlManager(this, {
+            enableFullscreen: true,
+            enableDragY: false, // nebo true, pokud chceš povolit posun
+            iosZoom: 0.95,
+            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+        });
 
         if (DEBUG_MODE) {
     this.responsive.addDebugOverlay();

@@ -2,10 +2,12 @@
 
 import Phaser from "phaser";
 import { COORDINATE } from "../../config/constants";
+import CameraControlManager from '../../utils/CameraControlManager';
 
 export default class GameOver extends Phaser.Scene {
     private coordsText: Phaser.GameObjects.Text | undefined;
     private texts: any; // <-- přidat
+    private cameraControl!: CameraControlManager;
 
     constructor() {
         super("GameOver");
@@ -17,6 +19,14 @@ export default class GameOver extends Phaser.Scene {
     }
 
     create() {
+        // Přidej CameraControlManager
+        this.cameraControl = new CameraControlManager(this, {
+            enableFullscreen: true,
+            enableDragY: false,
+            iosZoom: 0.95,
+            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+        });
+
         // Nastavení tmavého pozadí (velmi tmavá šedá)
         this.cameras.main.setBackgroundColor("#181818");
 

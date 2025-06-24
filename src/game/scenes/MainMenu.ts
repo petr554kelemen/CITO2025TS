@@ -3,19 +3,21 @@ import ResponsiveManager, { LayoutType, DeviceType } from '../../utils/Responsiv
 import { UI, DESIGN } from '../../config/constants'; // <-- přidán DESIGN
 //import { DEBUG_MODE } from '../../config/constants';
 //import csTexts from "../../../public/assets/locales/cs.json"; // nebo správná cesta dle build systému
+import CameraControlManager from '../../utils/CameraControlManager';
 
 type Lang = 'cs' | 'en' | 'pl';
 
 export default class MainMenu extends Phaser.Scene {
     private responsive!: ResponsiveManager;
+    private cameraControl!: CameraControlManager; // přidáno
 
     constructor() {
         super('MainMenu');
     }
 
     create() {
-        this.scene.stop('MainMenu'); // zastavíme scénu pokud běží
-        this.scene.start('FullscreenZoomTestScene'); // spustíme zoom tstovací scénu
+        //this.scene.stop('MainMenu'); // zastavíme scénu pokud běží
+        //this.scene.start('FullscreenZoomTestScene'); // spustíme zoom tstovací scénu
         // return; // Removed to allow MainMenu UI setup to run
         
         this.responsive = new ResponsiveManager(this);
@@ -47,6 +49,14 @@ export default class MainMenu extends Phaser.Scene {
             } else {
                 this.createDesktopLayout();
             }
+        });
+
+        // Přidej CameraControlManager – fullscreen tlačítko bude dostupné ihned
+        this.cameraControl = new CameraControlManager(this, {
+            enableFullscreen: true,
+            enableDragY: false,
+            iosZoom: 0.95,
+            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
         });
     }
 
@@ -219,9 +229,10 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     private selectLang(lang: string): void {
-        if (!this.scale.isFullscreen) {
-            this.scale.startFullscreen();
-        }
+        // Volání fullscreen už není potřeba!
+        // if (!this.scale.isFullscreen) {
+        //     this.scale.startFullscreen();
+        // }
         const texts = this.cache.json.get(`lang-${lang}`);
         if (!texts) {
             localStorage.setItem('language', 'en');
