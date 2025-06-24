@@ -140,7 +140,7 @@ export default class Preloader extends Phaser.Scene {
                     'Roboto:700',
                     'Single Day:400',
                     'DynaPuff:600',
-                    'Barrio',
+                    'Barrio:400',
                     'WDXL Lubrifont TC:400',
                     'Kings:400',
                     'Merienda:400'
