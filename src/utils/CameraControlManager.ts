@@ -17,17 +17,7 @@ export default class CameraControlManager {
         private scene: Phaser.Scene,
         private options: CameraControlOptions = {}
     ) {
-        CameraControlManager.loadMaterialSymbolsFont();
         this.init();
-    }
-
-    private static loadMaterialSymbolsFont() {
-        if (this.fontLoaded) return;
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0';
-        document.head.appendChild(link);
-        this.fontLoaded = true;
     }
 
     private init() {
