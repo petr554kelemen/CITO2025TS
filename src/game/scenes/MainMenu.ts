@@ -54,9 +54,9 @@ export default class MainMenu extends Phaser.Scene {
         // Přidej CameraControlManager – fullscreen tlačítko bude dostupné ihned
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
-            enableDragY: false,
-            iosZoom: 0.95,
-            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+            enableDragY: true,
+            iosZoom: 0.8,
+            infoTextIOS: "Hru pro iOS nelze adekvátně přizpůsobit. Pro lepší zážitek použij PC."
         });
     }
 
@@ -67,18 +67,18 @@ export default class MainMenu extends Phaser.Scene {
      *
      * @returns {boolean} True if the device is an iOS device, otherwise false.
      */
-    private isIOS(): boolean {
-        return /iPad|iPhone|iPod/.test(navigator.userAgent);
-    }
+    // private isIOS(): boolean {
+    //     return /iPad|iPhone|iPod/.test(navigator.userAgent);
+    // }
 
     private createMobileLayout(): void {
         const { width: gameWidth, height: gameHeight } = this.responsive.getGameSize();
         let scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
 
         // Zmenšení o 5 % pouze pro iOS zařízení
-        if (this.isIOS()) {
-            scaleFactor *= 0.95;
-        }
+        // if (this.isIOS()) {
+        //     scaleFactor *= 0.85;
+        // }
 
         const px = (x: number) => x * (gameWidth / DESIGN.WIDTH);
         const py = (y: number) => y * (gameHeight / DESIGN.HEIGHT);
@@ -154,9 +154,9 @@ export default class MainMenu extends Phaser.Scene {
         let scaleFactor = this.responsive.getScaleFactor(DESIGN.WIDTH, DESIGN.HEIGHT);
 
         // Zmenšení o 5 % pouze pro iOS zařízení
-        if (this.isIOS()) {
-            scaleFactor *= 0.95;
-        }
+        // if (this.isIOS()) {
+        //     scaleFactor *= 0.95;
+        // }
 
         const px = (x: number) => x * (gameWidth / DESIGN.WIDTH);
         const py = (y: number) => y * (gameHeight / DESIGN.HEIGHT);

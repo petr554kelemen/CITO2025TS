@@ -11,6 +11,11 @@ export default class DialogManager {
   private readonly MIN_DISPLAY_TIME = 2000;              // Minimální doba zobrazení (2 sekundy)
   private lastOffsetY: number = 0;                       // Poslední použitý offsetY pro pozicování bubliny
 
+  /**
+   * Vytvoří nového správce dialogů pro danou scénu a lokalizované texty.
+   * @param scene Aktuální Phaser scéna, kde se budou dialogy zobrazovat.
+   * @param texts Objekt s lokalizovanými texty (např. dialogSequence).
+   */
   constructor(scene: Phaser.Scene, texts: any) {
     this.scene = scene;
     // Z JSONu (předaného z MainMenu/Intro) beru pole dialogSequence:
@@ -19,12 +24,20 @@ export default class DialogManager {
     this.isVisible = false;
   }
 
-  // Nová pomocná metoda pro získání textu
+  /**
+   * Vrátí lokalizovaný text pro daný klíč, nebo placeholder pokud text chybí.
+   * @param key Klíč textu v lokalizačním slovníku.
+   * @returns Lokalizovaný text nebo placeholder.
+   */
   public getText(key: string): string {
     return this.texts[key] || `[TEXT MISSING: ${key}]`;
   }
 
-  // Testovací kod pro vykreslování grafických objektů
+  /**
+   * Pro začátečníky: vykreslí rámeček kolem sledovaného sprite a případné bubliny.
+   * Pomáhá vizuálně ladit pozice dialogů.
+   * @param obj Sprite, jehož bounds se mají zvýraznit.
+   */
   public beginnerTest(obj: Phaser.GameObjects.Sprite): void {
     // 1) Pokud existuje followTarget (např. motýl nebo duch), vykreslíme jeho bounds:
     this.followTarget = obj;
@@ -58,7 +71,7 @@ export default class DialogManager {
     }
   }
 
-  /** Dočasně vykreslíme jen šipku nad daným sprite (bez obdélníku a textu). */
+  /** Dočasně vykreslí jen šipku nad daným sprite (bez obdélníku a textu). */
   public showArrowOnly(target: Phaser.GameObjects.Sprite): void {
     // 1) Odstraníme předchozí container
     if (this.bubbleContainer) {
@@ -265,19 +278,30 @@ export default class DialogManager {
   }
 
 
-  // Přístupové metody pro případ, že chce scéna (Intro) v update() kontrolovat pozici:
+  /**
+   * Vrací aktuální container s dialogovou bublinou, nebo null pokud není žádná zobrazena.
+   * @returns Container s bublinou nebo null.
+   */
   public getBubbleContainer(): Phaser.GameObjects.Container | null {
 
     return this.bubbleContainer;
   }
 
 
+  /**
+   * Vrací sprite, ke kterému je aktuálně bublina ukotvena (pokud existuje).
+   * @returns Sprite nebo undefined.
+   */
   public getFollowTarget(): Phaser.GameObjects.Sprite | undefined {
 
     return this.followTarget;
   }
 
 
+  /**
+   * Aktualizuje pozici dialogové bubliny podle aktuální pozice sledovaného sprite.
+   * Vhodné volat v update() scén, pokud se sprite pohybuje.
+   */
   public updateBubblePosition(): void {
     if (this.bubbleContainer && this.followTarget && this.followTarget.active) {
         const spriteBounds = this.followTarget.getBounds();
@@ -299,7 +323,11 @@ export default class DialogManager {
   }
 
 
-  // Nová metoda: Vrátí odhadovanou délku zobrazení textu na základě jeho délky
+  /**
+   * Odhadne dobu zobrazení dialogu podle délky textu (v ms).
+   * @param key Klíč textu v lokalizačním slovníku.
+   * @returns Doba zobrazení v milisekundách.
+   */
   public getDisplayDurationForKey(key: string): number {
     const txt = this.texts[key];
     if (!txt) {
@@ -313,7 +341,11 @@ export default class DialogManager {
   }
 
 
-  // OPRAVENO: pouze jedna verze této metody!
+  /**
+   * Vrací dobu zobrazení dialogu podle počtu znaků a minimální doby.
+   * @param key Klíč textu v lokalizačním slovníku.
+   * @returns Doba zobrazení v milisekundách.
+   */
   public getDialogDisplayDuration(key: string): number {
     const text = this.getText(key);
     // Odhad doby zobrazení: počet znaků * čas na znak, s minimální dobou
@@ -321,16 +353,13 @@ export default class DialogManager {
   }
 
 
-  // OPRAVENO: pouze jedna verze této metody!
   /**
-   * Displays a dialog above the specified Phaser game object and waits for a calculated duration before hiding it.
-   * If the object is a Sprite, positions the dialog above it using its bounds; otherwise, positions it above the object's center.
-   * After displaying the dialog for the appropriate duration, hides the dialog and waits an additional 800ms.
-   *
-   * @param key - The key identifying the dialog text to display.
-   * @param obj - The Phaser game object above which the dialog should be shown.
-   * @param offsetY - Optional vertical offset to apply when positioning the dialog. Defaults to 0.
-   * @returns A Promise that resolves after the dialog has been shown and hidden with the appropriate delays.
+   * Zobrazí dialog nad zadaným objektem a čeká po dobu odpovídající délce textu.
+   * Po uplynutí doby dialog skryje a čeká ještě krátkou prodlevu.
+   * @param key Klíč textu v lokalizačním slovníku.
+   * @param obj Objekt, nad kterým se má dialog zobrazit.
+   * @param offsetY Volitelný posun bubliny ve směru Y.
+   * @returns Promise, která se vyřeší po zobrazení a skrytí dialogu.
    */
   public async showDialogAboveAndDelay(key: string, obj: Phaser.GameObjects.GameObject, offsetY: number = 0): Promise<void> {
     if ((obj as Phaser.GameObjects.Sprite).getBounds) {
@@ -353,12 +382,10 @@ export default class DialogManager {
     await this.delay(800);
   }
 
-  // Pomocná asynchronní metoda pro zpoždění
   /**
-   * Delays execution for a specified number of milliseconds.
-   *
-   * @param ms - The number of milliseconds to wait before resolving the promise.
-   * @returns A promise that resolves after the specified delay.
+   * Pomocná metoda pro asynchronní zpoždění (delay).
+   * @param ms Počet milisekund, po které se má čekat.
+   * @returns Promise, která se vyřeší po uplynutí času.
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => {

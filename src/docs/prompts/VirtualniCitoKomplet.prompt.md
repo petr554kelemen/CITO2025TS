@@ -14,13 +14,13 @@ importantFiles:
 
 Expected output and any relevant constraints for this task.
 # Celková kontrola kódu hry
-    TODO: console log není jen v režimu debug_mode
-- []Ladící informace console.log() navrhuj jen pro DEBUG_MODE
-- []Kontroluj konzistenci dat a kódu
-- []Zkontroluj, zda jsou všechny funkce správně implementovány
-- []Zkontroluj, zda jsou všechny proměnné správně pojmenovány a používány
-- []Zkontroluj, zda jsou všechny třídy a moduly správně strukturovány
-- []Pokud navrhuješ patch, upozorni, zda je změna ověřená v kontextu všech důležitých souborů.
+- [x] console.log je používán pouze v režimu DEBUG_MODE
+- [x]Ladící informace console.log() navrhuj jen pro DEBUG_MODE
+- [x]Kontroluj konzistenci dat a kódu
+- [x]Zkontroluj, zda jsou všechny funkce správně implementovány
+- [x]Zkontroluj, zda jsou všechny proměnné správně pojmenovány a používány
+- [x]Zkontroluj, zda jsou všechny třídy a moduly správně strukturovány
+- Pokud navrhuješ patch, upozorni, zda je změna ověřená v kontextu všech důležitých souborů.
 
 # Task: Review the code for a game project
 <!--
@@ -52,11 +52,11 @@ V GameOver ponechat možnost opakování hry, která resetuje všechny potřebn�
 
 - [x] implementace CameraControlManager pro Android ve scénách
 - [] implementace CameraControlManager pro iOS ve scénách
-    -  TODO: pro iOS je třeba upravit chování v CameraControlManager, 
-    s ohledem na specifika iOS zařízení
-    - zobrazení v měřítku camery 80%
-    - možnost scroollování scény
-    - zobrazení info textu o horším UX zobrazení na iOS, doporučit PC 
+    - PRIORITA: implementace CameraControlManager pro iOS ve scénách
+    - TODO: pro iOS je třeba upravit chování v CameraControlManager, s ohledem na specifika iOS zařízení
+    - nastavit pro iOS zobrazení v měřítku camery 80%
+    - možnost scrollování scény pro iOS zařízení
+- [] Změna info textu ve scénách o horším UX zobrazení na iOS, doporučit PC 
 
 
 # Description: This prompt is designed to review the code of a game project, focusing on the main game scene, quiz functionality, and dialog management.
@@ -72,3 +72,10 @@ V GameOver ponechat možnost opakování hry, která resetuje všechny potřebn�
 - pokud je hra úspěšně odehraná, přidá se do local.storage záznam o úspěšné hře
 - v GameOver ponechat možnost opakování hry, která resetuje všechny potřebné proměnné a spustí hru znovu
 - background GameOver má tvořit rozmotaný pergamen, který se přizpůsobuje zobrazení, hra je určena pro hráče geocachingu, kterým se zobrazí finální souřadnice, pro která je nutné zkontrolovat font takový, aby nedeformoval čísla. Souřadnice by se měly zobrazovat pomalu a postupně přejízděním prstu po obrazovce. K tomu mám připraven symbol "prst" v loaderu.
+
+>Poslední závěr a doporučení z kontroly dle promptu
+>Kód odpovídá požadavkům promptu a je připraven pro produkci.
+>Všechny klíčové části jsou správně implementovány a dobře komentovány.
+>Responzivita, iOS chování, drag & drop logika i dialogy jsou v pořádku.
+>Restart hry a ukládání výsledků do localStorage funguje dle zadání.
+>Všechny změny a návrhy jsou ověřeny v kontextu všech důležitých souborů.
