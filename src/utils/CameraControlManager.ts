@@ -27,6 +27,19 @@ export default class CameraControlManager {
         // Nastav zoom a info pro iOS
         if (isIOS && iosZoom < 1) {
             this.scene.cameras.main.setZoom(iosZoom);
+
+            // Zarovnej scénu na střed ve vertikálním směru po zoomu
+            const camera = this.scene.cameras.main;
+            const sceneHeight = this.scene.scale.height;
+            const viewHeight = camera.height / iosZoom;
+            if (sceneHeight < viewHeight) {
+                // Pokud je scéna menší než viewport, posuň kameru tak, aby byla scéna uprostřed
+                camera.scrollY = -(viewHeight - sceneHeight) / 2;
+            } else {
+                // Pokud je scéna větší, začni odshora (standardně)
+                camera.scrollY = 0;
+            }
+
             if (infoTextIOS) {
                 this.scene.add.text(
                     this.scene.scale.width / 2,
