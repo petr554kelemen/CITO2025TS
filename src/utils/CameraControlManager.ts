@@ -83,11 +83,19 @@ export default class CameraControlManager {
                 if (this.isDragging) {
                     const deltaY = pointer.y - this.lastPointerY;
                     this.lastPointerY = pointer.y;
+                    const camera = this.scene.cameras.main;
+                    const zoom = camera.zoom;
                     const sceneHeight = this.scene.scale.height;
-                    const maxScroll = Math.max(0, sceneHeight - this.scene.cameras.main.height);
-                    this.scene.cameras.main.scrollY = Phaser.Math.Clamp(
-                        this.scene.cameras.main.scrollY - deltaY,
-                        0,
+                    const viewHeight = camera.height / zoom;
+                    // Výška scény mínus výška viewportu po zoomu
+                    const scrollRange = sceneHeight - viewHeight;
+                    // Pokud je scéna menší než viewport, scrollRange bude záporný
+                    // Chceme umožnit scroll od 0 (horní okraj) až po zápornou hodnotu (spodní okraj)
+                    const minScroll = Math.min(0, -scrollRange);
+                    const maxScroll = 0;
+                    camera.scrollY = Phaser.Math.Clamp(
+                        camera.scrollY - deltaY,
+                        minScroll,
                         maxScroll
                     );
                 }
