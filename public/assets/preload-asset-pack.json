@@ -132,6 +132,16 @@
                 "key": "Vajgl"
             },
             {
+                "url": "assets/Images/zoom_in_24dp.png",
+                "type": "image",
+                "key": "zoom_in"
+            },
+            {
+                "url": "assets/Images/zoom_out_24dp.png",
+                "type": "image",
+                "key": "zoom_out"
+            },
+            {
                 "url": "assets/Images/Obr01.png",
                 "type": "image",
                 "key": "Zvykacka"

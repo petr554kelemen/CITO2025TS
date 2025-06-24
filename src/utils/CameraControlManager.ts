@@ -33,10 +33,8 @@ export default class CameraControlManager {
             const sceneHeight = this.scene.scale.height;
             const viewHeight = camera.height / iosZoom;
             if (sceneHeight < viewHeight) {
-                // Pokud je scéna menší než viewport, posuň kameru tak, aby byla scéna uprostřed
                 camera.scrollY = -(viewHeight - sceneHeight) / 2;
             } else {
-                // Pokud je scéna větší, začni odshora (standardně)
                 camera.scrollY = 0;
             }
 
@@ -54,6 +52,29 @@ export default class CameraControlManager {
                     }
                 ).setOrigin(0.5, 0);
             }
+
+            // Přidat tlačítka zoom_in a zoom_out (ikony PNG)
+            const pad = 48;
+            const btnSize = 48;
+            const btnPlus = this.scene.add.image(this.scene.scale.width - pad, pad, 'zoom_in')
+                .setOrigin(1, 0)
+                .setDisplaySize(btnSize, btnSize)
+                .setInteractive({ useHandCursor: true });
+
+            const btnMinus = this.scene.add.image(this.scene.scale.width - pad, pad + btnSize + 8, 'zoom_out')
+                .setOrigin(1, 0)
+                .setDisplaySize(btnSize, btnSize)
+                .setInteractive({ useHandCursor: true });
+
+            btnPlus.on('pointerdown', () => {
+                const camera = this.scene.cameras.main;
+                camera.setZoom(Math.min(camera.zoom + 0.1, 1.2));
+            });
+
+            btnMinus.on('pointerdown', () => {
+                const camera = this.scene.cameras.main;
+                camera.setZoom(Math.max(camera.zoom - 0.1, 0.5));
+            });
         }
 
         // Fullscreen tlačítko (ne na iOS)
