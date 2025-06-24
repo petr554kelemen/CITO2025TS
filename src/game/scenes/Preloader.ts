@@ -82,15 +82,11 @@ export default class Preloader extends Phaser.Scene {
     }
 
     create() {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
-
         // Inicializace ResponsiveManager
         this.responsive = new ResponsiveManager(this);
 
         // Přizpůsobit pozice loading baru podle zařízení
         if (this.responsive.isMobile()) {
-            // Mobilní layout - menší a více nahoru
             this.progressBar.setPosition(334, 200);
             this.progressBar.displayWidth = 300;
         }
@@ -99,7 +95,26 @@ export default class Preloader extends Phaser.Scene {
         this.progressBar.setPosition(gameWidth / 2, gameHeight * 0.6);
         this.progressBar.displayWidth = Math.min(468, gameWidth * 0.7);
 
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+        // Detekce zařízení
+        let device = 'PC';
+        const ua = navigator.userAgent;
+        if (/iPad|iPhone|iPod/.test(ua)) {
+            device = 'iOS';
+        } else if (/Android/.test(ua)) {
+            device = 'Android';
+        }
+
+        // Text podle zařízení
+        let info = `Detekováno zařízení: ${device}\n`;
+        if (device === 'PC') {
+            info += 'Hra poběží bez omezení.';
+        } else if (device === 'Android') {
+            info += 'Doporučujeme hrát ve fullscreen režimu.';
+        } else if (device === 'iOS') {
+            info += 'Vaše zařízení není v současné době podporované. Použijte PC nebo Android.';
+        }
+
+        // Počkej na načtení fontů a pak zobraz info
         window.WebFont.load({
             google: {
                 families: [
@@ -113,15 +128,22 @@ export default class Preloader extends Phaser.Scene {
                 ]
             },
             active: () => {
-                // (volitelně) barva pozadí během čekání
                 this.cameras.main.setBackgroundColor('#000000');
-                // start next scene až fonty jsou načtené
-                //this.scene.start('MainMenu');
+                this.add.text(gameWidth / 2, gameHeight * 0.75, info, {
+                    fontFamily: 'Roboto, Arial, sans-serif',
+                    fontSize: '22px',
+                    color: '#fff',
+                    backgroundColor: '#222',
+                    padding: { left: 16, right: 16, top: 12, bottom: 12 },
+                    align: 'center'
+                }).setOrigin(0.5);
 
-                this.scene.start('MainMenu');
+                // Pokud není iOS, pokračuj do MainMenu
+                if (device !== 'iOS') {
+                    this.scene.start('MainMenu');
+                }
             }
         });
-        //this.scene.start('MainMenu');
     }
 }
 
