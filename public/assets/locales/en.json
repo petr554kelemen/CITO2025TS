@@ -2,30 +2,32 @@
   "dialogSequence": {
     "motyl-00": "Wow, that's beautiful!\nWhat could it be?",
     "motyl-01": "Whoa, you startled me...\nWhy are you sneaking around?",
-    "duch-01": "I'm watching you play with the stuff that ended me...",
+    "duch-01": "I'm watching you play with the things that finished me off...",
     "motyl-02": "How did this get here?",
-    "duch-02": "I can tell you exactly.\nOnly humans can pull this off...",
+    "duch-02": "I can tell you exactly.\n...only humans can do this...",
     "motyl-03": "No way! They call themselves nature lovers.",
-    "duch-03": "Hmm... let's vanish, someone's coming.",
-    "monina-01": "Hi, I'm Monina... I'm out geocaching here...",
+    "duch-03": "Hmmm... let's vanish, someone's coming.",
+    "monina-01": "Hi, I'm Monina...\nI'm looking for a cache here...",
     "monina-02": "...and what is this supposed to be?",
-    "monina-03": "So...\nBefore I go on, will you help me clean this up?",
+    "monina-03": "So...\nBefore I go on, will you help me pick this up?",
     "monina-04": "I'm glad you agree,\nif you want the final coordinates for the cache.",
     "monina-05": "I'll leave you this bag so you have something to collect it in.",
     "monina-06": "Alright, let's get started! While cleaning, you'll get a few timed quiz questions.",
-    "monina-07": "And if you answer at least 8 out of 10 correctly, you'll get the cache finals.",
+    "monina-07": "If you answer at least 8 out of 10 correctly, you'll get the final coordinates.",
     "monina-08": "You can use 2 hints,\nbut each will cost you 10 seconds.",
     "monina-09": "Let's get to it, so you can finish quickly!",
     "timerLabel": "Time: {time}",
-    "finalSuccess": "Thanks for helping clean up!\nYou're awesome!\n\nThe cache finals are written on the parchment.\nClick the parchment!",
-    "finalFail": "Not quite...\nTry again!\n\nClick to restart.",
+    "finalSuccess": "Thanks for helping clean up!\nYou're awesome!\n\nThe final coordinates are written on the parchment.\nClick the parchment!",
+    "finalFail": "That didn't work out...\nTry again!\n\nClick to restart.",
     "finalFailTime": "Time's up!\nTry again.\n\nClick to restart.",
     "finalFailScore": "You need at least 8 correct answers!\nTry again.\n\nClick to restart.",
     "hintButton": "💡 Hint ({count})",
     "gameSavedInfo": "Your progress has been saved. You can return later."
   },
   "gameOver": {
-    "playAgain": "Play again",
-    "confirmReset": "Are you sure you want to start over?\nThis will remove the saved coordinates and you will have to complete the game again!"
+    "playAgain": "Start over",
+    "textToClipboard": "Copy coordinates to clipboard",
+    "textToClipboardSuccess": "Coordinates have been copied to your clipboard.",
+    "confirmReset": "Are you sure you want to start again?\nThis will remove your saved coordinates and you'll need to complete the cache again!"
   }
 }

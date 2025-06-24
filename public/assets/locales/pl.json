@@ -4,10 +4,10 @@
     "motyl-01": "Ojej, aż się przestraszyłem...\nCo tu się kręcisz?",
     "duch-01": "Obserwuję cię, jak bawisz się rzeczami, które mnie wykończyły...",
     "motyl-02": "Jak to się tu znalazło?",
-    "duch-02": "Powiem ci dokładnie.\nTylko ludzie potrafią takie rzeczy...",
+    "duch-02": "Powiem ci dokładnie.\n...to potrafią tylko ludzie...",
     "motyl-03": "Nie wierzę! Przecież mówią, że kochają naturę.",
-    "duch-03": "Hmm... zmywajmy się, ktoś się zbliża.",
-    "monina-01": "Cześć, jestem Monina... szukam tu kesza...",
+    "duch-03": "Hmmm... zmywajmy się, ktoś się zbliża.",
+    "monina-01": "Cześć, jestem Monina...\nszukam tu kesza...",
     "monina-02": "...a to niby co ma być?",
     "monina-03": "Więc...\nZanim pójdę dalej, pomożesz mi to posprzątać?",
     "monina-04": "Cieszę się, że się zgadzasz,\njeśli chcesz finałowe współrzędne do kesza.",
@@ -18,10 +18,16 @@
     "monina-09": "No to do dzieła, żeby mieć to szybko z głowy!",
     "timerLabel": "Czas: {time}",
     "finalSuccess": "Dzięki za pomoc w sprzątaniu!\nJesteś super!\n\nNa pergaminie znajdziesz finałowe współrzędne kesza.\nKliknij pergamin!",
-    "finalFail": "Tym razem się nie udało...\nSpróbuj ponownie!\n\nKliknij, aby zacząć od nowa.",
+    "finalFail": "To ci się nie udało...\nSpróbuj ponownie!\n\nKliknij, aby zacząć od nowa.",
     "finalFailTime": "Czas minął!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa.",
     "finalFailScore": "Potrzebujesz co najmniej 8 poprawnych odpowiedzi!\nSpróbuj ponownie.\n\nKliknij, aby zacząć od nowa.",
     "hintButton": "💡 Podpowiedź ({count})",
     "gameSavedInfo": "Twój postęp został zapisany. Możesz wrócić później."
+  },
+  "gameOver": {
+    "playAgain": "Zagraj od początku",
+    "textToClipboard": "Skopiuj współrzędne do schowka",
+    "textToClipboardSuccess": "Współrzędne zostały skopiowane do schowka.",
+    "confirmReset": "Na pewno chcesz zacząć od nowa?\nTo usunie zapisane współrzędne i będziesz musiał ponownie ukończyć grę!"
   }
 }
