@@ -26,6 +26,8 @@
   },
   "gameOver": {
     "playAgain": "Hrát od začátku",
+    "textToClipboard": "Zkopírovat souřadnice do schránky",
+    "textToClipboardSuccess": "Souřadnice byly zkopírovány do schránky.",
     "confirmReset": "Opravdu chcete začít znovu?\nTímto smažete uložené souřadnice a budete muset hru znovu úspěšně dokončit!"
   }
 }

@@ -101,8 +101,8 @@ export default class GameOver extends Phaser.Scene {
         });
 
         // Přidání tlačítka pro zkopírování souřadnic do schránky
-        const copyLabel = this.texts?.gameOver?.copyCoords ?? "Zkopírovat souřadnice";
-        const copySuccess = this.texts?.gameOver?.copySuccess ?? "Souřadnice byly zkopírovány do schránky!";
+        const copyLabel = this.texts?.gameOver?.textToClipboard ?? "Zkopírovat souřadnice do schránky";
+        const copySuccess = this.texts?.gameOver?.textToClipboardSuccess ?? "Souřadnice byly zkopírovány do schránky.";
 
         const copyBtn = this.add.text(
             this.scale.width / 2,
