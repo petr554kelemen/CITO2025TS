@@ -61,12 +61,19 @@ export default class Game extends Phaser.Scene {
         super({ key: "Game" });
     }
 
+    /**
+     * Inicializuje scénu Game s daty o odpadcích, lokalizovanými texty a případně responzivitou.
+     * @param data Objekt obsahující pole odpadků, texty a volitelně správce responzivity.
+     */
     init(data: { odpadkyData: Odpadek[]; texts: any; responsive?: any }) {
         this.odpadky = data.odpadkyData.map(o => ({ ...o, sprite: undefined, inPytel: false }));
         this.texts = data.texts;
         if (data.responsive) this.responsive = data.responsive;
     }
 
+    /**
+     * Hlavní metoda pro vytvoření scény – nastaví pozadí, pytel, odpadky, scoreboard, dialogy, quiz a eventy.
+     */
     create() {
         console.log('🚀 CREATE METHOD STARTED');
 
@@ -86,12 +93,14 @@ export default class Game extends Phaser.Scene {
         this.lastGameSuccess = false;
 
         // Přidej debug info na začátek
-        console.log('=== GAME CREATE START ===');
-        console.log('Responsive info:', this.responsive?.getDebugInfo());
-        console.log('Device type:', this.responsive?.getDeviceType());
-        console.log('Is mobile:', this.responsive?.isMobile());
-        console.log('Window size:', window.innerWidth, 'x', window.innerHeight);
-        console.log('Phaser size:', this.scale.width, 'x', this.scale.height);
+        if (DEBUG_MODE) {
+            console.log('=== GAME CREATE START ===');
+            console.log('Responsive info:', this.responsive?.getDebugInfo());
+            console.log('Device type:', this.responsive?.getDeviceType());
+            console.log('Is mobile:', this.responsive?.isMobile());
+            console.log('Window size:', window.innerWidth, 'x', window.innerHeight);
+            console.log('Phaser size:', this.scale.width, 'x', this.scale.height);
+        }
 
         // Monina sprite vytvoř ihned, ale další logiku řeš až po načtení otázek
         this.monina = this.add.sprite(UI.MONINA.POS_X, UI.MONINA.POS_Y, 'DivkaStoji');
@@ -246,6 +255,10 @@ export default class Game extends Phaser.Scene {
         });
     }
 
+    /**
+     * Povolení interaktivity pro všechny odpadky a nastavení jejich viditelnosti.
+     * Spouští se po skončení dialogů Moniny.
+     */
     private enableGamePlay() {
         this.canPlay = true;
         this.odpadky.forEach(odpadek => {
@@ -260,6 +273,11 @@ export default class Game extends Phaser.Scene {
         }
     }
 
+    /**
+     * Vytvoří pozadí scény podle rozměrů okna.
+     * @param gameWidth Šířka scény.
+     * @param gameHeight Výška scény.
+     */
     private createBackground(gameWidth: number, gameHeight: number) {
         const background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
         const scaleX = gameWidth / background.width;
@@ -268,6 +286,11 @@ export default class Game extends Phaser.Scene {
         background.setOrigin(0.5);
     }
 
+    /**
+     * Vytvoří pytel na odpadky na správné pozici a nastaví jej jako drop zónu.
+     * @param gameWidth Šířka scény.
+     * @param gameHeight Výška scény.
+     */
     private createPytel(gameWidth: number, gameHeight: number) {
         this.pytel = this.add.image(gameWidth * 0.85, gameHeight * 0.88, 'prazdnyPytel');
         this.pytel.setScale(Math.min(UI.PYTEL.SCALE, gameWidth * 0.0007));
@@ -307,7 +330,13 @@ export default class Game extends Phaser.Scene {
         });
     }
 
-    // 4. Kvíz pro odpadek – blokování ostatních odpadků během kvízu
+    /**
+     * Spustí kvíz pro konkrétní odpadek.
+     * Během kvízu jsou ostatní odpadky neaktivní.
+     * Po odpovědi se vyhodnotí výsledek a pokračuje hra.
+     * @param odpadek Odpadek, pro který se spouští kvíz.
+     * @param onComplete Callback, který se zavolá po dokončení kvízu.
+     */
     private quizForOdpadek(odpadek: Odpadek | undefined, onComplete: () => void) {
 
         if (!odpadek) return;
@@ -505,6 +534,10 @@ export default class Game extends Phaser.Scene {
         };
     }
 
+    /**
+     * Spustí časovač hry, který každou sekundu snižuje čas a aktualizuje scoreboard.
+     * Po vypršení času ukončí hru.
+     */
     private startTimer(): void {
         if (this.timerEvent) return;
         this.timerEvent = this.time.addEvent({
@@ -521,6 +554,9 @@ export default class Game extends Phaser.Scene {
         });
     }
 
+    /**
+     * Zastaví časovač hry.
+     */
     private stopTimer(): void {
         if (this.timerEvent) {
             this.timerEvent.remove();
@@ -557,7 +593,10 @@ export default class Game extends Phaser.Scene {
         }
     }
 
-    // Zobraz pergamen s interakcí po úspěchu
+    /**
+     * Zobrazí animovaný pergamen po úspěšném dokončení hry.
+     * Po kliknutí na pergamen přejde na finální scénu.
+     */
     private showPergamenAndTransition(): void {
         // Zobraz dialog s úspěšným textem (nad pergamenem)
         this.dialog.showDialog("finalSuccess");
@@ -593,7 +632,10 @@ export default class Game extends Phaser.Scene {
 
     private failScreenObjects: Phaser.GameObjects.GameObject[] = [];
 
-    // Zobraz neúspěšný konec s tlačítkem pro návrat na Intro
+    /**
+     * Zobrazí obrazovku neúspěchu s možností restartu hry.
+     * Po kliknutí restartuje hru a přejde na hlavní menu.
+     */
     private showFailScreen(): void {
         // Znič předchozí fail screen objekty, pokud existují
         this.failScreenObjects.forEach(obj => obj.destroy());
