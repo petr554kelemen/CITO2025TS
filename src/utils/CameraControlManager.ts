@@ -98,13 +98,15 @@ export default class CameraControlManager {
             .setOrigin(1, 0)
             .setDisplaySize(btnSize, btnSize)
             .setInteractive({ useHandCursor: true })
-            .setDepth(1999);
+            .setDepth(1999)
+            .setTint(0xffffff); // Bílá barva
 
         const btnMinus = this.scene.add.image(this.scene.scale.width - pad, pad + btnSize + 8, 'zoom_out')
             .setOrigin(1, 0)
             .setDisplaySize(btnSize, btnSize)
             .setInteractive({ useHandCursor: true })
-            .setDepth(1999);
+            .setDepth(1999)
+            .setTint(0xffffff); // Bílá barva
 
         // Smooth zoom s animací
         btnPlus.on('pointerdown', () => {

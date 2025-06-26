@@ -155,7 +155,7 @@ export default class Preloader extends Phaser.Scene {
                 ]
             },
             active: () => {
-                this.cameras.main.setBackgroundColor('#000000');
+                this.cameras.main.setBackgroundColor('#1a4a2e'); // Tmavě zelená místo modré
 
                 const posY = this.scale.height * 0.65;
                 let infoTextObj: Phaser.GameObjects.Text | null = null;
