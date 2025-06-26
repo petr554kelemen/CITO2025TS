@@ -63,7 +63,7 @@ export default class Intro extends Phaser.Scene {
         // Přidej CameraControlManager
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
-            enableDragY: false, // nebo true, pokud chceš povolit posun
+            enableDragY: false, // Vypnuto - nepotřebujeme s dobře vycentrovanou scénou
             iosZoom: 0.95,
             infoTextIOS: "📱 Hra je optimalizována pro mobilní zařízení!"
         });

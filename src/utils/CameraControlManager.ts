@@ -99,14 +99,16 @@ export default class CameraControlManager {
             .setDisplaySize(btnSize, btnSize)
             .setInteractive({ useHandCursor: true })
             .setDepth(1999)
-            .setTint(0xffffff); // Bílá barva
+            .setTint(0xffffff)  // Intenzivnější bílá
+            .setAlpha(0.9);     // Mírná průhlednost pro lepší čitelnost
 
         const btnMinus = this.scene.add.image(this.scene.scale.width - pad, pad + btnSize + 8, 'zoom_out')
             .setOrigin(1, 0)
             .setDisplaySize(btnSize, btnSize)
             .setInteractive({ useHandCursor: true })
             .setDepth(1999)
-            .setTint(0xffffff); // Bílá barva
+            .setTint(0xffffff)  // Intenzivnější bílá
+            .setAlpha(0.9);     // Mírná průhlednost pro lepší čitelnost
 
         // Smooth zoom s animací
         btnPlus.on('pointerdown', () => {
@@ -134,6 +136,13 @@ export default class CameraControlManager {
 
     private addDragSupport() {
         this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            // Kontrola: Pokud je pointer nad interaktivní objekt (odpadek), nepustíme camera drag
+            const gameObject = this.scene.input.hitTestPointer(pointer)[0];
+            if (gameObject?.input?.enabled) {
+                // Je to interaktivní objekt (pravděpodobně odpadek), nepustíme camera drag
+                return;
+            }
+            
             this.isDragging = true;
             this.lastPointerY = pointer.y;
         });
@@ -162,6 +171,15 @@ export default class CameraControlManager {
                     maxScroll
                 );
             }
+        });
+
+        // Přidáme listeners pro deaktivaci camera dragu během game dragu
+        this.scene.input.on('dragstart', () => {
+            this.isDragging = false; // Zastav camera drag při startu object dragu
+        });
+        
+        this.scene.input.on('dragend', () => {
+            this.isDragging = false; // Ujisti se, že camera drag zůstane vypnutý
         });
     }
 

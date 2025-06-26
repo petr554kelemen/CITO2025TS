@@ -194,9 +194,9 @@ export default class Game extends Phaser.Scene {
         // Přidej CameraControlManager
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
-            enableDragY: true, // pokud chceš umožnit posun scény na mobilech
+            enableDragY: false, // Vypnuto - nepotřebujeme s dobře vycentrovanou scénou
             iosZoom: 0.95,
-            infoTextIOS: "🎯 Použijte zoom tlačítka nebo táhněte pro přizpůsobení zobrazení."
+            infoTextIOS: "🎯 Použijte zoom tlačítka pro přizpůsobení zobrazení."
         });
 
         // Spusť asynchronní inicializaci (načtení otázek, dialogy, handlery)
