@@ -101,6 +101,12 @@ export default class Game extends Phaser.Scene {
         this.scoreboard.reset?.();
         this.quiz?.reset?.();
         this.lastGameSuccess = false;
+        
+        // DŮLEŽITÉ: Reset stavu Moniny při restartu scény
+        this.moninaDestroyed = false;
+        this.canPlay = false;
+        this.quizActive = false;
+        this.gameEnded = false;
 
         // Přidej debug info na začátek
         if (DEBUG_MODE) {
@@ -185,8 +191,6 @@ export default class Game extends Phaser.Scene {
         // Scoreboard reset
         this.scoreboard.reset();
 
-        //
-
         // Přidej CameraControlManager
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
@@ -201,22 +205,35 @@ export default class Game extends Phaser.Scene {
 
     // Nová metoda pro asynchronní inicializaci po synchronním create()
     private async initializeGameAsync() {
+        if (DEBUG_MODE) {
+            console.log('🔄 initializeGameAsync started. Monina destroyed:', this.moninaDestroyed);
+            console.log('📋 Monina exists:', !!this.monina);
+            console.log('🎭 Monina active:', this.monina?.active);
+        }
+
         // DŮLEŽITÉ: načti otázky!
         await this.quiz.loadQuestions();
 
         // Handler na kliknutí na Moninu – přeruší dialogy a spustí hru
         this.monina.once('pointerdown', () => {
+            if (DEBUG_MODE) console.log('👆 Monina clicked - skipping dialogs');
             this.time.delayedCall(800, () => {}, [], this);
             this.moninaDestroyed = true;
             this.forceDestroyMonina();
             this.enableGamePlay();
         });
 
-        // Spusť dialogy Moniny asynchronně
-        await this.startMoninaDialogs();
+        // Spusť dialogy Moniny asynchronně pouze pokud není zničena
+        if (!this.moninaDestroyed && this.monina?.active) {
+            if (DEBUG_MODE) console.log('🗣️ Starting Monina dialogs...');
+            await this.startMoninaDialogs();
+        } else if (DEBUG_MODE) {
+            console.log('⚠️ Skipping dialogs - Monina destroyed or inactive');
+        }
 
         // Pokud Monina nebyla zničena kliknutím, znič ji a povol hru až po všech dialozích
         if (!this.moninaDestroyed) {
+            if (DEBUG_MODE) console.log('🎬 Dialogs completed - enabling gameplay');
             this.forceDestroyMonina();
             this.enableGamePlay();
         }
@@ -226,17 +243,26 @@ export default class Game extends Phaser.Scene {
 
     // Nová metoda pro jednoduché spuštění dialogů
     private async startMoninaDialogs(): Promise<void> {
+        if (DEBUG_MODE) {
+            console.log('💬 startMoninaDialogs called');
+            console.log('📜 Dialog sequence length:', this.moninaSequence.length);
+        }
+
         try {
             for (const item of this.moninaSequence) {
                 // Kontrola existence Moniny před každým dialogem
                 if (!this.monina || !this.monina.active || this.moninaDestroyed) {
+                    if (DEBUG_MODE) console.log('❌ Breaking dialog loop - Monina state changed');
                     break;
                 }
 
+                if (DEBUG_MODE) console.log('💭 Showing dialog:', item.key);
                 await this.dialog.showDialogAbove(item.key, this.monina, -60);
                 await this.delay(2000);
                 this.dialog.hideDialog?.();
             }
+            
+            if (DEBUG_MODE) console.log('✅ All dialogs completed successfully');
         } catch (error) {
             console.warn('Dialog chyba:', error);
         }
@@ -244,12 +270,22 @@ export default class Game extends Phaser.Scene {
 
     // Nová metoda pro vynucené zničení Moniny
     private forceDestroyMonina(): void {
+        if (DEBUG_MODE) {
+            console.log('💥 forceDestroyMonina called. Current state:', {
+                exists: !!this.monina,
+                active: this.monina?.active,
+                destroyed: this.moninaDestroyed
+            });
+        }
+
         if (this.monina) {
-            this.moninaDestroyed = true; // <-- přidej tuto řádku
+            this.moninaDestroyed = true;
             this.dialog.hideDialog?.();
             this.monina.destroy();
             this.monina = null as any;
-            console.log('Monina byla zničena');
+            console.log('✨ Monina byla zničena');
+        } else if (DEBUG_MODE) {
+            console.log('⚠️ Monina already destroyed or null');
         }
     }
 
@@ -265,6 +301,11 @@ export default class Game extends Phaser.Scene {
      * Spouští se po skončení dialogů Moniny.
      */
     private enableGamePlay() {
+        if (DEBUG_MODE) {
+            console.log('🎮 enableGamePlay called');
+            console.log('🗑️ Odpadky count:', this.odpadky.length);
+        }
+
         this.canPlay = true;
         this.odpadky.forEach(odpadek => {
             if (odpadek.sprite) {
@@ -273,9 +314,13 @@ export default class Game extends Phaser.Scene {
                 odpadek.sprite.setAlpha(1); // Odpadek je plně viditelný
             }
         });
+        
         if (!this.timerEvent) {
             // Timer nespouštíme automaticky, jen až při prvním tahu
+            if (DEBUG_MODE) console.log('⏰ Timer ready to start on first drag');
         }
+        
+        if (DEBUG_MODE) console.log('✅ Game is now playable!');
     }
 
     /**

@@ -5,6 +5,7 @@
 import Phaser from "phaser";
 /* START-USER-IMPORTS */
 import ResponsiveManager from '../../utils/ResponsiveManager';
+import { DEBUG_MODE } from '../../config/constants';
 /* END-USER-IMPORTS */
 
 declare global {
@@ -81,6 +82,14 @@ export default class Preloader extends Phaser.Scene {
     }
 
     create() {
+        // V DEBUG režimu smaž localStorage klíč, aby bylo možné testovat hru od začátku
+        if (DEBUG_MODE) {
+            if (localStorage.getItem("CITO2025_FINISHED")) {
+                console.log('🗑️ DEBUG MODE: Clearing CITO2025_FINISHED localStorage to enable fresh testing');
+                localStorage.removeItem("CITO2025_FINISHED");
+            }
+        }
+
         // Inicializace ResponsiveManager
         this.responsive = new ResponsiveManager(this);
 

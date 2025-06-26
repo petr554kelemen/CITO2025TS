@@ -118,9 +118,11 @@ export default class Intro extends Phaser.Scene {
             this.skipIntro();
         });
 
-        if (localStorage.getItem("CITO2025_FINISHED")) {
-            this.scene.start("GameOver", { texts: this.texts });
-        }
+        // Poznámka: Původně zde bylo přeskakování na GameOver pro dokončenou hru
+        // Ale to brání opakovanému hraní - odstraněno
+        // if (localStorage.getItem("CITO2025_FINISHED")) {
+        //     this.scene.start("GameOver", { texts: this.texts });
+        // }
     }
 
     // Refaktorovaná metoda pro motýla a jeho animaci
