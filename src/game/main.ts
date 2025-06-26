@@ -17,7 +17,7 @@ const StartGame = (parent: string) => {
         width: 667,
         height: 375,
         parent,
-        backgroundColor: '#028af8',
+        backgroundColor: '#1a4a2e', // Tmavě zelené pozadí místo modrého
         scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
