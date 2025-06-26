@@ -1,11 +1,6 @@
 {
     "boot": {
         "files": [
-            {
-                "url": "assets/bg.png",
-                "type": "image",
-                "key": "background"
-            }
         ]
     },
     "meta": {
