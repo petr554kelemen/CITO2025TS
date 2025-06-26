@@ -122,17 +122,17 @@ export default class Preloader extends Phaser.Scene {
             cs: {
                 PC: "Detekováno zařízení: PC\nHra poběží bez omezení.",
                 Android: "Detekováno zařízení: Android\nDoporučujeme hrát ve fullscreen režimu.",
-                iOS: "Detekováno zařízení: iOS\nVaše zařízení není v současné době podporované.\nPoužijte PC nebo Android."
+                iOS: "Detekováno zařízení: iOS\n📱 Hra je optimalizována pro mobilní zařízení!\nOtočte zařízení na šířku pro nejlepší zážitek."
             },
             en: {
                 PC: "Device detected: PC\nThe game will run without restrictions.",
                 Android: "Device detected: Android\nWe recommend playing in fullscreen mode.",
-                iOS: "Device detected: iOS\nYour device is not currently supported.\nPlease use a PC or Android."
+                iOS: "Device detected: iOS\n📱 Game is optimized for mobile devices!\nRotate your device to landscape for the best experience."
             },
             pl: {
                 PC: "Wykryto urządzenie: PC\nGra będzie działać bez ograniczeń.",
                 Android: "Wykryto urządzenie: Android\nZalecamy grę w trybie pełnoekranowym.",
-                iOS: "Wykryto urządzenie: iOS\nTwoje urządzenie nie jest obecnie obsługiwane.\nUżyj komputera PC lub Androida."
+                iOS: "Wykryto urządzenie: iOS\n📱 Gra jest zoptymalizowana na urządzenia mobilne!\nObróć urządzenie na szerokość dla najlepszego doświadczenia."
             }
         };
 
