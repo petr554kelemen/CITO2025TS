@@ -175,16 +175,26 @@ export default class Preloader extends Phaser.Scene {
                 };
 
                 if (device === 'iOS') {
-                    // Nekonečně střídej jazykové varianty po 3s
+                    // Střídej jazykové varianty po 3s, ale umožni pokračovat kliknutím
                     const langs: Lang[] = ['cs', 'en', 'pl'];
                     let idx = 0;
-                    showInfo(infoTexts[langs[idx]].iOS);
-                    this.time.addEvent({
+                    let languageTimer: Phaser.Time.TimerEvent;
+                    
+                    showInfo(infoTexts[langs[idx]].iOS + '\n\n👆 Klikni pro pokračování');
+                    
+                    // Přidej možnost kliknout a pokračovat
+                    this.input.once('pointerdown', () => {
+                        if (languageTimer) languageTimer.destroy();
+                        this.scene.start('MainMenu', { texts: this.cache.json.get(`lang-${lang}`), language: lang });
+                    });
+                    
+                    // Střídání jazyků každé 3 sekundy
+                    languageTimer = this.time.addEvent({
                         delay: 3000,
                         loop: true,
                         callback: () => {
                             idx = (idx + 1) % langs.length;
-                            showInfo(infoTexts[langs[idx]].iOS);
+                            showInfo(infoTexts[langs[idx]].iOS + '\n\n👆 Klikni pro pokračování');
                         }
                     });
                 } else {
@@ -192,7 +202,7 @@ export default class Preloader extends Phaser.Scene {
                     showInfo(infoTexts[lang][device]);
                     // Po krátké prodlevě pokračovat do MainMenu
                     this.time.delayedCall(1500, () => {
-                        this.scene.start('MainMenu');
+                        this.scene.start('MainMenu', { texts: this.cache.json.get(`lang-${lang}`), language: lang });
                     });
                 }
             }
