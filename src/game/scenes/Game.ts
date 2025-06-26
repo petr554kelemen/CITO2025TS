@@ -714,8 +714,11 @@ export default class Game extends Phaser.Scene {
             if (DEBUG_MODE) console.log('Restart game clicked - returning to MainMenu');
             this.dialog.hideDialog();
             
-            // Přejdi na MainMenu pro kompletní restart hry
-            this.scene.start('MainMenu');
+            // Fade out před přechodem na MainMenu
+            this.cameras.main.fadeOut(800, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('MainMenu');
+            });
         });
     }
 
@@ -723,12 +726,14 @@ export default class Game extends Phaser.Scene {
 
     // Implementace metody showFinalScene
     private showFinalScene(): void {
-        // Zobraz finální obrazovku nebo přejdi na další scénu
-        // Toto je pouze příklad, uprav dle potřeby
-        this.scene.start('GameOver', {
-            score: this.scoreboard.getCorrectCount?.() ?? 0,
-            timeLeft: this.timeLeft,
-            success: this.lastGameSuccess ?? false
+        // Fade out pred prechodom na GameOver
+        this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('GameOver', {
+                score: this.scoreboard.getCorrectCount?.() ?? 0,
+                timeLeft: this.timeLeft,
+                success: this.lastGameSuccess ?? false
+            });
         });
     }
 

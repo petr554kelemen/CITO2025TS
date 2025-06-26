@@ -19,6 +19,9 @@ export default class GameOver extends Phaser.Scene {
     }
 
     create() {
+        // Fade in efekt na začátku
+        this.cameras.main.fadeIn(1000, 0, 0, 0);
+        
         // Přidaj CameraControlManager
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
@@ -99,9 +102,12 @@ export default class GameOver extends Phaser.Scene {
                 localStorage.removeItem("cilSplnen");
                 localStorage.removeItem("hraDokoncena");
             }
-            // Resetuj hru a vrať se na hlavní menu
-            this.scene.stop(this);
-            this.scene.start("MainMenu");
+            // Fade out pred návratom na MainMenu
+            this.cameras.main.fadeOut(800, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.stop(this);
+                this.scene.start("MainMenu");
+            });
         });
 
         // Přidání tlačítka pro zkopírování souřadnic do schránky
