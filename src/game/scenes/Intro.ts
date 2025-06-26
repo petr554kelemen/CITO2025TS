@@ -4,6 +4,28 @@ import ResponsiveManager from '../../utils/ResponsiveManager';
 import CameraControlManager from '../../utils/CameraControlManager';
 import { UI, DEBUG_MODE } from '../../config/constants';
 
+// Konstanty pro animace a pozice
+const ANIMATION_DURATIONS = {
+    BUTTERFLY_APPROACH: 2800,
+    BUTTERFLY_MOVE: 1200,
+    BUTTERFLY_TO_GHOST: 2800,
+    GHOST_APPEAR: 1200,
+    GHOST_DISAPPEAR: 3000,
+    BUTTERFLY_EXIT: 2500,
+    SCENE_FADE: 1000,
+    SKIP_FADE: 500
+} as const;
+
+const DESIGN_DIMENSIONS = {
+    WIDTH: 667,
+    HEIGHT: 375
+} as const;
+
+const GHOST_OFFSET = {
+    X: 120,
+    Y: 40
+} as const;
+
 type Odpadek = {
     typ: string;
     x: number;
@@ -40,7 +62,6 @@ export default class Intro extends Phaser.Scene {
     private motyl!: Phaser.GameObjects.Sprite;
     private duch!: Phaser.GameObjects.Sprite;
     private pytel!: Phaser.GameObjects.Sprite;
-    //private citoLogo!: Phaser.GameObjects.Image;
     private prevX: number = 0;
     private lang: any;
     private texts!: DialogTexts;
@@ -76,9 +97,9 @@ export default class Intro extends Phaser.Scene {
 
         // Výpočet scaleFactor a převodních funkcí
         const { width: gameWidth, height: gameHeight } = this.scale;
-        const scaleFactor = Math.min(gameWidth / 667, gameHeight / 375);
-        const px = (x: number) => Math.round(gameWidth * (x / 667));
-        const py = (y: number) => Math.round(gameHeight * (y / 375));
+        const scaleFactor = Math.min(gameWidth / DESIGN_DIMENSIONS.WIDTH, gameHeight / DESIGN_DIMENSIONS.HEIGHT);
+        const px = (x: number) => Math.round(gameWidth * (x / DESIGN_DIMENSIONS.WIDTH));
+        const py = (y: number) => Math.round(gameHeight * (y / DESIGN_DIMENSIONS.HEIGHT));
 
         // Pozadí
         this.background = this.add.image(gameWidth / 2, gameHeight / 2, "freepik_forest_01");
@@ -117,12 +138,6 @@ export default class Intro extends Phaser.Scene {
         this.input.once('pointerdown', () => {
             this.skipIntro();
         });
-
-        // Poznámka: Původně zde bylo přeskakování na GameOver pro dokončenou hru
-        // Ale to brání opakovanému hraní - odstraněno
-        // if (localStorage.getItem("CITO2025_FINISHED")) {
-        //     this.scene.start("GameOver", { texts: this.texts });
-        // }
     }
 
     // Refaktorovaná metoda pro motýla a jeho animaci
@@ -145,8 +160,8 @@ export default class Intro extends Phaser.Scene {
         const points = shuffled.slice(0, 4).map(o => ({ x: px(o.x), y: py(o.y) }));
 
         // Přidej cílový bod u ducha s rozestupem
-        const offsetX = Math.round(120 * scaleFactor);
-        const offsetY = Math.round(40 * scaleFactor);
+        const offsetX = Math.round(GHOST_OFFSET.X * scaleFactor);
+        const offsetY = Math.round(GHOST_OFFSET.Y * scaleFactor);
         const duchCilX = duchX + offsetX;
         const duchCilY = duchY + offsetY;
 
@@ -156,53 +171,54 @@ export default class Intro extends Phaser.Scene {
             x: points[0].x,
             y: points[0].y,
             scale: 0.6 * scaleFactor,
-            duration: 2800,
+            duration: ANIMATION_DURATIONS.BUTTERFLY_APPROACH,
             ease: 'Power2',
             onComplete: () => {
-                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl, -60).then(() => {
-                    const tweens = [
-                        ...points.slice(1).map(p => ({
-                            targets: this.motyl,
-                            x: p.x,
-                            y: p.y,
-                            duration: 1200,
-                            ease: 'Power2',
-                            onStart: () => {
-                                this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl, -60);
-                            }
-                        })),
-                        {
-                            targets: this.motyl,
-                            x: duchCilX,
-                            y: duchCilY,
-                            duration: 2800,
-                            ease: 'Power2'
-                        }
-                    ];
-
-                    this.tweens.chain({
-                        tweens,
-                        onComplete: () => {
-                            this.volejDucha();
-                        }
-                    });
-                });
+                this.startButterflySequence(points, duchCilX, duchCilY);
             }
         });
+    }
 
-        this.input.once('pointerdown', () => {
-            this.skipIntro();
+    // Nová metoda pro sekvenci motýla - snižuje complexity
+    private async startButterflySequence(points: { x: number; y: number }[], duchCilX: number, duchCilY: number): Promise<void> {
+        await this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl, -60);
+        
+        const tweens = [
+            ...points.slice(1).map(p => ({
+                targets: this.motyl,
+                x: p.x,
+                y: p.y,
+                duration: ANIMATION_DURATIONS.BUTTERFLY_MOVE,
+                ease: 'Power2',
+                onStart: () => {
+                    this.dialog.showDialogAboveAndDelay('motyl-00', this.motyl, -60);
+                }
+            })),
+            {
+                targets: this.motyl,
+                x: duchCilX,
+                y: duchCilY,
+                duration: ANIMATION_DURATIONS.BUTTERFLY_TO_GHOST,
+                ease: 'Power2'
+            }
+        ];
+
+        this.tweens.chain({
+            tweens,
+            onComplete: () => {
+                this.volejDucha();
+            }
         });
     }
 
     // Metoda pro zjevení ducha a spuštění dialogu
     private volejDucha(): void {
         this.duch.setVisible(true);
-        this.duch.setScale(0.6 * this.responsive.getScaleFactor(667, 375));
+        this.duch.setScale(0.6 * this.responsive.getScaleFactor(DESIGN_DIMENSIONS.WIDTH, DESIGN_DIMENSIONS.HEIGHT));
         this.tweens.add({
             targets: this.duch,
             alpha: 0.9,
-            duration: 1200,
+            duration: ANIMATION_DURATIONS.GHOST_APPEAR,
             onStart: () => {
                 if (this.dialog && typeof this.dialog.hideDialog === 'function') {
                     this.dialog.hideDialog();
@@ -246,7 +262,7 @@ export default class Intro extends Phaser.Scene {
         this.tweens.add({
             targets: this.duch,
             alpha: 0,
-            duration: 3000,
+            duration: ANIMATION_DURATIONS.GHOST_DISAPPEAR,
             onComplete: () => {
                 this.duch.setVisible(false);
             }
@@ -256,10 +272,10 @@ export default class Intro extends Phaser.Scene {
             targets: this.motyl,
             x: 1200,
             y: -100,
-            duration: 2500,
+            duration: ANIMATION_DURATIONS.BUTTERFLY_EXIT,
             ease: 'Quad.easeIn',
             onComplete: () => {
-                this.cameras.main.fadeOut(1000, 0, 0, 0);
+                this.cameras.main.fadeOut(ANIMATION_DURATIONS.SCENE_FADE, 0, 0, 0);
                 this.cameras.main.once('camerafadeoutcomplete', () => {
                     this.startGameScene();
                 });
@@ -269,7 +285,7 @@ export default class Intro extends Phaser.Scene {
 
     private skipIntro(): void {
         this.input.enabled = false;
-        this.cameras.main.fadeOut(500, 0, 0, 0);
+        this.cameras.main.fadeOut(ANIMATION_DURATIONS.SKIP_FADE, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', () => {
             this.startGameScene();
         });
@@ -311,10 +327,10 @@ export default class Intro extends Phaser.Scene {
     }
 
     private px(x: number): number {
-        return Math.round(this.scale.width * (x / 667));
+        return Math.round(this.scale.width * (x / DESIGN_DIMENSIONS.WIDTH));
     }
     private py(y: number): number {
-        return Math.round(this.scale.height * (y / 375));
+        return Math.round(this.scale.height * (y / DESIGN_DIMENSIONS.HEIGHT));
     }
 
 }
