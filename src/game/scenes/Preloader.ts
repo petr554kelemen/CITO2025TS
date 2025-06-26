@@ -5,7 +5,6 @@
 import Phaser from "phaser";
 /* START-USER-IMPORTS */
 import ResponsiveManager from '../../utils/ResponsiveManager';
-import { DEBUG_MODE } from '../../config/constants';
 /* END-USER-IMPORTS */
 
 declare global {

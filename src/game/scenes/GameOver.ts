@@ -1,7 +1,7 @@
 // Scene: Zobrazení konce hry
 
 import Phaser from "phaser";
-import { COORDINATE } from "../../config/constants";
+import { COORDINATE, DEBUG_MODE } from "../../config/constants";
 import CameraControlManager from '../../utils/CameraControlManager';
 
 export default class GameOver extends Phaser.Scene {
@@ -15,7 +15,7 @@ export default class GameOver extends Phaser.Scene {
 
     // Přidej metodu init pro načtení dat
     init(data: { texts?: any }) {
-        this.texts = data.texts || {};
+        this.texts = data.texts ?? {};
     }
 
     create() {
@@ -24,8 +24,12 @@ export default class GameOver extends Phaser.Scene {
             enableFullscreen: true,
             enableDragY: false,
             iosZoom: 0.95,
-            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+            infoTextIOS: "🏆 Gratulujeme k dokončení hry!"
         });
+
+        if (DEBUG_MODE) {
+            console.log('GameOver scene initialized. Camera control:', !!this.cameraControl);
+        }
 
         // Nastavení tmavého pozadí (velmi tmavá šedá)
         this.cameras.main.setBackgroundColor("#181818");

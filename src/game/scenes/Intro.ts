@@ -2,8 +2,7 @@ import Phaser from 'phaser';
 import DialogManager from '../../utils/DialogManager';
 import ResponsiveManager from '../../utils/ResponsiveManager';
 import CameraControlManager from '../../utils/CameraControlManager';
-import { UI } from '../../config/constants';
-import { DEBUG_MODE } from '../../config/constants';
+import { UI, DEBUG_MODE } from '../../config/constants';
 
 type Odpadek = {
     typ: string;
@@ -24,7 +23,7 @@ export default class Intro extends Phaser.Scene {
     private responsive!: ResponsiveManager;
     private cameraControl!: CameraControlManager;
 
-    private odpadkyData: Odpadek[] = [
+    private readonly odpadkyData: Odpadek[] = [
         { typ: "Karton", x: 359, y: 243, scale: 0.6 },
         { typ: "Plechovka", x: 475, y: 278, scale: 0.6 },
         { typ: "Lahev", x: 427, y: 253, scale: 0.6 },
@@ -66,12 +65,14 @@ export default class Intro extends Phaser.Scene {
             enableFullscreen: true,
             enableDragY: false, // nebo true, pokud chceš povolit posun
             iosZoom: 0.95,
-            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+            infoTextIOS: "📱 Hra je optimalizována pro mobilní zařízení!"
         });
 
         if (DEBUG_MODE) {
-    this.responsive.addDebugOverlay();
-}
+            this.responsive.addDebugOverlay();
+            console.log('Intro scene initialized. Camera control:', !!this.cameraControl);
+            console.log('Helper methods available:', typeof this.doFlip, typeof this.px, typeof this.py);
+        }
 
         // Výpočet scaleFactor a převodních funkcí
         const { width: gameWidth, height: gameHeight } = this.scale;
@@ -119,7 +120,6 @@ export default class Intro extends Phaser.Scene {
 
         if (localStorage.getItem("CITO2025_FINISHED")) {
             this.scene.start("GameOver", { texts: this.texts });
-            return;
         }
     }
 

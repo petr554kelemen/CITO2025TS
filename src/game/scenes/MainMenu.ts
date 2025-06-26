@@ -1,8 +1,6 @@
 import Phaser from 'phaser';
 import ResponsiveManager, { LayoutType, DeviceType } from '../../utils/ResponsiveManager';
-import { UI, DESIGN } from '../../config/constants'; // <-- přidán DESIGN
-//import { DEBUG_MODE } from '../../config/constants';
-//import csTexts from "../../../public/assets/locales/cs.json"; // nebo správná cesta dle build systému
+import { UI, DESIGN, DEBUG_MODE } from '../../config/constants'; // <-- přidán DEBUG_MODE
 import CameraControlManager from '../../utils/CameraControlManager';
 
 type Lang = 'cs' | 'en' | 'pl';
@@ -16,19 +14,8 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     create() {
-        //this.scene.stop('MainMenu'); // zastavíme scénu pokud běží
-        //this.scene.start('FullscreenZoomTestScene'); // spustíme zoom tstovací scénu
-        // return; // Removed to allow MainMenu UI setup to run
-        
         this.responsive = new ResponsiveManager(this);
         this.responsive.checkAndForceOrientation();
-
-        /*         if (DEBUG_MODE) {
-                           // Zkus načíst jazyk z localStorage, případně fallback na češtinu
-                let texts = this.cache?.json?.get?.("lang-cs") || csTexts;
-                this.scene.start("GameOver", { texts });
-                return;
-                } */
 
         const deviceType = this.responsive.getDeviceType();
 
@@ -55,9 +42,13 @@ export default class MainMenu extends Phaser.Scene {
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
             enableDragY: true,
-            iosZoom: 0.8,
-            infoTextIOS: "Hru pro iOS nelze adekvátně přizpůsobit. Pro lepší zážitek použij PC."
+            iosZoom: 0.95,
+            infoTextIOS: "🎮 Hra je optimalizována pro všechna zařízení! Použijte zoom tlačítka pro přizpůsobení."
         });
+        
+        if (DEBUG_MODE) {
+            console.log('MainMenu camera control initialized:', !!this.cameraControl);
+        }
     }
 
     /**

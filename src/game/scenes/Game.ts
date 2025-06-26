@@ -40,7 +40,7 @@ export default class Game extends Phaser.Scene {
     private quizCleanup: (() => void) | null = null;
 
     // Sekvence dialogů Moniny
-    private moninaSequence: { key: string }[] = [
+    private readonly moninaSequence: { key: string }[] = [
         { key: "monina-01" },
         { key: "monina-02" },
         { key: "monina-03" },
@@ -93,7 +93,7 @@ export default class Game extends Phaser.Scene {
 
         this.scoreboard = new Scoreboard(this, this.odpadky.length, this.timeLeft, this.texts);
         this.dialog = new DialogManager(this, this.texts);
-        const language = (this as any).data?.language || this.texts.language || 'cs';
+        const language = (this as any).data?.language ?? this.texts.language ?? 'cs';
         this.quiz = new Quiz(language);
 
         // Reset časovače a skóre
@@ -110,6 +110,8 @@ export default class Game extends Phaser.Scene {
             console.log('Is mobile:', this.responsive?.isMobile());
             console.log('Window size:', window.innerWidth, 'x', window.innerHeight);
             console.log('Phaser size:', this.scale.width, 'x', this.scale.height);
+            console.log('Camera control ready:', !!this.cameraControl);
+            console.log('Quiz cleanup ready:', !!this.quizCleanup);
         }
 
         // Monina sprite vytvoř ihned, ale další logiku řeš až po načtení otázek
@@ -183,20 +185,14 @@ export default class Game extends Phaser.Scene {
         // Scoreboard reset
         this.scoreboard.reset();
 
-        //if (window.DEBUG_MODE) {
-        // this.children.list
-        //     .filter(obj => obj instanceof Phaser.GameObjects.Sprite && (obj as Phaser.GameObjects.Sprite).texture.key === 'DivkaStoji')
-        //     .forEach((obj, i) => {
-        //         console.log(`Monina instance #${i + 1}:`, obj);
-        //     });
-        //}
+        //
 
         // Přidej CameraControlManager
         this.cameraControl = new CameraControlManager(this, {
             enableFullscreen: true,
             enableDragY: true, // pokud chceš umožnit posun scény na mobilech
             iosZoom: 0.95,
-            infoTextIOS: "Pro lepší zážitek použijte fullscreen nebo otočte zařízení."
+            infoTextIOS: "🎯 Použijte zoom tlačítka nebo táhněte pro přizpůsobení zobrazení."
         });
 
         // Spusť asynchronní inicializaci (načtení otázek, dialogy, handlery)
@@ -231,13 +227,12 @@ export default class Game extends Phaser.Scene {
     // Nová metoda pro jednoduché spuštění dialogů
     private async startMoninaDialogs(): Promise<void> {
         try {
-            for (let i = 0; i < this.moninaSequence.length; i++) {
+            for (const item of this.moninaSequence) {
                 // Kontrola existence Moniny před každým dialogem
                 if (!this.monina || !this.monina.active || this.moninaDestroyed) {
                     break;
                 }
 
-                const item = this.moninaSequence[i];
                 await this.dialog.showDialogAbove(item.key, this.monina, -60);
                 await this.delay(2000);
                 this.dialog.hideDialog?.();
@@ -314,8 +309,7 @@ export default class Game extends Phaser.Scene {
 
         this.odpadky.forEach((odpadek, idx) => {
             if (
-                !odpadek ||
-                !odpadek.pozice ||
+                !odpadek?.pozice ||
                 typeof odpadek.pozice.x !== "number" ||
                 typeof odpadek.pozice.y !== "number" ||
                 typeof odpadek.typ !== "string"
@@ -557,7 +551,6 @@ export default class Game extends Phaser.Scene {
                 this.scoreboard.updateTime(this.timeLeft);
                 if (this.timeLeft <= 0) {
                     this.endGame(); // Zavolej metodu pro ukončení hry
-                    return;
                 }
             },
             loop: true
