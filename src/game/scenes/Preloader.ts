@@ -22,13 +22,13 @@ export default class Preloader extends Phaser.Scene {
 
     editorCreate(): void {
 
-        // image_56ba42f5-7d7b-4134-a21e-85c51411440a
-        this.add.image(512, 384, "background");
+        // Dark green background instead of blue bg.png
+        const gameWidth = this.scale.width;
+        const gameHeight = this.scale.height;
+        this.add.rectangle(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 0x1a4a2e);
 
         // progressBar
         const progressBar = this.add.rectangle(512, 384, 468, 32);
-        const gameWidth = this.scale.width;
-        const gameHeight = this.scale.height;
         progressBar.setPosition(gameWidth / 2, gameHeight * 0.6);
         progressBar.displayWidth = Math.min(468, gameWidth * 0.7);
         progressBar.isFilled = true;
