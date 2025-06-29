@@ -102,6 +102,9 @@ export default class Game extends Phaser.Scene {
         this.quiz?.reset?.();
         this.lastGameSuccess = false;
         
+        // DŮLEŽITÉ: Reset nápověd při restartu hry
+        this.totalHintsLeft = 2;
+        
         // DŮLEŽITÉ: Reset stavu Moniny při restartu scény
         this.moninaDestroyed = false;
         this.canPlay = false;
